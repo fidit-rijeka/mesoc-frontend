@@ -1,0 +1,174 @@
+@import './colors';
+@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-size: 16px;
+  font-weight: 400;
+  color: $textDark;
+  background: $background;
+  font-family: 'Rubik', sans-serif;
+}
+
+/*   ------   SHARED   ------   */
+
+.pageWrapper {
+  display: flex;
+  min-height: calc(100vh - 60px);
+  margin-top: 60px;
+
+  .sidenavArea {
+    width: 230px;
+    flex-shrink: 0;
+  }
+
+  .pageArea {
+    width: 100%;
+    padding: 1em;
+  }
+}
+
+/*   ------   NAVBAR   ------   */
+
+nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  width: 100%;
+  height: 60px;
+  background: $white;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 5%;
+  box-shadow: 0px 0px 24px rgba(0, 0, 0, 0.04);
+
+  .logoA {
+    margin-right: 4em;
+
+    .logo {
+      width: 56px;
+    }
+  }
+
+  .navSearchForm {
+    margin-right: auto;
+
+    .navInputField {
+      background: rgba($buttonPurple, .1);
+      border: transparent;
+      font-size: .9rem;
+      padding: .5em 1em;
+      border-radius: 18px;
+    }
+  }
+
+  .mainA {
+    font-size: 1.1rem;
+    font-weight: 500;
+    text-decoration: none;
+    padding: .7em;
+    margin-right: 1.8em;
+    color: $textDark;
+
+    &:hover {
+      color: $textDarkHover;
+      transition: .2s;
+    }
+  }
+
+  .secondaryA {
+    font-weight: 500;
+    font-size: .95rem;
+    text-decoration: none;
+    padding: .7em;
+    margin-left: .5em;
+    color: $buttonPurple;
+
+    &:hover {
+      color: $buttonPurpleHover;
+      transition: .2s;
+    }
+  }
+}
+
+/*   ------   SIDENAV   ------   */
+
+.sidenavWrapper {
+  width: 230px;
+  height: calc(100vh - 60px);
+  position: fixed;
+  top: 60px;
+  left: 0;
+  background: $sidenavBlue;
+  padding: .5em 0;
+
+  .sidenavLink {
+    display: flex;
+    align-items: center;
+    padding: .5em;
+    margin: .2em 0;
+
+    .slIco {
+      width: 24px;
+      margin-right: .65em;
+      fill: rgba($textLight, .7);
+    }
+
+    .slSpan {
+      color: rgba($textLight, .8);
+      font-size: .95rem;
+    }
+
+    &:hover .slIco {
+      fill: rgba($textLight, 1);
+      transition: .2s;
+    }
+
+    &:hover .slSpan {
+      color: rgba($textLight, 1);
+      transition: .2s;
+    }
+  }
+}
+
+/*   ------   SIGN IN   ------   */
+
+.signInWrapper {
+  margin-top: 60px;
+
+  .fs95 {
+    font-size: .95rem;
+    font-weight: 400;
+  }
+}
+
+/*   ------   UPLOAD DOCUMENT   ------   */
+
+.uplForm {
+  display: flex;
+  flex-wrap: wrap;
+
+  .formField {
+    width: 32%;
+    margin-right: 2%;
+
+    &:nth-child(3n) {
+      margin-right: 0;
+    }
+  }
+
+  .btnFix {
+    width: 100%;
+  }
+
+  .fs952 {
+    font-size: .95rem;
+    font-weight: 400;
+  }
+}

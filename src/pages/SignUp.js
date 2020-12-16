@@ -13,16 +13,16 @@ const SignUp = props => {
   const [wait, setWait] = useState(false);
   const [danger, setDanger] = useState(false);
 
-  // TODO
-  // Update this function to comunicate with backend.
   const handleValidSubmit = e => {
+    // TODO:
+    // Add validation for password format
     if(e.target.password.value !== e.target.repeatPassword.value) {
       setErr('Passwords don\'t match. Please try again.');
       return;
     }
     setWait(true);
-    // TODO
-    // setTimeout is only temporary, needs to be replaced with call to a backend server
+    // TODO:
+    // Send data to backend. Display message acordingly to backend response
     setTimeout(() => {
       setWait(false);
       //setDanger(true);
@@ -82,15 +82,15 @@ const SignUp = props => {
                       {wait && <Alert color="secondary">Please wait.</Alert>}
 
                       <div className="form-group">
-                        <AvField name="email" label="Email" className="form-control" type="email" required />
+                        <AvField onInput={() => setErr(null)} name="email" label="Email" className="form-control" type="email" required />
                       </div>
 
                       <div className="form-group">
-                        <AvField name="password" label="Password" className="form-control" type="password" required />
+                        <AvField onInput={() => setErr(null)} name="password" label="Password" className="form-control" type="password" required />
                       </div>
 
                       <div className="form-group">
-                        <AvField name="repeatPassword" label="Repeat password" className="form-control" type="password" required />
+                        <AvField onInput={() => setErr(null)} name="repeatPassword" label="Repeat password" className="form-control" type="password" required />
                       </div>
 
                       <AvGroup check>
@@ -101,7 +101,7 @@ const SignUp = props => {
                         </Label>
                       </AvGroup>
 
-                      {/* TODO
+                      {/* TODO:
                       Add react-google-recaptcha here */}
 
                       <div className="mt-3">

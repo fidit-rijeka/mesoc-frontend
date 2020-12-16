@@ -5,29 +5,39 @@ import Sidenav from '../components/sidenav';
 import FileDropzone from '../components/fileDropzone';
 import FilePreview from '../components/filePreview';
 
+// TODO:
+// Protect this route -> auth only
 const UploadDocument = () => {
 
   const [invalid, setInvalid] = useState(null);
-  const [customchk, setCustomchk] = useState(false);
   const [file, setFile] = useState([]);
 
-  // TODO:
-  // Update this function to communicate with backend
-  // Finish validation
-  const handleUpload = e => {
+  const handleSubmit = e => {
+    const eventTarget = e.target;
     e.preventDefault();
-    setInvalid(null);
+
     console.log(file.length);
-    if(e.target.language.value === 'Choose document language') {
-      setInvalid('Please fill out all fields.');
-      setTimeout(() => setInvalid(null), 5000);
+
+    // form validations
+    if(eventTarget.title.value === '') {
+      setInvalid('Please specify title of your document.');
+      return;
+    }
+    if(eventTarget.language.value === 'Choose document language') {
+      setInvalid('Please specify language of your document.');
+      return;
+    }
+    if(eventTarget.city.value === 'Choose a city') {
+      setInvalid('Please specify city.');
       return;
     }
     if(file.length === 0) {
       setInvalid('Please upload your document.');
-      setTimeout(() => setInvalid(null), 5000);
       return;
     }
+
+    // TODO:
+    // Send data to backend
   };
 
   return(
@@ -43,57 +53,33 @@ const UploadDocument = () => {
 
             {invalid && <Alert color="danger">{invalid}</Alert>}
 
-            <form className="uplForm" onSubmit={handleUpload}>
+            <form className="uplForm" onSubmit={handleSubmit}>
 
               <div className="formField">
                 <label className="ffLabel">Title</label>
-                <input type="text" name="title" placeholder="Title of your document" className="form-control" />
+                <input onInput={() => setInvalid(null)} type="text" name="title" placeholder="Title of your document" className="form-control" />
               </div>
               {/* TODO:
-              Make this list a bit more elegant.
-              For example load cities from external json or make request from a server to make it customizable. */}
+              Fetch language list from backend */}
               <div className="formField">
                 <label className="ffLabel">Language</label>
-                <select name="language" className="form-control">
+                <select onInput={() => setInvalid(null)} name="language" className="form-control">
                   <option hidden disabled selected value="Choose document language">Choose document language</option>
                   <option value="bg">Bulgarian</option>
                   <option value="hr">Croatian</option>
-                  <option value="cs">Czech</option>
-                  <option value="da">Danish</option>
-                  <option value="nl">Dutch</option>
-                  <option value="en">English</option>
-                  <option value="ek">Estonian</option>
-                  <option value="fi">Finish</option>
-                  <option value="fr">French</option>
-                  <option value="de">German</option>
-                  <option value="el">Greek</option>
-                  <option value="hu">Hungarian</option>
-                  <option value="ga">Irish</option>
-                  <option value="it">Italian</option>
-                  <option value="lv">Latvian</option>
-                  <option value="lt">Lithuanian</option>
-                  <option value="mt">Maltese</option>
-                  <option value="pl">Polish</option>
-                  <option value="pt">Portuguese</option>
-                  <option value="ro">Romanian</option>
-                  <option value="sk">Slovak</option>
-                  <option value="sl">Slovenian</option>
-                  <option value="es">Spanish</option>
-                  <option value="sv">Swedish</option>
                 </select>
               </div>
               {/* TODO:
-              Turn this into a select list with list of supported cities (find on slack) */}
+              Fetch city list from backend */}
               <div className="formField">
                 <label className="ffLabel">City</label>
-                <input type="text" name="city" placeholder="Choose a city" className="form-control" />
+                <select onInput={() => setInvalid(null)} name="city" className="form-control">
+                  <option hidden disabled selected value="Choose a city">Choose a city</option>
+                  <option value="city1">City example 1</option>
+                  <option value="city2">Option 2</option>
+                  <option value="city3">Some value</option>
+                </select>
               </div>
-              <div className="custom-control custom-checkbox mb-3 mt-3">
-                <input type="checkbox" className="custom-control-input" id="CustomCheck1" onChange={() => false} checked={customchk} />
-                <label className="custom-control-label fs952" onClick={() => { setCustomchk(!customchk); }} >I want my document to be private</label>
-              </div>
-              {/* TODO:
-              Add dropzone for uploading documents here */}
               <FileDropzone setFile={setFile} setInvalid={setInvalid} />
               {file.length ? <FilePreview setFile={setFile} fileName={file[0].name} /> : null}
               

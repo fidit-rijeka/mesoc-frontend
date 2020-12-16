@@ -1,0 +1,185 @@
+{
+  "title": "Title of a document or city",
+  "cells": [
+    {
+      "classification": 0.0,
+      "num_keywords": 0,
+      "varUrl": "someUrl",
+      "simmilarUrl": "someUrl2"
+    },
+    {
+      "classification": 0.05,
+      "num_keywords": 0,
+      "varUrl": "someUrl",
+      "simmilarUrl": "someUrl2"
+    },
+    {
+      "classification": 0.1,
+      "num_keywords": 6,
+      "varUrl": "example.url/cell/2",
+      "simmilarUrl": "someUrl2"
+    },
+    {
+      "classification": 0.15,
+      "num_keywords": 6,
+      "varUrl": "example.url/cell/2",
+      "simmilarUrl": "someUrl2"
+    },
+    {
+      "classification": 0.2,
+      "num_keywords": 6,
+      "varUrl": "example.url/cell/2",
+      "simmilarUrl": "someUrl2"
+    },
+    {
+      "classification": 0.25,
+      "num_keywords": 6,
+      "varUrl": "example.url/cell/2",
+      "simmilarUrl": "someUrl2"
+    },
+    {
+      "classification": 0.3,
+      "num_keywords": 6,
+      "varUrl": "example.url/cell/2",
+      "simmilarUrl": "someUrl2"
+    },
+    {
+      "classification": 0.35,
+      "num_keywords": 6,
+      "varUrl": "example.url/cell/2",
+      "simmilarUrl": "someUrl2"
+    },
+    {
+      "classification": 0.4,
+      "num_keywords": 6,
+      "varUrl": "example.url/cell/2",
+      "simmilarUrl": "someUrl2"
+    },
+    {
+      "classification": 0.45,
+      "num_keywords": 6,
+      "varUrl": "example.url/cell/2",
+      "simmilarUrl": "someUrl2"
+    },
+    {
+      "classification": 0.5,
+      "num_keywords": 6,
+      "varUrl": "example.url/cell/2",
+      "simmilarUrl": "someUrl2"
+    },
+    {
+      "classification": 0.55,
+      "num_keywords": 6,
+      "varUrl": "example.url/cell/2",
+      "simmilarUrl": "someUrl2"
+    },
+    {
+      "classification": 0.6,
+      "num_keywords": 6,
+      "varUrl": "example.url/cell/2",
+      "simmilarUrl": "someUrl2"
+    },
+    {
+      "classification": 0.65,
+      "num_keywords": 6,
+      "varUrl": "example.url/cell/2",
+      "simmilarUrl": "someUrl2"
+    },
+    {
+      "classification": 0.7,
+      "num_keywords": 6,
+      "varUrl": "example.url/cell/2",
+      "simmilarUrl": "someUrl2"
+    },
+    {
+      "classification": 0.75,
+      "num_keywords": 6,
+      "varUrl": "example.url/cell/2",
+      "simmilarUrl": "someUrl2"
+    },
+    {
+      "classification": 0.8,
+      "num_keywords": 6,
+      "varUrl": "example.url/cell/2",
+      "simmilarUrl": "someUrl2"
+    },
+    {
+      "classification": 0.85,
+      "num_keywords": 6,
+      "varUrl": "example.url/cell/2",
+      "simmilarUrl": "someUrl2"
+    },
+    {
+      "classification": 0.9,
+      "num_keywords": 6,
+      "varUrl": "example.url/cell/2",
+      "simmilarUrl": "someUrl2"
+    },
+    {
+      "classification": 0.95,
+      "num_keywords": 6,
+      "varUrl": "example.url/cell/2",
+      "simmilarUrl": "someUrl2"
+    },
+    {
+      "classification": 1.0,
+      "num_keywords": 6,
+      "varUrl": "example.url/cell/2",
+      "simmilarUrl": "someUrl2"
+    },
+    {
+      "classification": 0.0,
+      "num_keywords": 6,
+      "varUrl": "example.url/cell/2",
+      "simmilarUrl": "someUrl2"
+    },
+    {
+      "classification": 0.0,
+      "num_keywords": 6,
+      "varUrl": "example.url/cell/2",
+      "simmilarUrl": "someUrl2"
+    },
+    {
+      "classification": 0.0,
+      "num_keywords": 6,
+      "varUrl": "example.url/cell/2",
+      "simmilarUrl": "someUrl2"
+    },
+    {
+      "classification": 0.0,
+      "num_keywords": 6,
+      "varUrl": "example.url/cell/2",
+      "simmilarUrl": "someUrl2"
+    },
+    {
+      "classification": 0.37,
+      "num_keywords": 6,
+      "varUrl": "example.url/cell/2",
+      "simmilarUrl": "someUrl2"
+    },
+    {
+      "classification": 0.37,
+      "num_keywords": 6,
+      "varUrl": "example.url/cell/2",
+      "simmilarUrl": "someUrl2"
+    },
+    {
+      "classification": 0.37,
+      "num_keywords": 6,
+      "varUrl": "example.url/cell/2",
+      "simmilarUrl": "someUrl2"
+    },
+    {
+      "classification": 0.37,
+      "num_keywords": 6,
+      "varUrl": "example.url/cell/2",
+      "simmilarUrl": "someUrl2"
+    },
+    {
+      "classification": 0.37,
+      "num_keywords": 6,
+      "varUrl": "example.url/cell/2",
+      "simmilarUrl": "someUrl2"
+    }
+  ]
+}

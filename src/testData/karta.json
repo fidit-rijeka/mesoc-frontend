@@ -1,0 +1,12 @@
+{
+  "cities":[
+    {
+       "cityName": "Zagreb",
+       "lat": "43.4729",
+       "lon": "43.4729",
+       "numOfDocs": "43",
+       "analysisScreenUrl": "url",
+       "isPilot": true
+    }
+  ]
+}

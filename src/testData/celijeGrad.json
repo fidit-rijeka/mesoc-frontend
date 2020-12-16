@@ -1,0 +1,23 @@
+{
+  "title": "City name",
+  "cells": [
+    {
+      "num_docs": 5612,
+      "num_keywords": 0,
+      "varUrl": "someUrl",
+      "simmilarUrl": "someUrl2"
+    },
+    {
+      "classification": 0.0,
+      "num_keywords": 0,
+      "varUrl": "someUrl",
+      "simmilarUrl": "someUrl2"
+    },
+    {
+      "classification": 0.37,
+      "num_keywords": 6,
+      "varUrl": "example.url/cell/2",
+      "simmilarUrl": "someUrl2"
+    }
+  ]
+}

@@ -10,12 +10,11 @@ const SignIn = props => {
   const [err, setErr] = useState(null);
   const [wait, setWait] = useState(false);
 
-  // TODO
-  // Update this function once you communicate with backend.
-  // setTimeout is only temporary to demonstrate things
   const handleValidSubmit = e => {
-    setErr(null);
     setWait(true);
+    // TODO:
+    // Make call to backend server here. Submit all data.
+    // Display message to user acordingly to backend response (success / failure)
     setTimeout(() => {
       if(e.target.email.value === 'a@a.a' && e.target.password.value=== '123') {
         props.history.push('/my-documents');
@@ -59,11 +58,11 @@ const SignIn = props => {
                       {wait && <Alert color="secondary">Please wait.</Alert>}
 
                       <div className="form-group">
-                        <AvField name="email" label="Email" className="form-control" type="email" required />
+                        <AvField onInput={() => setErr(null)} name="email" label="Email" className="form-control" type="email" required />
                       </div>
 
                       <div className="form-group">
-                        <AvField name="password" label="Password" className="form-control" type="password" required />
+                        <AvField onInput={() => setErr(null)} name="password" label="Password" className="form-control" type="password" required />
                       </div>
 
                       <div className="mt-3">

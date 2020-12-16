@@ -1,0 +1,58 @@
+{
+  "vars": [
+    {
+      "id": 4,
+      "name": "sense of socio-cultural belonging",
+      "num_ontology_categories": 4,
+      "num_keyword_vars": 15,
+      "strength" : 0.15,
+      "decompositionUrl": "someUrl",
+      "simmilarUrl": "someUrl2"
+    },
+    {
+      "id": 4,
+      "name": "sense of socio-cultural belonging",
+      "num_ontology_categories": 4,
+      "num_keyword_vars": 27,
+      "strength" : 0.25,
+      "decompositionUrl": "someUrl",
+      "simmilarUrl": "someUrl2"
+    },
+    {
+      "id": 4,
+      "name": "sense of socio-cultural belonging",
+      "num_ontology_categories": 4,
+      "num_keyword_vars": 15,
+      "strength" : 0.56,
+      "decompositionUrl": "someUrl",
+      "simmilarUrl": "someUrl2"
+    },
+    {
+      "id": 4,
+      "name": "sense of socio-cultural belonging",
+      "num_ontology_categories": 4,
+      "num_keyword_vars": 15,
+      "strength" : 0.15,
+      "decompositionUrl": "someUrl",
+      "simmilarUrl": "someUrl2"
+    },
+    {
+      "id": 4,
+      "name": "sense of socio-cultural belonging",
+      "num_ontology_categories": 4,
+      "num_keyword_vars": 15,
+      "strength" : 0.15,
+      "decompositionUrl": "someUrl",
+      "simmilarUrl": "someUrl2"
+    },
+    {
+      "id": 4,
+      "name": "sense of socio-cultural belonging",
+      "num_ontology_categories": 4,
+      "num_keyword_vars": 15,
+      "strength" : 0.15,
+      "decompositionUrl": "someUrl",
+      "simmilarUrl": "someUrl2"
+    }
+  ]
+}

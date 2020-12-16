@@ -1,6 +1,11 @@
 @import './colors';
 @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500&display=swap');
 
+@keyframes spin {
+  0% { transform: rotate(0deg) }
+  100% { transform: rotate(360deg) }
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -36,6 +41,7 @@ body {
 /*   ------   NAVBAR   ------   */
 
 nav {
+  z-index: 9999;
   position: fixed;
   top: 0;
   left: 0;
@@ -210,6 +216,7 @@ nav {
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-top: 2em;
 
   .dtPassive {
     font-weight: 500;
@@ -220,4 +227,169 @@ nav {
     font-weight: 500;
     color: $buttonPurple;
   }
+}
+
+/*   ------   HEATMAP   ------   */
+
+.heatmapWrapper {
+  display: grid;
+  grid-template-columns: 50px repeat(3, calc(33.3% - 16px));
+  grid-template-rows: repeat(11, 50px);
+
+  .numberSpan {
+    justify-self: center;
+    margin: auto;
+    font-weight: 700;
+    color: rgb(84, 89, 94);
+    font-size: 1.1rem;
+  }
+
+  #numSpan1 {
+    grid-area: 2 / 1 / 3 / 2;
+  }
+  #numSpan2 {
+    grid-area: 3 / 1 / 4 / 2;
+  }
+  #numSpan3 {
+    grid-area: 4 / 1 / 5 / 2;
+  }
+  #numSpan4 {
+    grid-area: 5 / 1 / 6 / 2;
+  }
+  #numSpan5 {
+    grid-area: 6 / 1 / 7 / 2;
+  }
+  #numSpan6 {
+    grid-area: 7 / 1 / 8 / 2;
+  }
+  #numSpan7 {
+    grid-area: 8 / 1 / 9 / 2;
+  }
+  #numSpan8 {
+    grid-area: 9 / 1 / 10 / 2;
+  }
+  #numSpan9 {
+    grid-area: 10 / 1 / 11 / 2;
+  }
+  #numSpan10 {
+    grid-area: 11 / 1 / 12 / 2;
+  }
+  #numSpanB1 {
+    grid-area: 1 / 2 / 2 / 3;
+  }
+  #numSpanB2 {
+    grid-area: 1 / 3 / 2 / 4;
+  }
+  #numSpanB3 {
+    grid-area: 1 / 4 / 2 / 5;
+  }
+
+  .heatmapCell {
+    width: calc(100% - 1px);
+    height: calc(100% - 1px);
+    background: rgb(90, 116, 172);
+    padding: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: .03s;
+
+    &:hover {
+      box-shadow: inset 0px 0px 0px 2px #ffc400;
+      transition: .03s;
+      cursor: pointer;
+    }
+  }
+}
+
+/*   ------   DOCUMENT LIST   ------   */
+
+.dlContainer {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+
+  .docContainer {
+    width: 18.5%;
+    margin-right: 1.875%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid rgba($textDark, .1);
+    box-shadow: 2px 1px 3px rgba(0, 0, 0, 0.15);
+    border-radius: 5px;
+    padding: 1em .3em;
+    margin-bottom: 1em;
+
+    .docIcon {
+      width: 30px;
+      fill: rgba($textDark, .7);
+      margin-bottom: 1.2em;
+    }
+
+    .docTitle {
+      text-align: center;
+      font-size: .9rem;
+      margin-bottom: .8em;
+    }
+
+    .docPercentage {
+      font-weight: 700;
+      color:rgba($textDark, .7);
+      font-size: 1.1rem;
+      margin-top: auto;
+    }
+
+    &:nth-child(5n) {
+      margin-right: 0;
+    }
+
+    &:hover {
+      box-shadow: 2px 1px 3px rgba(0, 0, 0, 0.45);
+      transition: .2s;
+      cursor: pointer;
+    }
+
+    &:hover .docPercentage {
+      color: $textDark;
+      transition: .2s;
+    }
+
+    &:hover .docIcon {
+      fill: $textDark;
+      transition: .2s;
+    }
+  }
+}
+
+/*   ------   ANALYSIS SCREEN   ------   */
+
+.analysisEmpty {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: rgba($textDark, .7);
+}
+
+.analysisLoader {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.dataLoaderIcon {
+  font-size: 3rem;
+  color: $buttonPurple;
+  animation: spin 2s linear infinite;
+}
+
+.dataLoaderText {
+  font-size: 1.1rem;
+  color: $buttonPurple;
+  font-weight: 700;
 }

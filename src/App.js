@@ -24,7 +24,7 @@ function App() {
         <Route path='/sign-in' component={SignIn} />
         <Route path='/create-account' component={SignUp} />
         <Route path='/upload-document' component={UploadDocument} />
-        <Route path='/:analysisKey' component={Analysis} />
+        <Route path='/:analysisType/:analysisKey' component={Analysis} />
       </Switch>
     </div>
   );

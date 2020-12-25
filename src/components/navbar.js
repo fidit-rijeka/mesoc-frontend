@@ -5,7 +5,12 @@ import NavSearchField from './navSearchField';
 
 import logo from '../images/mesocLogoBlue.png';
 
-const Navbar = () => {
+const Navbar = ({ userToken, setUserToken, removeAuthCookie }) => {
+
+  const signOut = () => {
+    setUserToken(null);
+    removeAuthCookie('mesoc_local_user')
+  };
 
   return(
     <nav>
@@ -16,8 +21,11 @@ const Navbar = () => {
       <NavSearchField />
 
       <Link to="browse" className="mainA">Browse</Link>
-      <Link to="sign-in" className="secondaryA">Sign in</Link>
-      <Link to="create-account" className="secondaryA">Create account</Link>
+      {userToken === null && <Link to="sign-in" className="secondaryA">Sign in</Link>}
+      {userToken === null ?
+        <Link to="create-account" className="secondaryA">Create account</Link> :
+        <Link to="/browse" onClick={signOut} className="secondaryA">Sign out</Link>
+      }
     </nav>
   );
 };

@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
+import { Redirect } from 'react-router-dom';
 import { Card, CardBody, CardTitle, CardSubtitle, Alert } from "reactstrap";
 
 import Sidenav from '../components/sidenav';
 import FileDropzone from '../components/fileDropzone';
 import FilePreview from '../components/filePreview';
 
-// TODO:
-// Protect this route -> auth only
-const UploadDocument = () => {
+const UploadDocument = ({ userToken }) => {
 
   const [invalid, setInvalid] = useState(null);
   const [file, setFile] = useState([]);
@@ -40,6 +39,11 @@ const UploadDocument = () => {
     // Send data to backend
   };
 
+  // If not authenticated, redirect to sign in.
+  if(userToken === null) {
+    return <Redirect to="/sign-in" />
+  }
+
   return(
     <div className="pageWrapper">
       <div className="sidenavArea">
@@ -60,7 +64,8 @@ const UploadDocument = () => {
                 <input onInput={() => setInvalid(null)} type="text" name="title" placeholder="Title of your document" className="form-control" />
               </div>
               {/* TODO:
-              Fetch language list from backend */}
+              Fetch language list from backend.
+              Find more elegant way of searching this dropdown. */}
               <div className="formField">
                 <label className="ffLabel">Language</label>
                 <select onInput={() => setInvalid(null)} name="language" className="form-control">
@@ -70,7 +75,13 @@ const UploadDocument = () => {
                 </select>
               </div>
               {/* TODO:
-              Fetch city list from backend */}
+              Add state dropdown list here.
+              Consult with team, maybe state and city should be in one list.
+              Format: state, city */}
+
+              {/* TODO:
+              Fetch city list from backend
+              Find more elegant way of searching this dropdown. */}
               <div className="formField">
                 <label className="ffLabel">City</label>
                 <select onInput={() => setInvalid(null)} name="city" className="form-control">

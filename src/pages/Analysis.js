@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { withRouter } from 'react-router-dom';
 import { Card, CardBody, CardTitle, CardSubtitle, Row, Col, Button } from "reactstrap";
 
 import Sidenav from '../components/sidenav';
@@ -22,7 +23,9 @@ const Analysis = ({ match }) => {
   useEffect(() => {
     // TODO:
     // Fetch cell data based on url params and set it to state
-    setCells(require('../testData/celije.json').cells);
+    setTimeout(() => {
+      setCells(require('../testData/celije.json').cells);
+    }, 1000)
     console.log(match.params.analysisType, match.params.analysisKey);
   }, []);
 
@@ -188,4 +191,4 @@ const Analysis = ({ match }) => {
   );
 };
 
-export default Analysis;
+export default withRouter(Analysis);

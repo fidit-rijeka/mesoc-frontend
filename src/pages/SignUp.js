@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { Row, Col, CardBody, Card, Alert, Container, Label } from "reactstrap";
 import { AvForm, AvField, AvInput, AvGroup } from 'availity-reactstrap-validation';
 import SweetAlert from 'react-bootstrap-sweetalert';
+import ReCAPTCHA from "react-google-recaptcha";
+import axios from 'axios';
 
 import logo from '../images/mesocLogoBlue.png';
 
@@ -12,17 +14,42 @@ const SignUp = props => {
   const [succ, setSucc] = useState(false);
   const [wait, setWait] = useState(false);
   const [danger, setDanger] = useState(false);
+  const [capCheck, setCapCheck] = useState(false);
 
   const handleValidSubmit = e => {
     // TODO:
-    // Add validation for password format
+    // Add all password validations (see api documentation).
     if(e.target.password.value !== e.target.repeatPassword.value) {
       setErr('Passwords don\'t match. Please try again.');
       return;
     }
-    setWait(true);
+    if(!capCheck) {
+      setErr('Please confirm that you are not a robot.');
+      return;
+    }
+
     // TODO:
     // Send data to backend. Display message acordingly to backend response
+    setWait(true);
+    // axios
+    //   .post('http://localhost:7000/users/', {
+    //     email: e.target.email.value,
+    //     password: e.target.password.value
+    //   }, {
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //       "Access-Control-Allow-Origin": "*"
+    //     }
+    //   })
+    //   .then(response => {
+    //     console.log(response);
+    //     setWait(false);
+    //   })
+    //   .catch(error => {
+    //     console.log(error);
+    //     setWait(false);
+    //   });
+
     setTimeout(() => {
       setWait(false);
       //setDanger(true);
@@ -39,7 +66,7 @@ const SignUp = props => {
           confirmBtnBsStyle="btn btn-primary wawes-effect waves-light"
           onConfirm={() => {props.history.push('/browse')}}
         >
-          Please click on the link that has just been sent to your email account to verify your email and continue the registration process.
+          Please click on the link that has just been sent to your email account to verify your email and continue the registration process. Be sure to check your spam folder.
         </SweetAlert>
       }
       {danger &&
@@ -93,16 +120,23 @@ const SignUp = props => {
                         <AvField onInput={() => setErr(null)} name="repeatPassword" label="Repeat password" className="form-control" type="password" required />
                       </div>
 
+                      {/* TODO:
+                      Link these to actual Terms & Tonditions and Privacy policy */}
                       <AvGroup check>
-                        <Label check>
+                        <Label  className="mb-4" check>
                           <AvInput type="checkbox" name="agree" required />
-                          <span className="fs95">I agree that you can store my e-mail address.<br/></span>
-                          <a href="http://localhost:4001" target="_blank" className="font-weight-medium text-primary fs95">Read more</a>
+                          <span className="fs95">By checking this box, you are acknowledging that you have read, understood, and accept our <a href="#" target="_blank" className="font-weight-medium text-primary fs95">Terms & Conditions</a> and <a href="#" target="_blank" className="font-weight-medium text-primary fs95">Privacy Policy</a>, and that you consent to our use of your personal data as described in our <a href="#" target="_blank" className="font-weight-medium text-primary fs95">Privacy Policy</a>. Also you grant us the permission to process, analyze and store uploaded documents.</span>
                         </Label>
                       </AvGroup>
 
                       {/* TODO:
-                      Add react-google-recaptcha here */}
+                      Add official mesoc recaptcha here */}
+                      <ReCAPTCHA
+                        sitekey="6LcMGQ8aAAAAANsNdayJ6eaZx0q-U8wz3v-4pBBS"
+                        onChange={() => setCapCheck(true)}
+                        onErrored={() => setCapCheck(false)}
+                        onExpired={() => setCapCheck(false)}
+                      />
 
                       <div className="mt-3">
                         <button className="btn btn-primary btn-block wawes-effect waves-light" type="submit">Create account</button>

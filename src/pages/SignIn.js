@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import { Row, Col, CardBody, Card, Alert, Container } from "reactstrap";
 import { AvForm, AvField } from 'availity-reactstrap-validation';
 
 import logo from '../images/mesocLogoBlue.png';
 
-const SignIn = props => {
+const SignIn = ({ history, setUserToken, setAuthCookie }) => {
 
   const [err, setErr] = useState(null);
   const [wait, setWait] = useState(false);
@@ -16,8 +16,10 @@ const SignIn = props => {
     // Make call to backend server here. Submit all data.
     // Display message to user acordingly to backend response (success / failure)
     setTimeout(() => {
-      if(e.target.email.value === 'a@a.a' && e.target.password.value=== '123') {
-        props.history.push('/my-documents');
+      if(e.target.email.value === 'dev@mesoc.dev' && e.target.password.value=== 'devtest123') {
+        setAuthCookie('mesoc_local_user', 'testusertoken#123');
+        setUserToken('testusertoken#123');
+        history.push('/my-documents');
       } else {
         setWait(false);
         setErr('Wrong credentials. Please try again.');
@@ -58,11 +60,11 @@ const SignIn = props => {
                       {wait && <Alert color="secondary">Please wait.</Alert>}
 
                       <div className="form-group">
-                        <AvField onInput={() => setErr(null)} name="email" label="Email" className="form-control" type="email" required />
+                        <AvField onInput={() => setErr(null)} name="email" label="Email" className="form-control" type="email" defaultValue="dev@mesoc.dev" required />
                       </div>
 
                       <div className="form-group">
-                        <AvField onInput={() => setErr(null)} name="password" label="Password" className="form-control" type="password" required />
+                        <AvField onInput={() => setErr(null)} name="password" label="Password" className="form-control" type="password" defaultValue="devtest123" required />
                       </div>
 
                       <div className="mt-3">
@@ -81,4 +83,4 @@ const SignIn = props => {
   );
 };
 
-export default SignIn;
+export default withRouter(SignIn);

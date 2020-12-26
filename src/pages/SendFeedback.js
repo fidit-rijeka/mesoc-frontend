@@ -1,21 +1,30 @@
 import React, { useState } from 'react';
-import { Redirect } from 'react-router-dom';
+import { Redirect, withRouter } from 'react-router-dom';
 import { Card, CardBody, CardTitle, CardSubtitle, Alert, Input } from "reactstrap";
+import SweetAlert from 'react-bootstrap-sweetalert';
 
 import Sidenav from '../components/sidenav';
 
-const SendFeedback = ({ userToken }) => {
+const SendFeedback = ({ userToken, history }) => {
 
   const [textAreaBadge, setTextAreaBadge] = useState(false);
   const [textCount, setTextCount] = useState(0);
+
+  const [succ, setSucc] = useState(false);
+  const [danger, setDanger] = useState(false);
+  const [wait, setWait] = useState(false);
 
   const handleSubmit = e => {
     const eventTarget = e.target;
     e.preventDefault();
 
+    setWait(true);
     // TODO:
     // Submit data to backend.
-    console.log(eventTarget.subject.value, eventTarget.messageBody.value);
+    setTimeout(() => {
+      setSucc(true);
+      setWait(false);
+    }, 1000);
   };
 
   const textareachange = e => {
@@ -41,10 +50,31 @@ const SendFeedback = ({ userToken }) => {
         <Sidenav />
       </div>
       <div className="pageArea">
-      <Card>
+        {succ &&
+          <SweetAlert
+            title="Success."
+            success
+            confirmBtnBsStyle="btn btn-primary wawes-effect waves-light"
+            onConfirm={() => {history.push('/my-documents')}}
+          >
+            Thank you for your feedback!
+          </SweetAlert>
+        }
+        {danger &&
+          <SweetAlert
+            title="Oops!"
+            danger
+            onConfirm={() => { setDanger(false) }}
+          >
+            Something went wrong.
+          </SweetAlert>
+        }
+        <Card>
           <CardBody>
             <CardTitle>Send feedback</CardTitle>
             <CardSubtitle className="mb-3">Help us improve MESOC toolkit application.</CardSubtitle>
+
+            {wait && <Alert color="secondary">Please wait.</Alert>}
 
             <form className="uplForm" onSubmit={handleSubmit}>
               <input type="text" name="subject" placeholder="Subject" className="form-control mb-2" required />
@@ -76,4 +106,4 @@ const SendFeedback = ({ userToken }) => {
   );
 };
 
-export default SendFeedback;
+export default withRouter(SendFeedback);

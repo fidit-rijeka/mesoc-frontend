@@ -95,7 +95,7 @@ const MyDocuments = ({ userToken }) => {
             status: 'failed',
             info: 'For your document we produced no results.'
           }
-        ])
+        ]);
       }, 1000);
     } else {
       setTimeout(() => {
@@ -133,7 +133,7 @@ const MyDocuments = ({ userToken }) => {
             <CardTitle>My documents</CardTitle>
             <CardSubtitle className="mb-3">Here you can find all of your documents you have uploaded over time.</CardSubtitle>
 
-            <Nav tabs className="nav-tabs-custom">
+            <Nav tabs className="nav-tabs-custom hideOnMobile">
               <NavItem>
                 <NavLink
                   style={{ cursor: "pointer" }}
@@ -142,7 +142,7 @@ const MyDocuments = ({ userToken }) => {
                   })}
                   onClick={() => switchTab('1')}
                 >
-                  <span className="d-none d-sm-block">Active documents</span>
+                  <span className="d-none d-sm-block">Active</span>
                 </NavLink>
               </NavItem>
               <NavItem>
@@ -153,10 +153,12 @@ const MyDocuments = ({ userToken }) => {
                   })}
                   onClick={() => switchTab('2')}
                 >
-                  <span className="d-none d-sm-block">Failed documents</span>
+                  <span className="d-none d-sm-block">Failed</span>
                 </NavLink>
               </NavItem>
             </Nav>
+
+            <button onClick={() => {activeTab === '1' ? switchTab('2') : switchTab('1')}} className="groupSwitch hideOnDesktop">Switch to active</button>
 
             {/* TODO:
             Fetch and display tables from backend server.

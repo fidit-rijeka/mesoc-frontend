@@ -176,7 +176,7 @@ const UploadDocument = ({ userToken, history }) => {
                 <Input onInput={() => setInvalid(null)} type="text" name="title" placeholder="Title of your document" className="form-control" />
               </FormGroup>
 
-              <FormGroup className="ajax-select mt-3 mt-lg-0 select2-container formField">
+              <FormGroup className="ajax-select select2-container formField">
                 <Label>Language</Label>
                 <Select
                   name="language"
@@ -188,7 +188,7 @@ const UploadDocument = ({ userToken, history }) => {
                 />
               </FormGroup>
 
-              <FormGroup className="ajax-select mt-3 mt-lg-0 select2-container formField">
+              <FormGroup className="ajax-select select2-container formField">
                 <Label>Location</Label>
                 <Select
                   name="location"

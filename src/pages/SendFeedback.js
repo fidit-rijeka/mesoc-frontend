@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Redirect, withRouter } from 'react-router-dom';
 import { Card, CardBody, CardTitle, CardSubtitle, Alert, Input } from "reactstrap";
 import SweetAlert from 'react-bootstrap-sweetalert';
+import axios from 'axios';
 
 import Sidenav from '../components/sidenav';
 
@@ -20,7 +21,27 @@ const SendFeedback = ({ userToken, history }) => {
 
     setWait(true);
     // TODO:
-    // Submit data to backend.
+    // Verify this request and uncomment it.
+
+    // axios
+    //   .post('https://docs.mesoc.dev/feedback/', {
+    //     subject: e.target.subject.value,
+    //     message: e.target.messageBody.value
+    //   }, {
+    //     headers: {
+    //       Authorization: `Bearer ${userToken}`
+    //     }
+    //   })
+    //   .then(res => {
+    //     setSucc(true);
+    //     setWait(false);
+    //     history.push('/my-documents');
+    //   })
+    //   .catch(err => {
+    //     setDanger(true);
+    //     setWait(false);
+    //   });
+
     setTimeout(() => {
       setSucc(true);
       setWait(false);

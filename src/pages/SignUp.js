@@ -28,31 +28,26 @@ const SignUp = props => {
       return;
     }
 
-    // TODO:
-    // Send data to backend. Display message acordingly to backend response
     setWait(true);
     // axios
-    //   .post('http://localhost:7000/users/', {
+    //   .post('https://docs.mesoc.dev/users/', {
     //     email: e.target.email.value,
     //     password: e.target.password.value
-    //   }, {
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //       "Access-Control-Allow-Origin": "*"
-    //     }
     //   })
     //   .then(response => {
-    //     console.log(response);
+    //     setSucc(true);
     //     setWait(false);
     //   })
     //   .catch(error => {
-    //     console.log(error);
+    //     // TODO:
+    //     // If error is recognized (wrong password format) use setErr(), if not recognized use setDanger(true)
+    //     setDanger(true);
     //     setWait(false);
     //   });
 
     setTimeout(() => {
       setWait(false);
-      //setDanger(true);
+      // setDanger(true);
       setSucc(true);
     }, 1500);
   };
@@ -78,7 +73,7 @@ const SignUp = props => {
           Something went wrong.
         </SweetAlert>
       }
-      <div className="account-pages my-5 pt-sm-5">
+      <div className="account-pages my-5 pt-5">
         <Container>
           <Row className="justify-content-center">
             <Col md={5} lg={6} xl={5}>
@@ -98,7 +93,7 @@ const SignUp = props => {
                   <Link to="/browse">
                     <div className="avatar-md profile-user-wid mb-4">
                       <span className="avatar-title rounded-circle bg-light">
-                        <img src={logo} alt="" className="rounded-circle" height="34" />
+                        <img src={logo} alt="mesoc toolkit application logo" className="rounded-circle" height="34" />
                       </span>
                     </div>
                   </Link>

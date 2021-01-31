@@ -60,7 +60,7 @@ function App() {
             <UploadDocument userToken={userToken} />
           </Route>
           <Route path='/:analysisType/:analysisKey'>
-            <Analysis />
+            <Analysis userToken={userToken} />
           </Route>
         </Switch>
       </div> :

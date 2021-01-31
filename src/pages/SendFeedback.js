@@ -20,32 +20,24 @@ const SendFeedback = ({ userToken, history }) => {
     e.preventDefault();
 
     setWait(true);
-    // TODO:
-    // Verify this request and uncomment it.
 
-    // axios
-    //   .post('https://docs.mesoc.dev/feedback/', {
-    //     subject: e.target.subject.value,
-    //     message: e.target.messageBody.value
-    //   }, {
-    //     headers: {
-    //       Authorization: `Bearer ${userToken}`
-    //     }
-    //   })
-    //   .then(res => {
-    //     setSucc(true);
-    //     setWait(false);
-    //     history.push('/my-documents');
-    //   })
-    //   .catch(err => {
-    //     setDanger(true);
-    //     setWait(false);
-    //   });
-
-    setTimeout(() => {
-      setSucc(true);
-      setWait(false);
-    }, 1000);
+    axios
+      .post('https://api.mesoc.dev/feedback/', {
+        subject: eventTarget.subject.value,
+        message: eventTarget.messageBody.value
+      }, {
+        headers: {
+          Authorization: `Bearer ${userToken}`
+        }
+      })
+      .then(res => {
+        setSucc(true);
+        setWait(false);
+      })
+      .catch(err => {
+        setDanger(true);
+        setWait(false);
+      });
   };
 
   const textareachange = e => {
@@ -98,11 +90,12 @@ const SendFeedback = ({ userToken, history }) => {
             {wait && <Alert color="secondary">Please wait.</Alert>}
 
             <form className="uplForm" onSubmit={handleSubmit}>
-              <input type="text" name="subject" placeholder="Subject" className="form-control mb-2" required />
+              <input type="text" name="subject" maxLength="50" placeholder="Subject" className="form-control mb-2" required />
               <Input
                 type="textarea"
                 id="textarea"
                 onChange={(e) => { textareachange(e) }}
+                minLength="120"
                 maxLength="1200"
                 rows="10"
                 placeholder="Message body"

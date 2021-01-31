@@ -23,33 +23,33 @@ const SignUp = props => {
       setErr('Passwords don\'t match. Please try again.');
       return;
     }
-    if(!capCheck) {
-      setErr('Please confirm that you are not a robot.');
-      return;
-    }
+    // if(!capCheck) {
+    //   setErr('Please confirm that you are not a robot.');
+    //   return;
+    // }
+
+    console.log(e.target.email.value);
+    console.log(e.target.password.value);
 
     setWait(true);
-    // axios
-    //   .post('https://docs.mesoc.dev/users/', {
-    //     email: e.target.email.value,
-    //     password: e.target.password.value
-    //   })
-    //   .then(response => {
-    //     setSucc(true);
-    //     setWait(false);
-    //   })
-    //   .catch(error => {
-    //     // TODO:
-    //     // If error is recognized (wrong password format) use setErr(), if not recognized use setDanger(true)
-    //     setDanger(true);
-    //     setWait(false);
-    //   });
-
-    setTimeout(() => {
-      setWait(false);
-      // setDanger(true);
-      setSucc(true);
-    }, 1500);
+    axios
+      .post('https://api.mesoc.dev/account/', {
+        email: e.target.email.value,
+        password: e.target.password.value
+      }, {auth: {
+        username: 'api',
+        password: '!kAkYk3T'
+      }})
+      .then(res => {
+        setSucc(true);
+        setWait(false);
+      })
+      .catch(err => {
+        setWait(false);
+        err.response.data.email && setErr(err.response.data.email);
+        err.response.data.password && setErr(err.response.data.password);
+        err.response.data.non_field_errors && setErr(err.response.data.non_field_errors);
+      });
   };
 
   return(
@@ -127,7 +127,7 @@ const SignUp = props => {
                       {/* TODO:
                       Add official mesoc recaptcha here */}
                       <ReCAPTCHA
-                        sitekey="6LcMGQ8aAAAAANsNdayJ6eaZx0q-U8wz3v-4pBBS"
+                        sitekey="6Lfzfj0aAAAAAKns10tA_r-dElHjso_rZRfut_8x"
                         onChange={() => setCapCheck(true)}
                         onErrored={() => setCapCheck(false)}
                         onExpired={() => setCapCheck(false)}

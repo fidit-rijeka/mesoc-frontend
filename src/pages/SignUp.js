@@ -127,7 +127,7 @@ const SignUp = props => {
                       {/* TODO:
                       Add official mesoc recaptcha here */}
                       <ReCAPTCHA
-                        sitekey="6Lfzfj0aAAAAAKns10tA_r-dElHjso_rZRfut_8x"
+                        sitekey={`${process.env.REACT_APP_RECAPTCHA_SITEKEY}`}
                         onChange={() => setCapCheck(true)}
                         onErrored={() => setCapCheck(false)}
                         onExpired={() => setCapCheck(false)}

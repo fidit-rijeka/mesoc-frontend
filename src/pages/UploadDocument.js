@@ -62,20 +62,18 @@ const UploadDocument = ({ userToken, history }) => {
     setWait(true);
 
     let formData = new FormData();
+    formData.append('title', eventTarget.title.value);
+    formData.append('language', eventTarget.language.value);
+    formData.append('location', eventTarget.location.value);
     formData.append('file', file[0]);
 
     // TODO:
     // Fix this request and test it.
     axios
-      .post(`https://api.mesoc.dev/documents/`, {
-        title: eventTarget.title.value,
-        language: eventTarget.language.value,
-        location: eventTarget.location.value,
-        file: formData
-      }, {
+      .post(`https://api.mesoc.dev/documents/`, formData, {
         headers: {
           Authorization: `Bearer ${userToken}`,
-          'Content-Type': 'multipart/form-data;boundary=---------------------------189138143916106872051318140853'
+          'Content-Type': 'multipart/form-data'
         }
       })
       .then(res => {

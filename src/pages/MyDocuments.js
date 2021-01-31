@@ -32,6 +32,7 @@ const MyDocuments = ({ userToken }) => {
         }
       })
       .then(res => {
+        console.log(res.data);
         setDocsData(res.data);
         setLoading(false);
       })
@@ -162,7 +163,7 @@ const MyDocuments = ({ userToken }) => {
                               <td>
                                 {doc.state === 'processed' ?
                                   <Link to={`document/${doc.id}`} className="btn btn-primary wawes-effect waves-light">Open</Link> :
-                                  doc.status === 'processing' ?
+                                  doc.state === 'processing' ?
                                     <button className="btn btn-primary wawes-effect waves-light" disabled>Processing</button> :
                                     <button onClick={() => openModal('reject', doc.id)} className="btn btn-danger wawes-effect waves-light">Failed</button>
                                 }

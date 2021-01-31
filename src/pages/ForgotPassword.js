@@ -15,27 +15,27 @@ const ForgotPassword = ({ history }) => {
 
   const handleValidSubmit = e => {
     setWait(true);
+    console.log(e.target.email.value);
 
-    // axios
-    //  .post('https://docs.mesoc.dev/account/password_reset/', {
-    //    email: e.target.email.value
-    //  })
-    //  .then(res => {
-    //   setWait(false);
-    //   setSucc(true);
-    //  })
-    //  .catch(err => {
-    //    setWait(false);
-    //    // TODO:
-    //    // Use setErr() if email doesn't exist
-    //  });
-
-    axios.get('https://docs.mesoc.dev/languages/').then(res => console.log(res)).catch(err => console.log(err))
-
-    // setTimeout(() => {
-    //   setWait(false);
-    //   setSucc(true);
-    // }, 1500);
+    // TODO:
+    // Fix and finish this axios request
+    axios
+      .post(`https://api.mesoc.dev/account/password_reset/`, {
+        email: e.target.email.value
+      }, {
+        auth: {
+          username: 'api',
+          password: '!kAkYk3T'
+        }
+      })
+      .then(res => {
+        setWait(false);
+        console.log(res);
+      })
+      .catch(err => {
+        setWait(false);
+        console.log(err.response);
+      })
   };
 
   return(

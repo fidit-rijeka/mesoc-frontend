@@ -14,31 +14,23 @@ const SignIn = ({ history, setUserToken, setAuthCookie }) => {
   const handleValidSubmit = e => {
     setWait(true);
 
-    // axios
-    //   .post('https://docs.mesoc.dev/account/login/', {
-    //     username: e.target.email.value,
-    //     password: e.target.password.value
-    //   })
-    //   .then(res => {
-    //     setAuthCookie('mesoc_local_user', '<insert token here>');
-    //     setUserToken('<insert token here>');
-    //     history.push('/my-documents');
-    //   })
-    //   .catch(err => {
-    //     // TODO:
-    //     // Use setErr() to display error to user
-    //   });
-
-    setTimeout(() => {
-      if(e.target.email.value === 'dev@mesoc.dev' && e.target.password.value=== 'devtest123') {
-        setAuthCookie('mesoc_local_user', 'testusertoken#123');
-        setUserToken('testusertoken#123');
+    axios
+      .post('https://api.mesoc.dev/account/login/', {
+        username: e.target.email.value,
+        password: e.target.password.value
+      }, {auth: {
+        username: 'api',
+        password: '!kAkYk3T'
+      }})
+      .then(res => {
+        setAuthCookie('mesoc_local_user', res.data.token);
+        setUserToken(res.data.token);
         history.push('/my-documents');
-      } else {
+      })
+      .catch(err => {
         setWait(false);
-        setErr('Wrong credentials. Please try again.');
-      }
-    }, 1500);
+        setErr(err.response.data.non_field_errors);
+      });
   };
 
   return(
@@ -74,11 +66,11 @@ const SignIn = ({ history, setUserToken, setAuthCookie }) => {
                       {wait && <Alert color="secondary">Please wait.</Alert>}
 
                       <div className="form-group">
-                        <AvField onInput={() => setErr(null)} name="email" label="Email" className="form-control" type="email" defaultValue="dev@mesoc.dev" required />
+                        <AvField onInput={() => setErr(null)} name="email" label="Email" className="form-control" type="email" defaultValue="erik55jermanis@gmail.com" required />
                       </div>
 
                       <div className="form-group">
-                        <AvField onInput={() => setErr(null)} name="password" label="Password" className="form-control" type="password" defaultValue="devtest123" required />
+                        <AvField onInput={() => setErr(null)} name="password" label="Password" className="form-control" type="password" defaultValue="erikMesoc@123" required />
                       </div>
 
                       <div className="mt-3">

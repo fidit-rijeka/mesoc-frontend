@@ -67,8 +67,6 @@ const UploadDocument = ({ userToken, history }) => {
     formData.append('location', eventTarget.location.value);
     formData.append('file', file[0]);
 
-    // TODO:
-    // Fix this request and test it.
     axios
       .post(`https://api.mesoc.dev/documents/`, formData, {
         headers: {
@@ -165,6 +163,9 @@ const UploadDocument = ({ userToken, history }) => {
   if(userToken === null) {
     return <Redirect to="/sign-in" />
   }
+
+  // TODO:
+  // add -> If not verified, redirect to sign in
 
   return(
     <div className="pageWrapper">

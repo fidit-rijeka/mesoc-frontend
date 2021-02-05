@@ -57,6 +57,9 @@ const SendFeedback = ({ userToken, history }) => {
     return <Redirect to="/sign-in" />
   }
 
+  // TODO:
+  // add -> If not verified, redirect to sign in
+
   return(
     <div className="pageWrapper">
       <div className="sidenavArea">

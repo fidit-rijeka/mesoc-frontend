@@ -31,7 +31,7 @@ body {
     width: 230px;
     flex-shrink: 0;
 
-    @media screen and (max-width: 1400px) {
+    @media screen and (max-width: 1595px) {
       width: 40px;
     }
     @media screen and (max-width: 850px) {
@@ -289,7 +289,7 @@ nav {
     }
   }
 
-  @media screen and (max-width: 1400px) {
+  @media screen and (max-width: 1595px) {
     clip-path: polygon(0 0, 17.39% 0, 17.39% 100%, 0% 100%);
     transition: .3s;
 
@@ -427,15 +427,22 @@ nav {
 
 .heatmapWrapper {
   display: grid;
-  grid-template-columns: 50px repeat(3, calc(33.3% - 16px));
-  grid-template-rows: repeat(11, 50px);
+  grid-template-columns: 120px repeat(3, calc(33.3% - 40px));
+  grid-template-rows: 90px repeat(10, 50px);
 
   .numberSpan {
     justify-self: center;
     margin: auto;
-    font-weight: 700;
+    font-weight: 400;
     color: rgb(84, 89, 94);
-    font-size: 1.1rem;
+    font-size: .85rem;
+    text-align: center;
+    padding: .6em;
+
+    @media screen and (max-width: 500px) {
+      font-size: .75rem;
+      padding: .3em;
+    }
   }
 
   #numSpan1 {
@@ -493,6 +500,10 @@ nav {
       transition: .03s;
       cursor: pointer;
     }
+  }
+
+  @media screen and (max-width: 500px) {
+    grid-template-columns: 96px repeat(3, calc(33.3% - 32px));
   }
 }
 

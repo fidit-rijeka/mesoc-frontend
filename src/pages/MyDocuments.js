@@ -94,6 +94,9 @@ const MyDocuments = ({ userToken }) => {
     return <Redirect to="/sign-in" />
   }
 
+  // TODO:
+  // add -> If not verified, redirect to sign in
+
   return(
     <div className="pageWrapper">
       <div className="sidenavArea">
@@ -134,6 +137,9 @@ const MyDocuments = ({ userToken }) => {
             </Nav>
 
             <button onClick={() => {activeTab === '1' ? switchTab('2') : switchTab('1')}} className="groupSwitch hideOnDesktop">Switch to active</button>
+
+            {/* TODO:
+            Fix Each child in a list should have a unique "key" prop warning */}
 
             <TabContent activeTab={activeTab}>
               <TabPane tabId="1">

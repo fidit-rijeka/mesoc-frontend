@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, withRouter, Redirect } from 'react-router-dom';
 import { Table, Card, CardBody, CardTitle, CardSubtitle, Nav, NavItem, NavLink, TabContent, TabPane } from "reactstrap";
 import classnames from 'classnames';
+import axios from 'axios';
 
 import Sidenav from '../components/sidenav';
 import InfoModal from '../components/infoModal';
@@ -14,7 +15,8 @@ const MyDocuments = ({ userToken }) => {
   const [modalType, setModalType] = useState(null);
   const [modalText, setModalText] = useState(null);
   const [docsData, setDocsData] = useState(null);
-  const [docIndex, setDocIndex] = useState(null);
+  const [docId, setDocId] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if(userToken === null) {
@@ -22,95 +24,68 @@ const MyDocuments = ({ userToken }) => {
     }
 
     // TODO:
-    // Fetch documents data here and put that data into state
-    setTimeout(() => {
-      setDocsData([
-        {
-          id: 'doc1',
-          title: 'Text About Wine',
-          uploaded: '21/12/2021',
-          language: 'English',
-          location: 'Milano, Italy',
-          status: 'finished'
-        },
-        {
-          id: 'doc12',
-          title: 'Text about something really important',
-          uploaded: '21/12/2021',
-          language: 'English',
-          location: 'Milano, Italy',
-          status: 'processing'
-        },
-        {
-          id: 'doc123',
-          title: 'Example',
-          uploaded: '21/12/2021',
-          language: 'English',
-          location: 'Milano, Italy',
-          status: 'failed',
-          info: 'For your document we produced no results.'
+    // Finish and test this request.
+    axios
+      .get(`https://api.mesoc.dev/documents?state=processing,processed,failed`, {
+        headers: {
+          Authorization: `Bearer ${userToken}`
         }
-      ])
-    }, 1000);
+      })
+      .then(res => {
+        console.log(res.data);
+        setDocsData(res.data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.log(err);
+        setLoading(false);
+      })
   }, []);
 
   // First argument: if in "Active documents" -> 'reject'
   //                 if in "Deleted documents" -> 'inform'
-  // Second argument: index of rendered document
+  // Second argument: doc id of rendered document
   const openModal = (type, selected) => {
-    setDocIndex(selected);
+    setDocId(selected);
     setModalType(type);
     setModalText(docsData[selected].info);
     setInfoModalOpen(true);
   };
 
   const switchTab = index => {
+    setLoading(true);
     setDocsData(null);
     setActiveTab(index);
+    // TODO:
+    // Finish and test this requests.
     if(index === '1') {
-      setTimeout(() => {
-        setDocsData([
-          {
-            id: 'doc1',
-            title: 'Text About Wine',
-            uploaded: '21/12/2021',
-            language: 'English',
-            location: 'Milano, Italy',
-            status: 'finished'
-          },
-          {
-            id: 'doc12',
-            title: 'Text about something really important',
-            uploaded: '21/12/2021',
-            language: 'English',
-            location: 'Milano, Italy',
-            status: 'processing'
-          },
-          {
-            id: 'doc123',
-            title: 'Example',
-            uploaded: '21/12/2021',
-            language: 'English',
-            location: 'Milano, Italy',
-            status: 'failed',
-            info: 'For your document we produced no results.'
+      axios
+        .get(`https://api.mesoc.dev/documents?state=processing,processed,failed`, {
+          headers: {
+            Authorization: `Bearer ${userToken}`
           }
-        ]);
-      }, 1000);
+        })
+        .then(res => {
+          setDocsData(res.data);
+          setLoading(false);
+        })
+        .catch(err => {
+          console.log(err);
+        })
     } else {
-      setTimeout(() => {
-        setDocsData([
-          {
-            id: 'doc1234',
-            title: 'Text About Wine',
-            uploaded: '21/12/2021',
-            language: 'English',
-            location: 'Milano, Italy',
-            status: 'failed',
-            info: 'For your document we produced no results.'
+      axios
+        .get(`https://api.mesoc.dev/documents?state=dismissed`, {
+          headers: {
+            Authorization: `Bearer ${userToken}`
           }
-        ])
-      }, 1000);
+        })
+        .then(res => {
+          setDocsData(res.data);
+          setLoading(false);
+        })
+        .catch(err => {
+          console.log(err);
+        })
     }
   };
 
@@ -119,6 +94,9 @@ const MyDocuments = ({ userToken }) => {
     return <Redirect to="/sign-in" />
   }
 
+  // TODO:
+  // add -> If not verified, redirect to sign in
+
   return(
     <div className="pageWrapper">
       <div className="sidenavArea">
@@ -126,7 +104,7 @@ const MyDocuments = ({ userToken }) => {
       </div>
       <div className="pageArea">
 
-        <InfoModal type={modalType} text={modalText} modalOpen={infoModalOpen} setModalOpen={setInfoModalOpen} docIndex={docIndex} />
+        <InfoModal type={modalType} text={modalText} modalOpen={infoModalOpen} setModalOpen={setInfoModalOpen} docId={docId} userToken={userToken} />
 
         <Card>
           <CardBody>
@@ -161,79 +139,82 @@ const MyDocuments = ({ userToken }) => {
             <button onClick={() => {activeTab === '1' ? switchTab('2') : switchTab('1')}} className="groupSwitch hideOnDesktop">Switch to active</button>
 
             {/* TODO:
-            Fetch and display tables from backend server.
-            Create view for "you haven't uploaded any documents" and "you haven't deleted any documents" */}
+            Fix Each child in a list should have a unique "key" prop warning */}
 
             <TabContent activeTab={activeTab}>
               <TabPane tabId="1">
-                {docsData !== null ?
-                  <div className="table-responsive">
-                    <Table className="table mb-0">
-                      <thead className="thead-light">
-                        <tr>
-                          <th>#</th>
-                          <th>Title</th>
-                          <th>Uploaded</th>
-                          <th>Language</th>
-                          <th>Location</th>
-                          <th></th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {docsData.map((doc, index) => {
-                          return <tr key={doc.id}>
-                            <th scope="row">{index + 1}</th>
-                            <td>{doc.title}</td>
-                            <td>{doc.uploaded}</td>
-                            <td>{doc.language}</td>
-                            <td>{doc.location}</td>
-                            <td>
-                              {doc.status === 'finished' ?
-                                <Link to={`document/${doc.id}`} className="btn btn-primary wawes-effect waves-light">Open</Link> :
-                                doc.status === 'processing' ?
-                                  <button className="btn btn-primary wawes-effect waves-light" disabled>Processing</button> :
-                                  <button onClick={() => openModal('reject', index)} className="btn btn-danger wawes-effect waves-light">Failed</button>
-                              }
-                            </td>
+                {loading ?
+                  <AnalysisLoader height="200px" /> :
+                  docsData.length !== 0 ?
+                    <div className="table-responsive">
+                      <Table className="table mb-0">
+                        <thead className="thead-light">
+                          <tr>
+                            <th>#</th>
+                            <th>Title</th>
+                            <th>Uploaded</th>
+                            <th>Language</th>
+                            <th>Location</th>
+                            <th></th>
                           </tr>
-                        })}
-                      </tbody>
-                    </Table>
-                  </div> :
-                  <AnalysisLoader height="200px" />
+                        </thead>
+                        <tbody>
+                          {docsData.map((doc, index) => {
+                            return <tr key={doc.id}>
+                              <th scope="row">{index + 1}</th>
+                              <td>{doc.title}</td>
+                              <td>{doc.uploaded_at}</td>
+                              <td>{doc.language.name}</td>
+                              <td>{`${doc.location.city}, ${doc.location.country}`}</td>
+                              <td>
+                                {doc.state === 'processed' ?
+                                  <Link to={`document/${doc.id}`} className="btn btn-primary wawes-effect waves-light">Open</Link> :
+                                  doc.state === 'processing' ?
+                                    <button className="btn btn-primary wawes-effect waves-light" disabled>Processing</button> :
+                                    <button onClick={() => openModal('reject', doc.id)} className="btn btn-danger wawes-effect waves-light">Failed</button>
+                                }
+                              </td>
+                            </tr>
+                          })}
+                        </tbody>
+                      </Table>
+                    </div> : 
+                    <div className="analysisEmpty" style={{ height: '200px' }}>You have no active documents</div>
                 }
               </TabPane>
               <TabPane tabId="2">
-                {docsData !== null ?
-                  <div className="table-responsive">
-                    <Table className="table mb-0">
-                      <thead className="thead-light">
-                        <tr>
-                          <th>#</th>
-                          <th>Title</th>
-                          <th>Uploaded</th>
-                          <th>Language</th>
-                          <th>Location</th>
-                          <th></th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {docsData.map((doc, index) => {
-                          return <tr key={doc.id}>
-                            <th scope="row">{index + 1}</th>
-                            <td>{doc.title}</td>
-                            <td>{doc.uploaded}</td>
-                            <td>{doc.language}</td>
-                            <td>{doc.location}</td>
-                            <td>
-                              <button onClick={() => openModal('inform', index)} className="btn btn-info wawes-effect waves-light">Info</button>
-                            </td>
+                {loading ?
+                  <AnalysisLoader height="200px" /> :
+                  docsData.length !== 0 ?
+                    <div className="table-responsive">
+                      <Table className="table mb-0">
+                        <thead className="thead-light">
+                          <tr>
+                            <th>#</th>
+                            <th>Title</th>
+                            <th>Uploaded</th>
+                            <th>Language</th>
+                            <th>Location</th>
+                            <th></th>
                           </tr>
-                        })}
-                      </tbody>
-                    </Table>
-                  </div> :
-                  <AnalysisLoader height="200px" />
+                        </thead>
+                        <tbody>
+                          {docsData.map((doc, index) => {
+                            return <tr key={doc.id}>
+                              <th scope="row">{index + 1}</th>
+                              <td>{doc.title}</td>
+                              <td>{doc.uploaded_at}</td>
+                              <td>{doc.language.name}</td>
+                              <td>{`${doc.location.city}, ${doc.location.country}`}</td>
+                              <td>
+                                <button onClick={() => openModal('inform', doc.id)} className="btn btn-info wawes-effect waves-light">Info</button>
+                              </td>
+                            </tr>
+                          })}
+                        </tbody>
+                      </Table>
+                    </div> : 
+                    <div className="analysisEmpty" style={{ height: '200px' }}>You have no failed documents</div>
                 }
               </TabPane>
             </TabContent>

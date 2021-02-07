@@ -1,12 +1,21 @@
 import React from 'react';
 import { Modal } from "reactstrap";
+import axios from 'axios';
 
-const InfoModal = ({text, modalOpen, setModalOpen, type, docIndex}) => {
+const InfoModal = ({text, modalOpen, setModalOpen, type, docId, userToken}) => {
 
   const moveToFailed = () => {
     setModalOpen(false);
     // TODO:
-    // Add axios request to move document to failed group (use docIndex).
+    // Finish and test this request with test data.
+    axios
+      .patch(`https://api.mesoc.dev/documents/${docId}`, {
+        state: 'dismissed'
+      }, {
+        headers: {
+          Authorization: `Bearer ${userToken}`
+        }
+      })
   };
 
   return(

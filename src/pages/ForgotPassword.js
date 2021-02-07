@@ -2,39 +2,55 @@ import React, { useState } from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import { Row, Col, CardBody, Card, Alert, Container } from "reactstrap";
 import { AvForm, AvField } from 'availity-reactstrap-validation';
+import SweetAlert from 'react-bootstrap-sweetalert';
 import axios from 'axios';
 
 import logo from '../images/mesocLogoBlue.png';
 
-const SignIn = ({ history, setUserToken, setAuthCookie }) => {
+const ForgotPassword = ({ history }) => {
 
   const [err, setErr] = useState(null);
   const [wait, setWait] = useState(false);
+  const [succ, setSucc] = useState(false);
 
   const handleValidSubmit = e => {
     setWait(true);
+    console.log(e.target.email.value);
 
+    // TODO:
+    // Fix and finish this axios request
     axios
-      .post('https://api.mesoc.dev/account/login/', {
-        username: e.target.email.value,
-        password: e.target.password.value
-      }, {auth: {
-        username: 'api',
-        password: '!kAkYk3T'
-      }})
+      .post(`https://api.mesoc.dev/account/password_reset/`, {
+        email: e.target.email.value
+      }, {
+        auth: {
+          username: 'api',
+          password: '!kAkYk3T'
+        }
+      })
       .then(res => {
-        setAuthCookie('mesoc_local_user', res.data.token);
-        setUserToken(res.data.token);
-        history.push('/my-documents');
+        setWait(false);
+        console.log(res);
       })
       .catch(err => {
         setWait(false);
-        setErr(err.response.data.non_field_errors);
-      });
+        console.log(err.response);
+      })
   };
 
   return(
     <div className="signInWrapper">
+      {succ &&
+        <SweetAlert
+          title="A reset link has been sent to your email account."
+          success
+          confirmBtnBsStyle="btn btn-primary wawes-effect waves-light"
+          onConfirm={() => {history.push('/sign-in')}}
+        >
+          Please click on the link that has just been sent to your email account to reset your password. Be sure to check your spam folder.
+        </SweetAlert>
+      }
+
       <div className="account-pages my-5 pt-5">
         <Container>
           <Row className="justify-content-center">
@@ -44,8 +60,8 @@ const SignIn = ({ history, setUserToken, setAuthCookie }) => {
                   <Row>
                     <Col className="col-7">
                       <div className="text-primary p-4">
-                        <h5 className="text-primary">Welcome!</h5>
-                        <p>Please sign in to continue to MESOC.</p>
+                        <h5 className="text-primary">Forgot password?</h5>
+                        <p>Enter your e-mail address and we will send you link for password reset.</p>
                       </div>
                     </Col>
                   </Row>
@@ -66,19 +82,11 @@ const SignIn = ({ history, setUserToken, setAuthCookie }) => {
                       {wait && <Alert color="secondary">Please wait.</Alert>}
 
                       <div className="form-group">
-                        <AvField onInput={() => setErr(null)} name="email" label="Email" className="form-control" type="email" defaultValue="erik55jermanis@gmail.com" required />
-                      </div>
-
-                      <div className="form-group">
-                        <AvField onInput={() => setErr(null)} name="password" label="Password" className="form-control" type="password" defaultValue="erikMesoc@123" required />
+                        <AvField onInput={() => setErr(null)} name="email" label="Email" className="form-control" type="email" required />
                       </div>
 
                       <div className="mt-3">
-                        <button className="btn btn-primary btn-block wawes-effect waves-light" type="submit">Sign in</button>
-                      </div>
-
-                      <div className="mt-4 text-center">
-                        <Link to="/forgot-password" className="text-muted"><i className="mdi mdi-lock mr-1"></i> Forgot password?</Link>
+                        <button className="btn btn-primary btn-block wawes-effect waves-light" type="submit">Submit</button>
                       </div>
                     </AvForm>
                   </div>
@@ -93,4 +101,4 @@ const SignIn = ({ history, setUserToken, setAuthCookie }) => {
   );
 };
 
-export default withRouter(SignIn);
+export default withRouter(ForgotPassword);

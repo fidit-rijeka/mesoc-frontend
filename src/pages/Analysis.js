@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { withRouter } from 'react-router-dom';
 import { Card, CardBody, CardTitle, CardSubtitle, Row, Col, Button } from "reactstrap";
+import axios from 'axios';
 
 import Sidenav from '../components/sidenav';
 import Heatmap from '../components/heatmap';
@@ -11,7 +12,7 @@ import DocumentList from '../components/documentList';
 let options = null;
 let series = null;
 
-const Analysis = ({ match }) => {
+const Analysis = ({ userToken, match }) => {
 
   const [cells, setCells] = useState(null);
   const [selectedCell, setSelectedCell] = useState(null);
@@ -22,14 +23,28 @@ const Analysis = ({ match }) => {
 
   useEffect(() => {
     // TODO:
-    // Fetch cell data based on url params and set it to state
+    // Finish this request and test it with real data.
+    // axios
+    //   .get(`https://api.mesoc.dev/documents/${match.params.analysisKey}/heatmap/`, {
+    //     headers: {
+    //       Aurhorization: `Bearer ${userToken}`
+    //     }
+    //   })
+    //   .then(res => {
+    //     console.log(res.data);
+    //     setCells(res.data);
+    //   })
+    //   .catch(err => {
+    //     console.log(err.response);
+    //   });
+
     setTimeout(() => {
       setCells(require('../testData/celije.json').cells);
     }, 1000)
     console.log(match.params.analysisType, match.params.analysisKey);
   }, []);
 
-  const fetchGraph = (cell) => {
+  const fetchGraph = async (cell) => {
     setVars(null);
     setCellSim(null);
     // If deselecting cell clear cell data.
@@ -39,10 +54,40 @@ const Analysis = ({ match }) => {
     }
 
     setSelectedCell(cell);
+    console.log(cells[cell]);
     // TODO:
     // Fetch variable data based on input (selected cell).
     // Fetch similar by cell.
+    // let varsTemp = [];
+    // await axios
+    //   .get(`${cells[cell].variables}`, {
+    //     headers: {
+    //       Authorization: `Bearer ${userToken}`
+    //     }
+    //   })
+    //   .then(res => {
+    //     console.log(res.data);
+    //     setVars(res.data);
+    //     varsTemp = res.data;
+    //   })
+
+    // await axios
+    //   .get(`${cells[cell].document}`, {
+    //     headers: {
+    //       Authorization: `Bearer ${userToken}`
+    //     }
+    //   })
+    //   .then(res => {
+    //     console.log(res.data);
+    //     setCellSim(res.data);
+    //   });
+
     const varsTemp = require('../testData/varijable.json').vars;
+
+    setTimeout(() => {
+      setVars(varsTemp);
+      setCellSim(require('../testData/simm.json').similar);
+    }, 1000)
 
     let labels = [];
     let percentages = [];
@@ -64,6 +109,7 @@ const Analysis = ({ match }) => {
                 return;
               }
               setSelectedVar(config.dataPointIndex);
+              console.log(vars[config.dataPointIndex]);
               // TODO:
               // Fetch similar by variable.
               setTimeout(() => setVarSim(require('../testData/simm.json').similar), 1000);
@@ -76,7 +122,8 @@ const Analysis = ({ match }) => {
             show: true,
             formatter: val => {
               if(val.length > 22) {
-                return `${val.slice(0, 20)}...`
+                //return `${val.slice(0, 20)}...`
+                return val
               }
               return val;
             }
@@ -109,11 +156,6 @@ const Analysis = ({ match }) => {
         name: 'effect',
         data: percentages
       }];
-
-      setTimeout(() => {
-        setVars(varsTemp);
-        setCellSim(require('../testData/simm.json').similar);
-      }, 1000)
     };
 
     setData();
@@ -128,7 +170,7 @@ const Analysis = ({ match }) => {
         {/* TODO:
         Create dynamic page header here to display document title or city. */}
         <Row>
-          <Col lg="4">
+          <Col xl="5" lg="12">
             <Card>
               <CardBody>
                 <CardTitle>MESOC matrix</CardTitle>
@@ -139,12 +181,12 @@ const Analysis = ({ match }) => {
                     selectedCell={selectedCell}
                     fetchGraph={fetchGraph}
                   /> :
-                  <AnalysisLoader height='550px' />
+                  <AnalysisLoader height='590px' />
                 }
               </CardBody>
             </Card>
           </Col>
-          <Col lg="8">
+          <Col xl="7" lg="12">
             <Card>
               <CardBody>
                 <CardTitle>MESOC Graph</CardTitle>

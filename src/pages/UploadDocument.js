@@ -3,6 +3,7 @@ import { Redirect, withRouter } from 'react-router-dom';
 import { Card, CardBody, CardTitle, CardSubtitle, Alert, FormGroup, Label, Input } from "reactstrap";
 import Select from 'react-select';
 import SweetAlert from 'react-bootstrap-sweetalert';
+import axios from 'axios';
 
 import Sidenav from '../components/sidenav';
 import FileDropzone from '../components/fileDropzone';
@@ -16,10 +17,12 @@ const UploadDocument = ({ userToken, history }) => {
   const [invalid, setInvalid] = useState(null);
 
   const [langOptions, setLangOptions] = useState([]);
+  const [fullLangData, setFullLangData] = useState([]);
   const [selectedLang, setSelectedLang] = useState(null);
   const [langLoading, setLangLoading] = useState(false);
 
   const [locOptions, setLocOptions] = useState([]);
+  const [fullLocData, setFullLocData] = useState([]);
   const [selectedLoc, setSelectedLoc] = useState(null);
   const [locLoading, setLocLoading] = useState(false);
 
@@ -51,14 +54,35 @@ const UploadDocument = ({ userToken, history }) => {
       return;
     }
 
+    console.log(eventTarget.title.value);
+    console.log(eventTarget.language.value);
+    console.log(eventTarget.location.value);
+    console.log(file[0]);
+
     setWait(true);
 
-    // TODO:
-    // Send data to backend and set succ/danger acordingly
-    setTimeout(() => {
-      setSucc(true);
-      setWait(false);
-    }, 1000);
+    let formData = new FormData();
+    formData.append('title', eventTarget.title.value);
+    formData.append('language', eventTarget.language.value);
+    formData.append('location', eventTarget.location.value);
+    formData.append('file', file[0]);
+
+    axios
+      .post(`https://api.mesoc.dev/documents/`, formData, {
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+      .then(res => {
+        setWait(false);
+        setSucc(true);
+      })
+      .catch(err => {
+        console.log(err.response);
+        setWait(false);
+        setDanger(true);
+      });
   };
 
   const langSearch = parameter => {
@@ -74,21 +98,22 @@ const UploadDocument = ({ userToken, history }) => {
     clearTimeout(langTimeout);
 
     // Wait .6 seconds before starting a search
-    // TODO:
-    // Ask Anto if this is a correct way of doing this.
     langTimeout = setTimeout(() => {
-      setTimeout(() => {
-        // TODO:
-        // Fetch language list based on params and set to state only if selectedLang !== null
-        setLangOptions(
-          [
-            { label: 'Language 1', value: 'language1' },
-            { label: 'Language 2', value: 'language2' },
-            { label: 'Language 3', value: 'language3' }
-          ]
-        );
-        setLangLoading(false);
-      }, 1000);
+      if(langSearch !== null) {
+        axios
+        .get(`https://api.mesoc.dev/languages?language=${parameter}`, {headers: {
+          Authorization: `Bearer ${userToken}`
+        }})
+        .then(async res => {
+          let langsToAdd = [];
+          setFullLangData(res.data);
+          await res.data.forEach(lang => {
+            langsToAdd.push({ label: lang.name, value: lang.url });
+          });
+          setLangOptions(langsToAdd);
+          setLangLoading(false);
+        });
+      }
     }, 600);
   };
 
@@ -111,17 +136,21 @@ const UploadDocument = ({ userToken, history }) => {
 
     // Wait .6 seconds before starting a search
     locTimeout = setTimeout(() => {
-      setTimeout(() => {
-        // TODO:
-        // Fetch location list based on params and set to state only if selectedLoc !== null
-        setLocOptions(
-          [
-            { label: 'Croatia, Rijeka', value: 'croatia rijeka' },
-            { label: 'Milano, Italy', value: 'milano italy' }
-          ]
-        );
-        setLocLoading(false);
-      }, 1000);
+      if(langSearch !== null) {
+        axios
+        .get(`https://api.mesoc.dev/locations?city=${parameter}`, {headers: {
+          Authorization: `Bearer ${userToken}`
+        }})
+        .then(async res => {
+          let locsToAdd = [];
+          setFullLocData(res.data);
+          await res.data.forEach(loc => {
+            locsToAdd.push({ label: `${loc.city}, ${loc.country}`, value: loc.url });
+          });
+          setLocOptions(locsToAdd);
+          setLocLoading(false);
+        });
+      }
     }, 600);
   };
 
@@ -134,6 +163,9 @@ const UploadDocument = ({ userToken, history }) => {
   if(userToken === null) {
     return <Redirect to="/sign-in" />
   }
+
+  // TODO:
+  // add -> If not verified, redirect to sign in
 
   return(
     <div className="pageWrapper">

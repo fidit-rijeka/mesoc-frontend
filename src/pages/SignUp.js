@@ -23,38 +23,33 @@ const SignUp = props => {
       setErr('Passwords don\'t match. Please try again.');
       return;
     }
-    if(!capCheck) {
-      setErr('Please confirm that you are not a robot.');
-      return;
-    }
+    // if(!capCheck) {
+    //   setErr('Please confirm that you are not a robot.');
+    //   return;
+    // }
 
-    // TODO:
-    // Send data to backend. Display message acordingly to backend response
+    console.log(e.target.email.value);
+    console.log(e.target.password.value);
+
     setWait(true);
-    // axios
-    //   .post('http://localhost:7000/users/', {
-    //     email: e.target.email.value,
-    //     password: e.target.password.value
-    //   }, {
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //       "Access-Control-Allow-Origin": "*"
-    //     }
-    //   })
-    //   .then(response => {
-    //     console.log(response);
-    //     setWait(false);
-    //   })
-    //   .catch(error => {
-    //     console.log(error);
-    //     setWait(false);
-    //   });
-
-    setTimeout(() => {
-      setWait(false);
-      //setDanger(true);
-      setSucc(true);
-    }, 1500);
+    axios
+      .post('https://api.mesoc.dev/account/', {
+        email: e.target.email.value,
+        password: e.target.password.value
+      }, {auth: {
+        username: 'api',
+        password: '!kAkYk3T'
+      }})
+      .then(res => {
+        setSucc(true);
+        setWait(false);
+      })
+      .catch(err => {
+        setWait(false);
+        err.response.data.email && setErr(err.response.data.email);
+        err.response.data.password && setErr(err.response.data.password);
+        err.response.data.non_field_errors && setErr(err.response.data.non_field_errors);
+      });
   };
 
   return(
@@ -78,7 +73,7 @@ const SignUp = props => {
           Something went wrong.
         </SweetAlert>
       }
-      <div className="account-pages my-5 pt-sm-5">
+      <div className="account-pages my-5 pt-5">
         <Container>
           <Row className="justify-content-center">
             <Col md={5} lg={6} xl={5}>
@@ -98,7 +93,7 @@ const SignUp = props => {
                   <Link to="/browse">
                     <div className="avatar-md profile-user-wid mb-4">
                       <span className="avatar-title rounded-circle bg-light">
-                        <img src={logo} alt="" className="rounded-circle" height="34" />
+                        <img src={logo} alt="mesoc toolkit application logo" className="rounded-circle" height="34" />
                       </span>
                     </div>
                   </Link>
@@ -132,7 +127,7 @@ const SignUp = props => {
                       {/* TODO:
                       Add official mesoc recaptcha here */}
                       <ReCAPTCHA
-                        sitekey="6LcMGQ8aAAAAANsNdayJ6eaZx0q-U8wz3v-4pBBS"
+                        sitekey="6Lfzfj0aAAAAAKns10tA_r-dElHjso_rZRfut_8x"
                         onChange={() => setCapCheck(true)}
                         onErrored={() => setCapCheck(false)}
                         onExpired={() => setCapCheck(false)}

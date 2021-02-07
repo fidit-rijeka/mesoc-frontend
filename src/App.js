@@ -11,10 +11,10 @@ import MyDocuments from './pages/MyDocuments';
 import SendFeedback from './pages/SendFeedback';
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
+import ForgotPassword from './pages/ForgotPassword';
 import UploadDocument from './pages/UploadDocument';
 import Analysis from './pages/Analysis';
 import AnalysisLoader from './components/analysisLoader';
-
 
 function App() {
 
@@ -53,11 +53,14 @@ function App() {
           <Route path='/create-account'>
             <SignUp />
           </Route>
+          <Route path="/forgot-password">
+            <ForgotPassword />
+          </Route>
           <Route path='/upload-document'>
             <UploadDocument userToken={userToken} />
           </Route>
           <Route path='/:analysisType/:analysisKey'>
-            <Analysis />
+            <Analysis userToken={userToken} />
           </Route>
         </Switch>
       </div> :

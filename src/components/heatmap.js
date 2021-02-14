@@ -29,12 +29,20 @@ const Heatmap = ({ data, selectedCell, fetchGraph }) => {
   return(
     <div className="heatmapWrapper">
       <span style={{ color: 'transparent' }}>.</span>
-      {new Array(10).fill(0).map((_, i) => {
-        return <span key={i} id={`numSpan${i + 1}`} className="numberSpan">{i + 1}</span>
-      })}
-      {new Array(3).fill(0).map((_, i) => {
-        return <span key={i} id={`numSpanB${i + 1}`} className="numberSpan">{i + 1}</span>
-      })}
+      <span id="numSpan1" className="numberSpan">Heritage</span>
+      <span id="numSpan2" className="numberSpan">Archives</span>
+      <span id="numSpan3" className="numberSpan">Libraries</span>
+      <span id="numSpan4" className="numberSpan">Book and Press</span>
+      <span id="numSpan5" className="numberSpan">Visual Arts</span>
+      <span id="numSpan6" className="numberSpan">Performing Arts</span>
+      <span id="numSpan7" className="numberSpan">Audiovisual and Multimedia</span>
+      <span id="numSpan8" className="numberSpan">Architecture</span>
+      <span id="numSpan9" className="numberSpan">Advertising</span>
+      <span id="numSpan10" className="numberSpan">Art crafts</span>
+
+      <span id="numSpanB1" className="numberSpan">Health and Wellbeing</span>
+      <span id="numSpanB2" className="numberSpan">Urban and Terrotorial Renovation</span>
+      <span id="numSpanB3" className="numberSpan">People's Engagement and Participation</span>
 
       {data.map((cellLabel, index) => {
         return <span onClick={() => fetchGraph(index)} key={index} className="heatmapCell" style={{ background: `rgba(74, 101, 255, ${calculateOpacity(cellLabel.classification)})`, boxShadow: selectedCell === index && 'inset 0px 0px 0px 4px #ff7300' }}>

@@ -17,8 +17,6 @@ const ForgotPassword = ({ history }) => {
     setWait(true);
     console.log(e.target.email.value);
 
-    // TODO:
-    // Fix and finish this axios request
     axios
       .post(`https://api.mesoc.dev/account/password_reset/`, {
         email: e.target.email.value
@@ -30,10 +28,12 @@ const ForgotPassword = ({ history }) => {
       })
       .then(res => {
         setWait(false);
+        setSucc(true);
         console.log(res);
       })
       .catch(err => {
         setWait(false);
+        setErr('Oops! Something went wrong.');
         console.log(err.response);
       })
   };

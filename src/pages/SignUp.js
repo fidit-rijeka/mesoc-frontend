@@ -120,7 +120,7 @@ const SignUp = props => {
                       <AvGroup check>
                         <Label  className="mb-4" check>
                           <AvInput type="checkbox" name="agree" required />
-                          <span className="fs95">By checking this box, you are acknowledging that you have read, understood, and accept our <a href="#" target="_blank" className="font-weight-medium text-primary fs95">Terms & Conditions</a> and <a href="#" target="_blank" className="font-weight-medium text-primary fs95">Privacy Policy</a>, and that you consent to our use of your personal data as described in our <a href="#" target="_blank" className="font-weight-medium text-primary fs95">Privacy Policy</a>. Also you grant us the permission to process, analyze and store uploaded documents.</span>
+                          <span className="fs95">By checking this box, you are acknowledging that you have read, understood, and accept our <a href={`${process.env.REACT_APP_HOME_URL}/terms`} target="_blank" className="font-weight-medium text-primary fs95">Terms & Conditions</a> and <a href={`${process.env.REACT_APP_HOME_URL}/privacy`} target="_blank" className="font-weight-medium text-primary fs95">Privacy Policy</a>, and that you consent to our use of your personal data as described in our <a href={`${process.env.REACT_APP_HOME_URL}/privacy`} target="_blank" className="font-weight-medium text-primary fs95">Privacy Policy</a>. Also you grant us the permission to process, analyze and store uploaded documents.</span>
                         </Label>
                       </AvGroup>
 

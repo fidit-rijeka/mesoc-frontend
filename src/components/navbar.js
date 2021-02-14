@@ -21,7 +21,7 @@ const Navbar = ({ userToken, setUserToken, removeAuthCookie }) => {
 
   return(
     <nav>
-      <a href="http://localhost:4001" className="logoA">
+      <a href={`${process.env.REACT_APP_HOME_URL}`} className="logoA">
         <img src={logo} alt="logo of mesoc toolkit application" className="logo"/>
       </a>
 

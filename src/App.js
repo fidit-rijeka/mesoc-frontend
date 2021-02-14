@@ -15,6 +15,8 @@ import ForgotPassword from './pages/ForgotPassword';
 import UploadDocument from './pages/UploadDocument';
 import Analysis from './pages/Analysis';
 import AnalysisLoader from './components/analysisLoader';
+import NotVerfied from './pages/NotVerified';
+import VerificationProcess from './pages/VerificationProcess';
 
 function App() {
 
@@ -55,6 +57,12 @@ function App() {
           </Route>
           <Route path="/forgot-password">
             <ForgotPassword />
+          </Route>
+          <Route path="/not-verified">
+            <NotVerfied />
+          </Route>
+          <Route path="/verification">
+            <VerificationProcess />
           </Route>
           <Route path='/upload-document'>
             <UploadDocument userToken={userToken} />

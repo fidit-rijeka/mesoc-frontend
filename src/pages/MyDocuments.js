@@ -20,11 +20,14 @@ const MyDocuments = ({ userToken }) => {
 
   useEffect(() => {
     if(userToken === null) {
+      console.log("user token null")
       return;
     }
 
     // TODO:
     // Finish and test this request.
+    console.log('ovo je use effect');
+    console.log(userToken);
     axios
       .get(`https://api.mesoc.dev/documents?state=processing,processed,failed`, {
         headers: {
@@ -32,11 +35,13 @@ const MyDocuments = ({ userToken }) => {
         }
       })
       .then(res => {
+        console.log('ovo je then');
         console.log(res.data);
         setDocsData(res.data);
         setLoading(false);
       })
       .catch(err => {
+        console.log('ovo je catch');
         console.log(err);
         setLoading(false);
       })
@@ -93,9 +98,13 @@ const MyDocuments = ({ userToken }) => {
   if(userToken === null) {
     return <Redirect to="/sign-in" />
   }
+  
 
   // TODO:
   // add -> If not verified, redirect to sign in
+  /*if(userToken === null) {
+    return <Redirect to="/not-verified" />
+  }*/
 
   return(
     <div className="pageWrapper">

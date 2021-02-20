@@ -1,15 +1,50 @@
 import React, { useState } from 'react';
-import { Link, withRouter } from 'react-router-dom';
+import { Link, withRouter, Redirect } from 'react-router-dom';
 import { Row, Col, CardBody, Card, Alert, Container } from "reactstrap";
 import { AvForm, AvField } from 'availity-reactstrap-validation';
+import InfoModal from '../components/infoModal';
 import axios from 'axios';
 
 import logo from '../images/mesocLogoBlue.png';
 
-const SignIn = ({ history, setUserToken, setAuthCookie }) => {
+const NotVerfied = ({ userToken }) => {
 
   const [err, setErr] = useState(null);
   const [wait, setWait] = useState(false);
+  const [infoModalOpen, setInfoModalOpen] = useState(false);
+  const [modalType, setModalType] = useState(null);
+  const [modalText, setModalText] = useState(null);
+
+  // If not authenticated, redirect to sign in.
+  if(userToken === null) {
+    return <Redirect to="/sign-in" />
+  }
+
+  const resendVerificationLink = () => {
+    // TODO: (Feb 20, 2021) => CORS error. Test when it gets fixed.
+    // TODO: (Feb 20, 2021) => modal should be added on button press.
+    axios
+      .post(`https://api.mesoc.dev/account/verification/`, {
+        headers: {
+          Authorization: `Bearer ${userToken}`
+        }
+      })
+      .then(res => {
+        console.log(`User resend verificationklink sent.`)
+        console.log(res)
+      })
+      .catch(err => {
+        console.log(`Error occured when trying to send user verification link. Error log should show up below.`)
+        console.log(err)
+      })
+  };
+
+  // Opens when user clicks resend button
+  const openModal = (type, selected) => {
+    setModalType(type);
+    setModalText("For this document we weren't able to produce any results.");
+    setInfoModalOpen(true);
+  };
 
   return(
     <div className="signInWrapper">
@@ -40,9 +75,7 @@ const SignIn = ({ history, setUserToken, setAuthCookie }) => {
                   <Link to={`browse`} className="btn btn-primary wawes-effect waves-light mr-3">
                         Go back
                   </Link>
-                  <Link to={`placeholder`} className="btn btn-primary wawes-effect waves-light">
-                        Re-send verification mail
-                  </Link>
+                  <button onClick={() => resendVerificationLink()} className="btn btn-primary wawes-effect waves-light">Resend verification link</button>
                   <div className="p-2">
                   </div>
                 </div>
@@ -56,4 +89,4 @@ const SignIn = ({ history, setUserToken, setAuthCookie }) => {
   );
 };
 
-export default withRouter(SignIn);
+export default withRouter(NotVerfied);

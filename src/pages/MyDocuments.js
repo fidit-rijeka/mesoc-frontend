@@ -22,7 +22,7 @@ const MyDocuments = ({ userToken }) => {
     // TODO:
     // Finish and test this request.
     axios
-      .get(`https://api.mesoc.dev/documents?state=processing,processed,failed`, {
+      .get(`https://api.mesoc.dev/documents?state=active`, {
         headers: {
           Authorization: `Bearer ${userToken}`
         }
@@ -58,7 +58,7 @@ const MyDocuments = ({ userToken }) => {
     if(index === '1') {
       axios
         // TODO: Will call this request after backend provides it: https://api.mesoc.dev/documents?state=active
-        .get(`https://api.mesoc.dev/documents?state=processing,processed,failed`, {
+        .get(`https://api.mesoc.dev/documents?state=active`, {
           headers: {
             Authorization: `Bearer ${userToken}`
           }

@@ -21,8 +21,10 @@ const Heatmap = ({ data, selectedCell, fetchGraph }) => {
       return '.37';
     } else if(classification > 0.1) {
       return '.28';
-    } else {
+    } else if(classification !== 0) {
       return '.19';
+    } else {
+      return '.09';
     }
   };
 

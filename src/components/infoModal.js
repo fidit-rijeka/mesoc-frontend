@@ -6,10 +6,11 @@ const InfoModal = ({text, modalOpen, setModalOpen, type, docId, userToken}) => {
 
   const moveToFailed = () => {
     setModalOpen(false);
+    console.log(`DocId given to func => ${docId}`)
     // TODO:
     // Finish and test this request with test data.
     axios
-      .patch(`https://api.mesoc.dev/documents/${docId}`, {
+      .patch(`${docId}`, {
         state: 'dismissed'
       }, {
         headers: {

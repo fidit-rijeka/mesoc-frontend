@@ -53,7 +53,7 @@ const MyDocuments = ({ userToken }) => {
   const openModal = (type, selected) => {
     setDocId(selected);
     setModalType(type);
-    setModalText(docsData[selected].info);
+    setModalText("For this document we weren't able to produce any results.");
     setInfoModalOpen(true);
   };
 
@@ -180,7 +180,7 @@ const MyDocuments = ({ userToken }) => {
                                   <Link to={`document/${doc.id}`} className="btn btn-primary wawes-effect waves-light">Open</Link> :
                                   doc.state === 'processing' ?
                                     <button className="btn btn-primary wawes-effect waves-light" disabled>Processing</button> :
-                                    <button onClick={() => openModal('reject', doc.id)} className="btn btn-danger wawes-effect waves-light">Failed</button>
+                                    <button onClick={() => openModal('reject', doc.url)} className="btn btn-danger wawes-effect waves-light">Failed</button>
                                 }
                               </td>
                             </tr>

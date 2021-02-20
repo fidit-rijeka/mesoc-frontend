@@ -15,7 +15,7 @@ let series = null;
 const Analysis = ({ userToken, match }) => {
 
   const [cells, setCells] = useState(null);
-  const [selectedCell, setSelectedCell] = useState(null);
+  const [selectedCell, setSelectedCell] = useState(null);x 
   const [cellSim, setCellSim] = useState(null);
   const [vars, setVars] = useState(null);
   const [selectedVar, setSelectedVar] = useState(null);
@@ -38,6 +38,7 @@ const Analysis = ({ userToken, match }) => {
     //     console.log(err.response);
     //   });
 
+    // Zakomentirat, dummy data
     setTimeout(() => {
       setCells(require('../testData/celije.json').cells);
     }, 1000)

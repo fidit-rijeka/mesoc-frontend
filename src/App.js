@@ -59,7 +59,7 @@ function App() {
             <ForgotPassword />
           </Route>
           <Route path="/not-verified">
-            <NotVerfied />
+            <NotVerfied userToken={userToken} />
           </Route>
           <Route path="/verification">
             <VerificationProcess />

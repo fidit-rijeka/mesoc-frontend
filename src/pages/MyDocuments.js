@@ -14,20 +14,13 @@ const MyDocuments = ({ userToken }) => {
   const [infoModalOpen, setInfoModalOpen] = useState(false);
   const [modalType, setModalType] = useState(null);
   const [modalText, setModalText] = useState(null);
-  const [docsData, setDocsData] = useState(null);
+  const [docsData, setDocsData] = useState([]);
   const [docId, setDocId] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if(userToken === null) {
-      console.log("user token null")
-      return;
-    }
-
     // TODO:
     // Finish and test this request.
-    console.log('ovo je use effect');
-    console.log(userToken);
     axios
       .get(`https://api.mesoc.dev/documents?state=processing,processed,failed`, {
         headers: {
@@ -35,14 +28,12 @@ const MyDocuments = ({ userToken }) => {
         }
       })
       .then(res => {
-        console.log('ovo je then');
-        console.log(res.data);
-        console.log(res.data[0].url.split('/')[4]);
+        console.log(res.data);  
+        //console.log(res.data[0].url.split('/')[4]);
         setDocsData(res.data);
         setLoading(false);
       })
       .catch(err => {
-        console.log('ovo je catch');
         console.log(err);
         setLoading(false);
       })
@@ -66,6 +57,7 @@ const MyDocuments = ({ userToken }) => {
     // Finish and test this requests.
     if(index === '1') {
       axios
+        // TODO: Will call this request after backend provides it: https://api.mesoc.dev/documents?state=active
         .get(`https://api.mesoc.dev/documents?state=processing,processed,failed`, {
           headers: {
             Authorization: `Bearer ${userToken}`
@@ -99,13 +91,35 @@ const MyDocuments = ({ userToken }) => {
   if(userToken === null) {
     return <Redirect to="/sign-in" />
   }
-  
 
   // TODO:
   // add -> If not verified, redirect to sign in
-  /*if(userToken === null) {
-    return <Redirect to="/not-verified" />
-  }*/
+  if(userToken) {
+    //return <Redirect to="/not-verified" />
+    axios.
+      get(`https://api.mesoc.dev/account/`, {
+        headers: {
+          Authorization: `Bearer ${userToken}`
+        }
+      })
+      .then(res => {
+        {
+          console.log(res.data)
+          if (res.data.verified === false) {
+            console.log(`User not verified, redirecting to "/not-verified"`)
+            //TODO: Figure out why this redirect doesnt work 
+            return <Redirect to="/not-verified" />
+          } else if (res.data.verified === true) {
+            console.log(`User is verified.`)
+          } else {
+            console.log(`Error => Cannot retrieve user account data!`)
+          }
+        }
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }
 
   return(
     <div className="pageWrapper">

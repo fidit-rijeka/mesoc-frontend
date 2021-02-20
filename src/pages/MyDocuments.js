@@ -37,6 +37,7 @@ const MyDocuments = ({ userToken }) => {
       .then(res => {
         console.log('ovo je then');
         console.log(res.data);
+        console.log(res.data[0].url.split('/')[4]);
         setDocsData(res.data);
         setLoading(false);
       })
@@ -177,7 +178,7 @@ const MyDocuments = ({ userToken }) => {
                               <td>{`${doc.location.city}, ${doc.location.country}`}</td>
                               <td>
                                 {doc.state === 'processed' ?
-                                  <Link to={`document/${doc.id}`} className="btn btn-primary wawes-effect waves-light">Open</Link> :
+                                  <Link to={`document/${doc.url.split('/')[4]}`} className="btn btn-primary wawes-effect waves-light">Open</Link> :
                                   doc.state === 'processing' ?
                                     <button className="btn btn-primary wawes-effect waves-light" disabled>Processing</button> :
                                     <button onClick={() => openModal('reject', doc.url)} className="btn btn-danger wawes-effect waves-light">Failed</button>

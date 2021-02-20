@@ -15,41 +15,40 @@ let series = null;
 const Analysis = ({ userToken, match }) => {
 
   const [cells, setCells] = useState(null);
-  const [selectedCell, setSelectedCell] = useState(null);x 
+  const [selectedCell, setSelectedCell] = useState(null);
   const [cellSim, setCellSim] = useState(null);
   const [vars, setVars] = useState(null);
   const [selectedVar, setSelectedVar] = useState(null);
   const [varSim, setVarSim] = useState(null);
 
   useEffect(() => {
-    // TODO:
-    // Finish this request and test it with real data.
-    // axios
-    //   .get(`https://api.mesoc.dev/documents/${match.params.analysisKey}/heatmap/`, {
-    //     headers: {
-    //       Aurhorization: `Bearer ${userToken}`
-    //     }
-    //   })
-    //   .then(res => {
-    //     console.log(res.data);
-    //     setCells(res.data);
-    //   })
-    //   .catch(err => {
-    //     console.log(err.response);
-    //   });
+    axios
+      .get(`https://api.mesoc.dev/documents/${match.params.analysisKey}/heatmap/`, {
+        headers: {
+          Authorization: `Bearer ${userToken}`
+        }
+      })
+      .then(async res => {
+        let heatData = await [...Array(30).keys()].map(x => {return {order: x, classification: 0.0}});
+        await res.data.map(resItem => {
+          heatData[resItem.order] = resItem;
+        });
+        setCells(heatData);
+      })
+      .catch(err => {
+        console.log(err);
+      });
 
-    // Zakomentirat, dummy data
-    setTimeout(() => {
-      setCells(require('../testData/celije.json').cells);
-    }, 1000)
-    console.log(match.params.analysisType, match.params.analysisKey);
+    // setTimeout(() => {
+    //   setCells(require('../testData/celije.json').cells);
+    // }, 1000)
   }, []);
 
   const fetchGraph = async (cell) => {
     setVars(null);
     setCellSim(null);
-    // If deselecting cell clear cell data.
-    if(selectedCell === cell) {
+    // If deselecting cell or clicking on "classification: 0" cell, clear cell data.
+    if(selectedCell === cell || cells[cell].classification === 0) {
       setSelectedCell(null);
       return;
     }
@@ -59,18 +58,26 @@ const Analysis = ({ userToken, match }) => {
     // TODO:
     // Fetch variable data based on input (selected cell).
     // Fetch similar by cell.
-    // let varsTemp = [];
-    // await axios
-    //   .get(`${cells[cell].variables}`, {
-    //     headers: {
-    //       Authorization: `Bearer ${userToken}`
-    //     }
-    //   })
-    //   .then(res => {
-    //     console.log(res.data);
-    //     setVars(res.data);
-    //     varsTemp = res.data;
-    //   })
+    let varsTemp = [];
+    let labels = [];
+    let percentages = [];
+    await axios
+      .get(`${cells[cell].variables}`, {
+        headers: {
+          Authorization: `Bearer ${userToken}`
+        }
+      })
+      .then(res => {
+        console.log(res.data);
+        //setVars(res.data);
+        varsTemp = res.data;
+        return res.data;
+      })
+      .then(res => {
+        setData();
+        console.log(res);
+        //setVars(res);
+      })
 
     // await axios
     //   .get(`${cells[cell].document}`, {
@@ -83,16 +90,16 @@ const Analysis = ({ userToken, match }) => {
     //     setCellSim(res.data);
     //   });
 
-    const varsTemp = require('../testData/varijable.json').vars;
+    // const varsTemp = require('../testData/varijable.json').vars;
 
-    setTimeout(() => {
-      setVars(varsTemp);
-      setCellSim(require('../testData/simm.json').similar);
-    }, 1000)
+    // setTimeout(() => {
+    //   setData();
+    //   //setVars(varsTemp);
+    //   //setCellSim(require('../testData/simm.json').similar);
+    // }, 1000)
 
-    let labels = [];
-    let percentages = [];
     async function setData() {
+      console.log(varsTemp);
       await varsTemp.forEach(element => {
         labels.push(element.name);
         percentages.push(parseInt(element.strength * 100));
@@ -157,9 +164,10 @@ const Analysis = ({ userToken, match }) => {
         name: 'effect',
         data: percentages
       }];
+      setVars(varsTemp);
     };
 
-    setData();
+    //setData();
   };
 
   return(

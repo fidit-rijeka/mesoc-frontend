@@ -1,19 +1,16 @@
 import React, { useState } from 'react';
 import { Link, withRouter, Redirect } from 'react-router-dom';
-import { Row, Col, CardBody, Card, Alert, Container } from "reactstrap";
-import { AvForm, AvField } from 'availity-reactstrap-validation';
-import InfoModal from '../components/infoModal';
+import { Row, Col, CardBody, Card, Container } from "reactstrap";
+import SweetAlert from 'react-bootstrap-sweetalert';
 import axios from 'axios';
 
 import logo from '../images/mesocLogoBlue.png';
 
-const NotVerfied = ({ userToken }) => {
+const NotVerfied = ({ userToken, history }) => {
 
-  const [err, setErr] = useState(null);
   const [wait, setWait] = useState(false);
-  const [infoModalOpen, setInfoModalOpen] = useState(false);
-  const [modalType, setModalType] = useState(null);
-  const [modalText, setModalText] = useState(null);
+  const [succ, setSucc] = useState(false);
+  const [danger, setDanger] = useState(false);
 
   // If not authenticated, redirect to sign in.
   if(userToken === null) {
@@ -29,25 +26,31 @@ const NotVerfied = ({ userToken }) => {
           Authorization: `Bearer ${userToken}`
         }
       })
-      .then(res => {
-        console.log(`User resend verificationklink sent.`)
-        console.log(res)
-      })
-      .catch(err => {
-        console.log(`Error occured when trying to send user verification link. Error log should show up below.`)
-        console.log(err)
-      })
-  };
-
-  // Opens when user clicks resend button
-  const openModal = (type, selected) => {
-    setModalType(type);
-    setModalText("For this document we weren't able to produce any results.");
-    setInfoModalOpen(true);
+      .then(res => setSucc(true))
+      .catch(err => setDanger(true));
   };
 
   return(
     <div className="signInWrapper">
+      {succ &&
+        <SweetAlert
+          title="Success!"
+          success
+          confirmBtnBsStyle="btn btn-primary wawes-effect waves-light"
+          onConfirm={() => {history.push('/browse')}}
+        >
+          Verification link has been sent to your account.
+        </SweetAlert>
+      }
+      {danger &&
+        <SweetAlert
+          title="Oops!"
+          danger
+          onConfirm={() => {setDanger(false)}}
+        >
+          Something went wrong.
+        </SweetAlert>
+      }
       <div className="account-pages my-5 pt-5">
         <Container>
           <Row className="justify-content-center">
@@ -58,7 +61,7 @@ const NotVerfied = ({ userToken }) => {
                     <Col className="col-12">
                       <div className="text-primary p-4">
                         <h5 className="text-primary">Verify your account!</h5>
-                        <p>Before continuing, you need to verify your account.</p>
+                        <p>Before continuing, you need to verify your account. Please go to your email and click on the verification link.</p>
                       </div>
                     </Col>
                   </Row>

@@ -12,7 +12,7 @@ import FilePreview from '../components/filePreview';
 let langTimeout = null;
 let locTimeout = null;
 
-const UploadDocument = ({ userToken, history }) => {
+const UploadDocument = ({ userToken, history, userVerified }) => {
 
   const [invalid, setInvalid] = useState(null);
 
@@ -31,6 +31,17 @@ const UploadDocument = ({ userToken, history }) => {
   const [succ, setSucc] = useState(false);
   const [danger, setDanger] = useState(false);
   const [wait, setWait] = useState(false);
+
+    // If not authenticated, redirect to sign in.
+    if(userToken === null) {
+      return <Redirect to="/sign-in" />
+    }
+  
+    // If not verified, redirect to sign in
+    if(userToken && !userVerified) {
+      console.log(`User not verified, redirecting to "/not-verified"`)
+      return <Redirect to="/not-verified" />
+    }
 
   const handleSubmit = e => {
     const eventTarget = e.target;

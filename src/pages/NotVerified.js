@@ -6,7 +6,15 @@ import axios from 'axios';
 
 import logo from '../images/mesocLogoBlue.png';
 
-const NotVerfied = ({ userToken, history }) => {
+// ****************** IMPORTANT ******************
+
+// this code, somewhere it somehow sets the userVerified to false, even when on login he indeed is verified and that code sets it to true...idk
+
+// Logging out and logging back in fixes the temporary issue.
+
+// (Feb 21, 2021) => I think I figured it out. It happenes probably becasue the app state isn't saved on page hard refresh, so verification status should be put into session state/cookie and this should be fixed.
+
+const NotVerfied = ({ userToken, history, userVerified }) => {
 
   const [wait, setWait] = useState(false);
   const [succ, setSucc] = useState(false);
@@ -17,17 +25,31 @@ const NotVerfied = ({ userToken, history }) => {
     return <Redirect to="/sign-in" />
   }
 
+  //console.log(`${userVerified}`)
+
+  // User is logged in and verified scenario
+  // TODO => (maybe?) open a modul and tell user his situation. Give him a button to redirect to /browse
+
+  /*if (userToken && userVerified) {
+    console.log(`got here`)
+    return <Redirect to="/browse" // donesn't work />
+  }*/
+
   const resendVerificationLink = () => {
-    // TODO: (Feb 20, 2021) => CORS error. Test when it gets fixed.
-    // TODO: (Feb 20, 2021) => modal should be added on button press.
+    // TODO: (Feb 21, 2021) => 401 Unauthorized
+    console.log(`NotVeriifed page userToken log: ${userToken}`);
     axios
-      .post(`https://api.mesoc.dev/account/verification/`, {
+      .post(`https://api.mesoc.dev/account/verification`, {
         headers: {
           Authorization: `Bearer ${userToken}`
         }
       })
-      .then(res => setSucc(true))
-      .catch(err => setDanger(true));
+      .then(res => {
+        setSucc(true)
+      })
+      .catch(err => {
+        setDanger(true)
+      });
   };
 
   return(

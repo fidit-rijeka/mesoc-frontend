@@ -6,7 +6,7 @@ import axios from 'axios';
 
 import logo from '../images/mesocLogoBlue.png';
 
-const SignIn = ({ history, setUserToken, setAuthCookie }) => {
+const SignIn = ({ history, setUserToken, setAuthCookie, setUserVerified }) => {
 
   const [err, setErr] = useState(null);
   const [wait, setWait] = useState(false);
@@ -23,8 +23,10 @@ const SignIn = ({ history, setUserToken, setAuthCookie }) => {
         password: '!kAkYk3T'
       }})
       .then(res => {
+        console.log(`User data retrieved. Token: ${res.data.token}, Verified: ${res.data.verified}.`);
         setAuthCookie('mesoc_local_user', res.data.token);
         setUserToken(res.data.token);
+        setUserVerified(res.data.verified);
         history.push('/my-documents');
       })
       .catch(err => {

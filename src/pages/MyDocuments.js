@@ -8,7 +8,7 @@ import Sidenav from '../components/sidenav';
 import InfoModal from '../components/infoModal';
 import AnalysisLoader from '../components/analysisLoader';
 
-const MyDocuments = ({ userToken }) => {
+const MyDocuments = ({ userToken, userVerified }) => {
 
   const [activeTab, setActiveTab] = useState('1');
   const [infoModalOpen, setInfoModalOpen] = useState(false);
@@ -21,7 +21,8 @@ const MyDocuments = ({ userToken }) => {
   useEffect(() => {
     // TODO:
     // Finish and test this request.
-    axios
+    if (userToken && userVerified) {
+      axios
       .get(`https://api.mesoc.dev/documents?state=active`, {
         headers: {
           Authorization: `Bearer ${userToken}`
@@ -37,7 +38,10 @@ const MyDocuments = ({ userToken }) => {
         console.log(err);
         setLoading(false);
       })
+    }
   }, []);
+
+  console.log(`${userVerified}`)
 
   // First argument: if in "Active documents" -> 'reject'
   //                 if in "Deleted documents" -> 'inform'
@@ -92,33 +96,10 @@ const MyDocuments = ({ userToken }) => {
     return <Redirect to="/sign-in" />
   }
 
-  // TODO:
-  // add -> If not verified, redirect to sign in
-  if(userToken) {
-    //return <Redirect to="/not-verified" />
-    axios.
-      get(`https://api.mesoc.dev/account/`, {
-        headers: {
-          Authorization: `Bearer ${userToken}`
-        }
-      })
-      .then(res => {
-        {
-          console.log(res.data)
-          if (res.data.verified === false) {
-            console.log(`User not verified, redirecting to "/not-verified"`)
-            //TODO: Figure out why this redirect doesnt work 
-            return <Redirect to="/not-verified" />
-          } else if (res.data.verified === true) {
-            console.log(`User is verified.`)
-          } else {
-            console.log(`Error => Cannot retrieve user account data!`)
-          }
-        }
-      })
-      .catch(err => {
-        console.log(err)
-      })
+  // If not verified, redirect to sign in
+  if(userToken && !userVerified) {
+    console.log(`User not verified, redirecting to "/not-verified"`)
+    return <Redirect to="/not-verified" />
   }
 
   return(

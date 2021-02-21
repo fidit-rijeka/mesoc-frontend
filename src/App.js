@@ -26,6 +26,7 @@ function App() {
   const [authCookie, setAuthCookie, removeAuthCookie] = useCookies(null);
   const [userToken, setUserToken] = useState(null);
   const [appReady, setAppReady] = useState(false);
+  const [userVerified, setUserVerified] = useState(false);
 
   useEffect(() => {
     authCookie.mesoc_local_user !== undefined && setUserToken(authCookie.mesoc_local_user);
@@ -44,13 +45,13 @@ function App() {
             <Browse />
           </Route>
           <Route path='/my-documents'>
-            <MyDocuments userToken={userToken} />
+            <MyDocuments userToken={userToken} userVerified={userVerified} />
           </Route>
           <Route path='/send-feedback'>
-            <SendFeedback userToken={userToken} />
+            <SendFeedback userToken={userToken} userVerified={userVerified} />
           </Route>
           <Route path='/sign-in'>
-            <SignIn setUserToken={setUserToken} setAuthCookie={setAuthCookie} />
+            <SignIn setUserToken={setUserToken} setAuthCookie={setAuthCookie} userVerified={userVerified} setUserVerified={setUserVerified} />
           </Route>
           <Route path='/create-account'>
             <SignUp />
@@ -62,10 +63,10 @@ function App() {
             <NotVerfied userToken={userToken} />
           </Route>
           <Route path="/verification">
-            <VerificationProcess />
+            <VerificationProcess path='/verification/:uuidKey' userToken={userToken} userVerified={userVerified} />
           </Route>
           <Route path='/upload-document'>
-            <UploadDocument userToken={userToken} />
+            <UploadDocument userToken={userToken} userVerified={userVerified} />
           </Route>
           <Route path='/:analysisType/:analysisKey'>
             <Analysis userToken={userToken} />

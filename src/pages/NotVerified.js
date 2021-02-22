@@ -6,34 +6,23 @@ import axios from 'axios';
 
 import logo from '../images/mesocLogoBlue.png';
 
-// ****************** IMPORTANT ******************
-
-// this code, somewhere it somehow sets the userVerified to false, even when on login he indeed is verified and that code sets it to true...idk
-
-// Logging out and logging back in fixes the temporary issue.
-
-// (Feb 21, 2021) => I think I figured it out. It happenes probably becasue the app state isn't saved on page hard refresh, so verification status should be put into session state/cookie and this should be fixed.
-
 const NotVerfied = ({ userToken, history, userVerified }) => {
 
   const [wait, setWait] = useState(false);
   const [succ, setSucc] = useState(false);
   const [danger, setDanger] = useState(false);
 
+  // TODO => (maybe?) User is logged in and verified scenario => open a modul and tell user his situation. Give him a button to redirect to /browse
+
   // If not authenticated, redirect to sign in.
   if(userToken === null) {
     return <Redirect to="/sign-in" />
   }
 
-  //console.log(`${userVerified}`)
-
-  // User is logged in and verified scenario
-  // TODO => (maybe?) open a modul and tell user his situation. Give him a button to redirect to /browse
-
-  /*if (userToken && userVerified) {
-    console.log(`got here`)
-    return <Redirect to="/browse" // donesn't work />
-  }*/
+  // If authenticated and verified redirect to browse.
+  if (userToken && userVerified) {
+    return <Redirect to="/browse" />
+  }
 
   const resendVerificationLink = () => {
     // TODO: (Feb 21, 2021) => 401 Unauthorized

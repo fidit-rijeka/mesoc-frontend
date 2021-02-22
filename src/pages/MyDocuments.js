@@ -29,8 +29,6 @@ const MyDocuments = ({ userToken, userVerified }) => {
         }
       })
       .then(res => {
-        console.log(res.data);  
-        //console.log(res.data[0].url.split('/')[4]);
         setDocsData(res.data);
         setLoading(false);
       })
@@ -40,8 +38,6 @@ const MyDocuments = ({ userToken, userVerified }) => {
       })
     }
   }, []);
-
-  console.log(`${userVerified}`)
 
   // First argument: if in "Active documents" -> 'reject'
   //                 if in "Deleted documents" -> 'inform'
@@ -57,11 +53,9 @@ const MyDocuments = ({ userToken, userVerified }) => {
     setLoading(true);
     setDocsData(null);
     setActiveTab(index);
-    // TODO:
-    // Finish and test this requests.
+
     if(index === '1') {
       axios
-        // TODO: Will call this request after backend provides it: https://api.mesoc.dev/documents?state=active
         .get(`https://api.mesoc.dev/documents?state=active`, {
           headers: {
             Authorization: `Bearer ${userToken}`
@@ -91,14 +85,13 @@ const MyDocuments = ({ userToken, userVerified }) => {
     }
   };
 
+  // USER MANAGEMENT
   // If not authenticated, redirect to sign in.
   if(userToken === null) {
     return <Redirect to="/sign-in" />
   }
-
   // If not verified, redirect to sign in
   if(userToken && !userVerified) {
-    console.log(`User not verified, redirecting to "/not-verified"`)
     return <Redirect to="/not-verified" />
   }
 

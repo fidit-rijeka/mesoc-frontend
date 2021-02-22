@@ -18,6 +18,7 @@ const Browse = () => {
             <CardTitle>MESOC world map</CardTitle>
             <CardSubtitle className="mb-3">Explore our MESOC data visualized on a world map.</CardSubtitle>
             <Map />
+            { /* TODO: Add a small margin here (about 10px) */ }
             <p>To see our complete analytics, click the button below.</p>
             <Link to={`placeholder`} className="btn btn-primary wawes-effect waves-light">
               All cities

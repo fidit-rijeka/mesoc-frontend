@@ -15,14 +15,15 @@ const VerificationProcess = ({ match, history, userToken, userVerified }) => {
   useEffect(() => {
     // TODO => (Maybe this is extra work and doesn't need to be modified) Only do this if used is not logged in
     /*if (!userToken && !userVerified) {*/
+      console.log(`UUID: ${match.params.uuidKey}`)
       axios
-      .get(`https://api.mesoc.dev/account/verification/confirmation`, {
+      .post(`https://api.mesoc.dev/account/verification/confirmation/`, {
         // body
         "uuid": `${match.params.uuidKey}`
       }, {
-        /*headers: {
+        headers: {
           Authorization: `Bearer ${userToken}`
-        }*/
+        }
       })
       .then(res => {
         console.log(res.data);

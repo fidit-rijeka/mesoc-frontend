@@ -9,13 +9,15 @@ import logo from '../images/mesocLogoBlue.png';
 import { ReactComponent as SearchIcon } from '../assets/images/search.svg'
 import { Nav } from 'reactstrap';
 
-const Navbar = ({ userToken, setUserToken, removeAuthCookie }) => {
+const Navbar = ({ userToken, setUserToken, removeAuthCookie, setUserVerified }) => {
 
   const [navOpen, setNavOpen] = useState(false);
 
   const signOut = () => {
     setUserToken(null);
+    setUserVerified(null);
     removeAuthCookie('mesoc_local_user');
+    removeAuthCookie('mesoc_local_user_verified');
     setNavOpen(false);
   };
 

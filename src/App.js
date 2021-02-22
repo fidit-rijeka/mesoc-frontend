@@ -18,18 +18,30 @@ import AnalysisLoader from './components/analysisLoader';
 import NotVerfied from './pages/NotVerified';
 import VerificationProcess from './pages/VerificationProcess';
 
+// (Feb 22 2021) => When app reads user verified status and stores it in state it stores it as a string, which creates a bug. Temporary fix. Fix it or write it better.
+function toBool(val) {
+  if (val === "true") {
+    return true 
+  } else {
+    return false;
+  }
+}
+
 function App() {
 
   // TODO:
   // Display cookie warning.
 
-  const [authCookie, setAuthCookie, removeAuthCookie] = useCookies(null);
+  const [authCookie, setAuthCookie, removeAuthCookie] = useCookies(null); // Stores the authToken
   const [userToken, setUserToken] = useState(null);
   const [appReady, setAppReady] = useState(false);
   const [userVerified, setUserVerified] = useState(false);
 
   useEffect(() => {
-    authCookie.mesoc_local_user !== undefined && setUserToken(authCookie.mesoc_local_user);
+    if (authCookie.mesoc_local_user) {
+      setUserToken(authCookie.mesoc_local_user);
+      setUserVerified(toBool(authCookie.mesoc_local_user_verified));
+    }
     setAppReady(true);
   }, [])
 
@@ -38,20 +50,28 @@ function App() {
       {appReady ? 
         <div className="App">
         <Route path='/'>
-          <Navbar userToken={userToken} setUserToken={setUserToken} removeAuthCookie={removeAuthCookie}/>
+          <Navbar userToken={userToken}
+                  setUserToken={setUserToken}
+                  removeAuthCookie={removeAuthCookie}
+                  setUserVerified={setUserVerified} />
         </Route>
         <Switch>
           <Route path='/browse'>
             <Browse />
           </Route>
           <Route path='/my-documents'>
-            <MyDocuments userToken={userToken} userVerified={userVerified} />
+            <MyDocuments userToken={userToken}
+                         userVerified={userVerified} />
           </Route>
           <Route path='/send-feedback'>
-            <SendFeedback userToken={userToken} userVerified={userVerified} />
+            <SendFeedback userToken={userToken}
+                          userVerified={userVerified} />
           </Route>
           <Route path='/sign-in'>
-            <SignIn setUserToken={setUserToken} setAuthCookie={setAuthCookie} userVerified={userVerified} setUserVerified={setUserVerified} />
+            <SignIn setUserToken={setUserToken}
+                    setAuthCookie={setAuthCookie}
+                    userVerified={userVerified}
+                    setUserVerified={setUserVerified} />
           </Route>
           <Route path='/create-account'>
             <SignUp />
@@ -60,13 +80,16 @@ function App() {
             <ForgotPassword />
           </Route>
           <Route path="/not-verified">
-            <NotVerfied userToken={userToken} />
+            <NotVerfied userToken={userToken}
+                        userVerified={userVerified} />
           </Route>
-          <Route path="/verification">
-            <VerificationProcess path='/verification/:uuidKey' userToken={userToken} userVerified={userVerified} />
+          <Route path="/verification/:uuidKey">
+            <VerificationProcess userToken={userToken}
+                                 userVerified={userVerified} />
           </Route>
           <Route path='/upload-document'>
-            <UploadDocument userToken={userToken} userVerified={userVerified} />
+            <UploadDocument userToken={userToken}
+                            userVerified={userVerified} />
           </Route>
           <Route path='/:analysisType/:analysisKey'>
             <Analysis userToken={userToken} />

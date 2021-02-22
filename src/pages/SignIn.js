@@ -23,8 +23,8 @@ const SignIn = ({ history, setUserToken, setAuthCookie, setUserVerified }) => {
         password: '!kAkYk3T'
       }})
       .then(res => {
-        console.log(`User data retrieved. Token: ${res.data.token}, Verified: ${res.data.verified}.`);
         setAuthCookie('mesoc_local_user', res.data.token);
+        setAuthCookie('mesoc_local_user_verified', res.data.verified);
         setUserToken(res.data.token);
         setUserVerified(res.data.verified);
         history.push('/my-documents');

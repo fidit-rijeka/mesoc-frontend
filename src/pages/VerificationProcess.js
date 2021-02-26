@@ -1,40 +1,45 @@
 import React, { useState, useEffect } from 'react';
-import { Link, withRouter } from 'react-router-dom';
-import { Row, Col, CardBody, Card, Alert, Container } from "reactstrap";
-import { AvForm, AvField } from 'availity-reactstrap-validation';
+import { withRouter } from 'react-router-dom';
 import SweetAlert from 'react-bootstrap-sweetalert';
 import axios from 'axios';
 
 import logo from '../images/mesocLogoBlue.png';
+import AnalysisLoader from '../components/analysisLoader';
 
-const VerificationProcess = ({ match, history, userToken, userVerified }) => {
+const VerificationProcess = ({ match, history, userToken, userVerified, verificationUUIDkey, setVerificationUUIDkey }) => {
 
   const [succ, setSucc] = useState(false);
+  const [info, setInfo] = useState(false);
   const [danger, setDanger] = useState(false);
 
   useEffect(() => {
-    // TODO => (Maybe this is extra work and doesn't need to be modified) Only do this if used is not logged in
-    /*if (!userToken && !userVerified) {*/
-      console.log(`UUID: ${match.params.uuidKey}`)
-      axios
+    if(userToken === null) {
+      setVerificationUUIDkey(match.params.uuidKey);
+      history.push('/sign-in');
+      return;
+    }
+    if(userVerified) {
+      setInfo(true);
+      setVerificationUUIDkey(null);
+      return;
+    }
+
+    axios
       .post(`https://api.mesoc.dev/account/verification/confirmation/`, {
-        // body
-        "uuid": `${match.params.uuidKey}`
+        uuid: match.params.uuidKey
       }, {
         headers: {
           Authorization: `Bearer ${userToken}`
         }
       })
       .then(res => {
-        console.log(res.data);
-        setSucc(); 
-        
+        setSucc(true);
+        setVerificationUUIDkey(null);
       })
       .catch(err => {
-        console.log(err);
         setDanger(true);
-      })
-   /* }*/
+        setVerificationUUIDkey(null);
+      });
   }, []);
   
   return(
@@ -45,57 +50,32 @@ const VerificationProcess = ({ match, history, userToken, userVerified }) => {
           title="Success!"
           success
           confirmBtnBsStyle="btn btn-primary wawes-effect waves-light"
-          onConfirm={() => {history.push('/browse')}}
+          onConfirm={() => {history.push('/my-documents')}}
         >
           Your account has been verified. Press the button below to expore MESOC.
+        </SweetAlert>
+      }
+      {info &&
+        <SweetAlert
+          title="Already verified."
+          info
+          confirmBtnBsStyle="btn btn-primary wawes-effect waves-light"
+          onConfirm={() => {history.push('/my-documents')}}
+        >
+          You are already verified. You may proceed with exploring MESOC.
         </SweetAlert>
       }
       {danger &&
         <SweetAlert
           title="Oops!"
           danger
-          onConfirm={() => {setDanger(false)}}
+          onConfirm={() => {history.push('/browse')}}
         >
-          Something went wrong.
+          Something went wrong. Please try again.
         </SweetAlert>
       }
 
-      <div className="account-pages my-5 pt-5">
-        <Container>
-          {/*<Row className="justify-content-center">
-            <Col md={5} lg={6} xl={5}>
-              <Card className="overflow-hidden">
-                <div className="bg-soft-primary">
-                  <Row>
-                    <Col className="col-12">
-                      <div className="text-primary p-4">
-                        <h5 className="text-primary">Verify your account!</h5>
-                        <p>Before continuing, you need to verify your account.</p>
-                      </div>
-                    </Col>
-                  </Row>
-                </div>
-                <CardBody className="pt-0">
-                <div>
-                  <Link to="/browse">
-                    <div className="avatar-md profile-user-wid mb-4">
-                      <span className="avatar-title rounded-circle bg-light">
-                        <img src={logo} alt="mesoc toolkit application logo" className="rounded-circle" height="34" />
-                      </span>
-                    </div>
-                  </Link>
-                  <Link to={`placeholder`} className="btn btn-primary btn-block wawes-effect waves-light">
-                        Verify account
-                  </Link>
-                  <div className="p-2">
-                  </div>
-                </div>
-                </CardBody>
-              </Card>
-            </Col>
-          </Row>*/}
-        </Container>
-      </div>
+      {!succ && !danger && !info && <AnalysisLoader height={'100vh'} />}
     </div>
   );
 };

@@ -90,7 +90,7 @@ const MyDocuments = ({ userToken, userVerified }) => {
   if(userToken === null) {
     return <Redirect to="/sign-in" />
   }
-  // If not verified, redirect to sign in
+  // If not verified, redirect to not verified page
   if(userToken && !userVerified) {
     return <Redirect to="/not-verified" />
   }

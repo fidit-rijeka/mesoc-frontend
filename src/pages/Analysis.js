@@ -218,7 +218,8 @@ const Analysis = ({ userToken, match }) => {
                 <CardTitle>Similar documents</CardTitle>
                 <CardSubtitle className="mb-3">Document similarity by selected cell</CardSubtitle>
                 {selectedCell !== null ?
-                  <DocumentList docs={cellSim} /> :
+                  //<DocumentList docs={cellSim} /> :
+                  <div className="analysisEmpty" style={{ height: '200px' }}>No cell selected</div> :
                   <div className="analysisEmpty" style={{ height: '200px' }}>No cell selected</div>
                 }
               </CardBody>

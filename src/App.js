@@ -36,6 +36,7 @@ function App() {
   const [userToken, setUserToken] = useState(null);
   const [appReady, setAppReady] = useState(false);
   const [userVerified, setUserVerified] = useState(false);
+  const [verificationUUIDkey, setVerificationUUIDkey] = useState(null);
 
   useEffect(() => {
     if (authCookie.mesoc_local_user) {
@@ -71,7 +72,8 @@ function App() {
             <SignIn setUserToken={setUserToken}
                     setAuthCookie={setAuthCookie}
                     userVerified={userVerified}
-                    setUserVerified={setUserVerified} />
+                    setUserVerified={setUserVerified}
+                    verificationUUIDkey={verificationUUIDkey} />
           </Route>
           <Route path='/create-account'>
             <SignUp />
@@ -85,7 +87,9 @@ function App() {
           </Route>
           <Route path="/verification/:uuidKey">
             <VerificationProcess userToken={userToken}
-                                 userVerified={userVerified} />
+                                 userVerified={userVerified}
+                                 verificationUUIDkey={verificationUUIDkey}
+                                 setVerificationUUIDkey={setVerificationUUIDkey} />
           </Route>
           <Route path='/upload-document'>
             <UploadDocument userToken={userToken}

@@ -22,29 +22,45 @@ const Analysis = ({ userToken, match }) => {
   const [varSim, setVarSim] = useState(null);
 
   useEffect(() => {
-    axios
-      .get(`https://api.mesoc.dev/documents/${match.params.analysisKey}/heatmap/`, {
-        headers: {
-          Authorization: `Bearer ${userToken}`
-        }
-      })
-      .then(async res => {
-        let heatData = await [...Array(30).keys()].map(x => {return {order: x, classification: 0.0}});
-        await res.data.map(resItem => {
-          heatData[resItem.order] = resItem;
+    if(match.params.analysisType === 'location') {
+      const latlong = match.params.analysisKey.split('-');
+      axios
+        .get(`https://api.mesoc.dev/aggregates/heatmap/?latitude=${latlong[0]}&longitude=${latlong[1]}`)
+        .then(async res => {
+          console.log(res.data);
+          let heatData = await [...Array(30).keys()].map(x => {return {order: x, classification: 0.0}});
+          await res.data.map(resItem => {
+            heatData[resItem.order] = resItem;
+          });
+          setCells(heatData);
+        })
+    }
+    else {
+      axios
+        .get(`https://api.mesoc.dev/documents/${match.params.analysisKey}/heatmap/`, {
+          headers: {
+            Authorization: `Bearer ${userToken}`
+          }
+        })
+        .then(async res => {
+          let heatData = await [...Array(30).keys()].map(x => {return {order: x, classification: 0.0}});
+          await res.data.map(resItem => {
+            heatData[resItem.order] = resItem;
+          });
+          setCells(heatData);
+        })
+        .catch(err => {
+          console.log(err);
         });
-        setCells(heatData);
-      })
-      .catch(err => {
-        console.log(err);
-      });
-
-    // setTimeout(() => {
-    //   setCells(require('../testData/celije.json').cells);
-    // }, 1000)
+    }
   }, []);
 
   const fetchGraph = async (cell) => {
+    // If analyzing location, do nothing
+    if(match.params.analysisType === 'location') {
+      return;
+    }
+
     setVars(null);
     setCellSim(null);
     // If deselecting cell or clicking on "classification: 0" cell, clear cell data.
@@ -111,6 +127,7 @@ const Analysis = ({ userToken, match }) => {
           id: 'mesoc-graph',
           events: {
             dataPointSelection: function(event, chartContext, config) {
+              return;
               setVarSim(null);
               if(config.selectedDataPoints[0][0] !== config.dataPointIndex) {
                 setSelectedVar(null);
@@ -183,7 +200,7 @@ const Analysis = ({ userToken, match }) => {
             <Card>
               <CardBody>
                 <CardTitle>MESOC matrix</CardTitle>
-                <CardSubtitle className="mb-3">Impact of variables per cell in a given document</CardSubtitle>
+                <CardSubtitle className="mb-3">Impact of variables per cell in a given {match.params.analysisType}</CardSubtitle>
                 {cells ?
                   <Heatmap
                     data={cells}
@@ -202,7 +219,7 @@ const Analysis = ({ userToken, match }) => {
                 <CardSubtitle className="mb-3">Distribution of variables impacting selected cell</CardSubtitle>
                 {selectedCell !== null ?
                   <Graph vars={vars} options={options} series={series} /> :
-                  <div className="analysisEmpty" style={{ height: '550px' }}>No cell selected</div>
+                  <div className="analysisEmpty" style={{ height: '550px' }}>{match.params.analysisType === 'location' ? 'Feature coming soon' : 'No cell selected'}</div>
                 }
                 {/* TODO:
                 Fetch data and display variable decomposition screen (as a modal) on click of this button. */}
@@ -219,8 +236,8 @@ const Analysis = ({ userToken, match }) => {
                 <CardSubtitle className="mb-3">Document similarity by selected cell</CardSubtitle>
                 {selectedCell !== null ?
                   //<DocumentList docs={cellSim} /> :
-                  <div className="analysisEmpty" style={{ height: '200px' }}>No cell selected</div> :
-                  <div className="analysisEmpty" style={{ height: '200px' }}>No cell selected</div>
+                  <div className="analysisEmpty" style={{ height: '200px' }}>Feature coming soon</div> :
+                  <div className="analysisEmpty" style={{ height: '200px' }}>Feature coming soon</div>
                 }
               </CardBody>
             </Card>
@@ -232,7 +249,7 @@ const Analysis = ({ userToken, match }) => {
                 <CardSubtitle className="mb-3">Document similarity by selected variable</CardSubtitle>
                 {selectedVar !== null ?
                   <DocumentList docs={varSim} /> :
-                  <div className="analysisEmpty" style={{ height: '200px' }}>No variable selected</div>
+                  <div className="analysisEmpty" style={{ height: '200px' }}>Feature coming soon</div>
                 }
               </CardBody>
             </Card>

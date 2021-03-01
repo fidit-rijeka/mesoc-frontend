@@ -36,16 +36,26 @@ const Map = () => {
     // });
 
     axios
-      .get('https://api.mesoc.dev/aggregates/heatmap')
+      .get('https://api.mesoc.dev/aggregates/location/')
       .then(res => {
         // TODO:
         // map through all markers and add them to the map
+        console.log(res.data);
+
+        res.data.map(markerData => {
+          Leaflet.marker([markerData.latitude, markerData.longitude]).bindPopup(`
+            <p class="mapPopupTitle">${markerData.city}, ${markerData.country}</p>
+            ${markerData.num_pilot !== 0 ? `<p>Pilot case studies: ${markerData.num_pilot}</p><a href="/location/${markerData.latitude}-${markerData.longitude}">Examine pilot studies</a>` : ''}
+            ${markerData.num_scientific !== 0 ? `<p>Scientific case studies: ${markerData.num_scientific}</p><a href="/location/${markerData.latitude}-${markerData.longitude}">Examine scientific studies</a>` : ''}
+          `).addTo(map);
+        })
         
         setMapLoaded(true);
       })
 
     // Example marker (coordinates of rijeka)
-    const mrk = Leaflet.marker([45.3271, 14.4422]).bindPopup(`<a href="https://www.mesoc-project.eu/">Example link</a>`).addTo(map);
+    //const mrk = Leaflet.marker([45.3271, 14.4422]).bindPopup(`<a href="https://www.mesoc-project.eu/">Example link</a>`).addTo(map);
+    Leaflet.marker([45.3271, 14.4422]).bindPopup(`<a href="https://www.mesoc-project.eu/">Example link</a>`).addTo(map);
 
   }, [mapContainer]);
 

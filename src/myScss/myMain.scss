@@ -129,12 +129,15 @@ nav {
     font-size: .95rem;
     text-decoration: none;
     padding: .7em;
+    margin: auto;
+    margin-right: 0;
     margin-left: .5em;
     color: $buttonPurple;
 
     &:hover {
       color: $buttonPurpleHover;
       transition: .2s;
+      cursor: pointer;
     }
 
     @media screen and (max-width: 850px) {

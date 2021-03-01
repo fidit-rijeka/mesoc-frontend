@@ -1,24 +1,22 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import classnames from 'classnames';
 
 import NavSearchField from './navSearchField';
 
 import logo from '../images/mesocLogoBlue.png';
-// import searchIco from '../assets/images/search.svg';
-import { ReactComponent as SearchIcon } from '../assets/images/search.svg'
-import { Nav } from 'reactstrap';
 
-const Navbar = ({ userToken, setUserToken, removeAuthCookie, setUserVerified }) => {
+const Navbar = ({ userToken, setUserToken, removeAuthCookie, setUserVerified, history }) => {
 
   const [navOpen, setNavOpen] = useState(false);
 
   const signOut = () => {
+    removeAuthCookie('mesoc_local_user', { path: '/' });
+    removeAuthCookie('mesoc_local_user_verified', { path: '/' });
     setUserToken(null);
     setUserVerified(null);
-    removeAuthCookie('mesoc_local_user');
-    removeAuthCookie('mesoc_local_user_verified');
     setNavOpen(false);
+    history.push('/browse');
   };
 
   return(
@@ -33,7 +31,7 @@ const Navbar = ({ userToken, setUserToken, removeAuthCookie, setUserVerified }) 
       {userToken === null && <Link to="sign-in" className="secondaryA">Sign in</Link>}
       {userToken === null ?
         <Link to="/create-account" className="secondaryA">Create account</Link> :
-        <Link to="/browse" onClick={signOut} className="secondaryA">Sign out</Link>
+        <p to="/browse" onClick={signOut} className="secondaryA">Sign out</p>
       }
 
       {/* Mobile */}
@@ -59,4 +57,4 @@ const Navbar = ({ userToken, setUserToken, removeAuthCookie, setUserVerified }) 
   );
 };
 
-export default Navbar;
+export default withRouter(Navbar);

@@ -11,7 +11,10 @@
 # production
 /build
 
+# env
 .env
+.env.development
+.env.production
 
 # eslint
 .eslintcache

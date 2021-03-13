@@ -4,7 +4,7 @@ import { Link, withRouter, Redirect } from 'react-router-dom';
 import { Card, CardBody, CardTitle, CardSubtitle, Row, Col, Button } from "reactstrap";
 
 import Sidenav from '../components/sidenav';
-import Map from '../components/map';
+import MapView from '../components/map';
 
 const Browse = () => {
   return(
@@ -17,7 +17,7 @@ const Browse = () => {
           <CardBody>
             <CardTitle>MESOC world map</CardTitle>
             <CardSubtitle className="mb-3">Explore our MESOC data visualized on a world map.</CardSubtitle>
-            <Map />
+            <MapView />
             { /* TODO: Add a small margin here (about 10px) */ }
             <p>To see our complete analytics, click the button below.</p>
             <Link to={`placeholder`} className="btn btn-primary wawes-effect waves-light">

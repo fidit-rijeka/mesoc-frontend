@@ -1,15 +1,22 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Component } from 'react';
+import ReactDOM from "react-dom";
 import Leaflet from 'leaflet';
-import {} from 'mapbox-gl-leaflet';
+//import {} from 'mapbox-gl-leaflet';
 import axios from 'axios';
+
+import { Map, Marker, Popup } from "react-leaflet";
+
+import MapboxLayer from "./map_components/MapboxLayer";
 
 import m_blue from '../assets/images/map/markers/blue.png';
 import m_red from '../assets/images/map/markers/red.png';
 import m_purple from '../assets/images/map/markers/purple.png';
 import m_shadow from '../assets/images/map/markers/shadow.png';
 
-//import AnalysisLoader from './analysisLoader';
+const MAPBOX_ACCESS_TOKEN = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN;
 
+//import AnalysisLoader from './analysisLoader';
+/*
 const Map = () => {
 
   const [mapLoaded, setMapLoaded] = useState(false);
@@ -57,10 +64,10 @@ const Map = () => {
       popupAnchor:  [0, -40] // point from which the popup should open relative to the iconAnchor
     });
 
-    const map = Leaflet.map(mapContainer).setView([initialState.lat, initialState.lng], initialState.zoom);
+    const map = Leaflet.map(mapContainer).setView([initialState.lat, initialState.lng], initialState.zoom).invalidateSize();
 
     // using map provided from mapbox
-    const gl = Leaflet.mapboxGL({
+    Leaflet.mapboxGL({
       style: process.env.REACT_APP_MAPBOX_STYLE,
       accessToken: process.env.REACT_APP_MAPBOX_ACCESS_TOKEN
     }).addTo(map);
@@ -74,28 +81,28 @@ const Map = () => {
         // NOTE => marker coloring works, if required, uncomment the fake data (fake markers are near Rijeka, Croatia)
         
         // Purple marker fake data
-        /*
-        res.data.push({
-          city: "test1",
-          country: "wda",
-          latitude: "45.3271",
-          longitude: "14.4422",
-          num_pilot: 2,
-          num_scientific: 5
-        });
-        */
-
-        /*
-        // Red marker test data
-        res.data.push({
-          city: "test1",
-          country: "wda",
-          latitude: "45.4",
-          longitude: "14.8",
-          num_pilot: 2,
-          num_scientific: 0
-        });
-        */
+        
+//        res.data.push({
+//          city: "test1",
+//          country: "wda",
+//          latitude: "45.3271",
+//          longitude: "14.4422",
+//          num_pilot: 2,
+//          num_scientific: 5
+//        });
+//        
+//
+//        
+//        // Red marker test data
+//        res.data.push({
+//          city: "test1",
+//          country: "wda",
+//          latitude: "45.4",
+//          longitude: "14.8",
+//          num_pilot: 2,
+//          num_scientific: 0
+//        });
+        
 
         console.log(res.data);
 
@@ -124,19 +131,52 @@ const Map = () => {
         
         setMapLoaded(true);
       })
+
+
   }, [mapContainer]);
+
+
+//{ {
+//        mapLoaded ?
+//          <div className="map-container" ref={el => mapContainer = el}></div> :
+//          <AnalysisLoader height={'600px'} />
+//      } }
+
 
   return (
     <React.Fragment>
-      {/* {
-        mapLoaded ?
-          <div className="map-container" ref={el => mapContainer = el}></div> :
-          <AnalysisLoader height={'600px'} />
-      } */}
+      
       {!mapLoaded && <p>locations are still loading...</p>}
       <div className="map-container" ref={el => mapContainer = el}></div>
     </React.Fragment>
   )
+}*/
+
+
+class MapView extends Component {
+  state = {
+    center: [11, 49],
+    zoom: 4
+  };
+
+  render() {
+    return (
+      <div>
+        <Map className="map-container" center={this.state.center} zoom={this.state.zoom}>
+          <MapboxLayer
+            accessToken={process.env.REACT_APP_MAPBOX_ACCESS_TOKEN}
+            style={process.env.REACT_APP_MAPBOX_STYLE}
+          />
+          <Marker position={[51.505, -0.09]}>
+    <Popup>
+      A pretty CSS3 popup. <br /> Easily customizable.
+    </Popup>
+  </Marker>
+        </Map>
+      </div>
+    );
+  }
 }
 
-export default Map;
+
+export default MapView;

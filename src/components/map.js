@@ -153,7 +153,53 @@ const Map = () => {
 }*/
 
 
-class MapView extends Component {
+const MapView = () => {
+
+  const [zoom, setZoom] = useState(4);
+  const [position, setPosition] = useState([11, 49]);
+  const [cities, setCities] = useState([]);
+
+  useEffect(() => {
+
+    axios
+      .get('https://api.mesoc.dev/aggregates/location/')
+      .then(res => {
+        setCities(res.data);
+      })
+
+  }, []);
+
+  console.log(cities)
+
+  return (
+    <div>
+      <Map className="map-container" center={position} zoom={zoom}>
+        <MapboxLayer
+          accessToken={process.env.REACT_APP_MAPBOX_ACCESS_TOKEN}
+          style={process.env.REACT_APP_MAPBOX_STYLE}
+        />
+
+        {cities && cities.map(city => {
+          return <Marker position={[city.latitude, city.longitude]}>
+            <Popup>
+            `
+            <p class="mapPopupTitle">{city.city}, {city.country}</p>
+
+            city.num_pilot !== 0 ? <p>Pilot case studies: ${city.num_pilot}</p><a href="/location/${city.latitude}-${city.longitude}">Examine pilot studies</a> : ''
+
+            city.num_scientific !== 0 ? <p>Scientific case studies: ${city.num_scientific}</p><a href="/location/${city.latitude}-${city.longitude}">Examine scientific studies</a> : ''
+            </Popup>
+          </Marker>
+          console.log(`${city.latitude} == ${city.longitude}`)
+        })}
+        
+      </Map>
+    </div>
+  );
+
+}
+
+/*class MapView extends Component {
   state = {
     center: [11, 49],
     zoom: 4
@@ -177,6 +223,6 @@ class MapView extends Component {
     );
   }
 }
-
+*/
 
 export default MapView;

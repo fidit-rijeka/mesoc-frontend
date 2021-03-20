@@ -9,8 +9,19 @@ import Graph from '../components/graph';
 import AnalysisLoader from '../components/analysisLoader';
 import DocumentList from '../components/documentList';
 
-let options = null;
-let series = null;
+const compare = (a, b) => {
+  const varA = a.strength;
+  const varB= b.strength;
+
+  let comparison = 0;
+  if(varA > varB) {
+    comparison = 1;
+  } else if(varA < varB) {
+    comparison = -1;
+  }
+
+  return comparison;
+};
 
 const Analysis = ({ userToken, match }) => {
 
@@ -23,9 +34,9 @@ const Analysis = ({ userToken, match }) => {
 
   useEffect(() => {
     if(match.params.analysisType === 'location') {
-      const latlong = match.params.analysisKey.split('-');
+      const latlong = match.params.analysisKey.split('_');
       axios
-        .get(`https://api.mesoc.dev/aggregates/heatmap/?latitude=${latlong[0]}&longitude=${latlong[1]}`)
+        .get(`https://api.mesoc.dev/aggregates/heatmap/?latitude=${latlong[0]}&longitude=${latlong[1]}&type=${latlong[2]}`)
         .then(async res => {
           console.log(res.data);
           let heatData = await [...Array(30).keys()].map(x => {return {order: x, classification: 0.0}});
@@ -55,137 +66,74 @@ const Analysis = ({ userToken, match }) => {
     }
   }, []);
 
-  const fetchGraph = async (cell) => {
+  const heatmapClick = async cellIndex => {
     // If analyzing location, do nothing
     if(match.params.analysisType === 'location') {
       return;
     }
 
+    // Reset graph data and similar by cell data.
     setVars(null);
     setCellSim(null);
-    // If deselecting cell or clicking on "classification: 0" cell, clear cell data.
-    if(selectedCell === cell || cells[cell].classification === 0) {
+
+    // If deselecting cell or clicking on "classification: 0" cell, clear cell data and terminate function.
+    if(selectedCell === cellIndex || cells[cellIndex].classification === 0) {
       setSelectedCell(null);
       return;
     }
 
-    setSelectedCell(cell);
-    console.log(cells[cell]);
-    // TODO:
-    // Fetch variable data based on input (selected cell).
-    // Fetch similar by cell.
-    let varsTemp = [];
-    let labels = [];
-    let percentages = [];
-    await axios
-      .get(`${cells[cell].variables}`, {
-        headers: {
-          Authorization: `Bearer ${userToken}`
-        }
-      })
-      .then(res => {
-        console.log(res.data);
-        //setVars(res.data);
-        varsTemp = res.data;
-        return res.data;
-      })
-      .then(res => {
-        setData();
-        console.log(res);
-        //setVars(res);
-      })
+    // Mark selected cell.
+    setSelectedCell(cellIndex);
 
-    // await axios
-    //   .get(`${cells[cell].document}`, {
-    //     headers: {
-    //       Authorization: `Bearer ${userToken}`
-    //     }
-    //   })
-    //   .then(res => {
-    //     console.log(res.data);
-    //     setCellSim(res.data);
-    //   });
+    //TODO: Fetch similar documents by cell instead of loading from json.
+    setCellSim(require('../testData/simm.json').similar);
 
-    // const varsTemp = require('../testData/varijable.json').vars;
-
-    // setTimeout(() => {
-    //   setData();
-    //   //setVars(varsTemp);
-    //   //setCellSim(require('../testData/simm.json').similar);
-    // }, 1000)
-
-    async function setData() {
-      console.log(varsTemp);
-      await varsTemp.forEach(element => {
-        labels.push(element.name);
-        percentages.push(parseInt(element.strength * 100));
-      });
-
-      // Settings for graph rendering.
-      options = {
-        chart: {
-          id: 'mesoc-graph',
-          events: {
-            dataPointSelection: function(event, chartContext, config) {
-              return;
-              setVarSim(null);
-              if(config.selectedDataPoints[0][0] !== config.dataPointIndex) {
-                setSelectedVar(null);
-                return;
-              }
-              setSelectedVar(config.dataPointIndex);
-              console.log(vars[config.dataPointIndex]);
-              // TODO:
-              // Fetch similar by variable.
-              setTimeout(() => setVarSim(require('../testData/simm.json').similar), 1000);
-            }
-          }
-        },
-        xaxis: {
-          categories: labels,
-          labels: {
-            show: true,
-            formatter: val => {
-              if(val.length > 22) {
-                //return `${val.slice(0, 20)}...`
-                return val
-              }
-              return val;
-            }
-          }
-        },
-        yaxis: {
-          labels: {
-            formatter: val => `${val} %`
-          }
-        },
-        dataLabels: {
-          enabled: true,
-          formatter: val => `${val} %`,
-          offsetY: -20,
-          style: {
-            fontSize: '12px',
-            colors: ["#303030"]
-          }
-        },
-        plotOptions: {
-          bar: {
-            dataLabels: {
-              position: 'top'
-            }
-          }
-        },
-        colors: ['#5A74AC']
-      };
-      series = [{
-        name: 'effect',
-        data: percentages
-      }];
-      setVars(varsTemp);
-    };
-
-    //setData();
+    // Fetch graph data.
+    let graphData = await (await axios.get(cells[cellIndex].variables, { headers: { Authorization: `Bearer ${userToken}` } })).data;
+    // Sort graph data by strength.
+    await graphData.sort(compare);
+    // Modify graph data for displaying.
+    await graphData.map(barData => {
+      barData.strength = barData.strength * 100;
+      barData.Strength = 0;
+    })
+    // Set graph data to state.
+    setVars(graphData);
   };
+
+  const graphClick = async data => {
+    setVarSim(null);
+
+    // Create a copy of graph data.
+    let newGraphData = [...vars];
+
+    if(data.id === 'strength') {
+      // Bar is being selected.
+      await newGraphData.map(current => {
+        if(current.Strength) {
+          current.strength = current.Strength;
+          current.Strength = 0;
+        }
+      });
+      newGraphData[data.index].Strength = newGraphData[data.index].strength;
+      newGraphData[data.index].strength = 0;
+
+      setSelectedVar(data.id);
+
+      // TODO: fetch similar by variable
+      setTimeout(() => {
+        setVarSim(require('../testData/simm.json').similar);
+      }, 1000);
+    } else {
+      // Bar is being deselected.
+      newGraphData[data.index].strength = newGraphData[data.index].Strength;
+      newGraphData[data.index].Strength = 0;
+      
+      setSelectedVar(null);
+    }
+    // Set modified graph data to state.
+    setVars(newGraphData);
+  }
 
   return(
     <div className="pageWrapper">
@@ -205,7 +153,7 @@ const Analysis = ({ userToken, match }) => {
                   <Heatmap
                     data={cells}
                     selectedCell={selectedCell}
-                    fetchGraph={fetchGraph}
+                    heatmapClick={heatmapClick}
                   /> :
                   <AnalysisLoader height='590px' />
                 }
@@ -218,7 +166,7 @@ const Analysis = ({ userToken, match }) => {
                 <CardTitle>MESOC Graph</CardTitle>
                 <CardSubtitle className="mb-3">Distribution of variables impacting selected cell</CardSubtitle>
                 {selectedCell !== null ?
-                  <Graph vars={vars} options={options} series={series} /> :
+                  <Graph vars={vars} varClick={graphClick} /> :
                   <div className="analysisEmpty" style={{ height: '550px' }}>{match.params.analysisType === 'location' ? 'Feature coming soon' : 'No cell selected'}</div>
                 }
                 {/* TODO:
@@ -235,9 +183,9 @@ const Analysis = ({ userToken, match }) => {
                 <CardTitle>Similar documents</CardTitle>
                 <CardSubtitle className="mb-3">Document similarity by selected cell</CardSubtitle>
                 {selectedCell !== null ?
-                  //<DocumentList docs={cellSim} /> :
-                  <div className="analysisEmpty" style={{ height: '200px' }}>Feature coming soon</div> :
-                  <div className="analysisEmpty" style={{ height: '200px' }}>Feature coming soon</div>
+                  <DocumentList docs={cellSim} /> :
+                  //<div className="analysisEmpty" style={{ height: '200px' }}>Feature coming soon</div> :
+                  <div className="analysisEmpty" style={{ height: '200px' }}>No cell selected</div>
                 }
               </CardBody>
             </Card>
@@ -249,7 +197,7 @@ const Analysis = ({ userToken, match }) => {
                 <CardSubtitle className="mb-3">Document similarity by selected variable</CardSubtitle>
                 {selectedVar !== null ?
                   <DocumentList docs={varSim} /> :
-                  <div className="analysisEmpty" style={{ height: '200px' }}>Feature coming soon</div>
+                  <div className="analysisEmpty" style={{ height: '200px' }}>No variable selected</div>
                 }
               </CardBody>
             </Card>

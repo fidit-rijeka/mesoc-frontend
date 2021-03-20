@@ -69,11 +69,11 @@ const SignIn = ({ history, setUserToken, setAuthCookie, setUserVerified, verific
                       {wait && <Alert color="secondary">Please wait.</Alert>}
 
                       <div className="form-group">
-                        <AvField onInput={() => setErr(null)} name="email" label="Email" className="form-control" type="email" defaultValue="erik55jermanis@gmail.com" required />
+                        <AvField onInput={() => setErr(null)} name="email" label="Email" className="form-control" type="email" required />
                       </div>
 
                       <div className="form-group">
-                        <AvField onInput={() => setErr(null)} name="password" label="Password" className="form-control" type="password" defaultValue="erikMesoc@123" required />
+                        <AvField onInput={() => setErr(null)} name="password" label="Password" className="form-control" type="password" required />
                       </div>
 
                       <div className="mt-3">

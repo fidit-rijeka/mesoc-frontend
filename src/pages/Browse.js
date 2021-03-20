@@ -20,7 +20,7 @@ const Browse = () => {
             <MapView />
             { /* TODO: Add a small margin here (about 10px) */ }
             <p>To see our complete analytics, click the button below.</p>
-            <Link to={`placeholder`} className="btn btn-primary wawes-effect waves-light">
+            <Link to={`location/all`} className="btn btn-primary wawes-effect waves-light">
               All cities
             </Link>            
           </CardBody>

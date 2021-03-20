@@ -20,6 +20,7 @@ const MapView = () => {
     axios
       .get('https://api.mesoc.dev/aggregates/location/')
       .then(res => {
+        console.log(res.data)
         setCities(res.data);
       })
   }, []);
@@ -80,9 +81,9 @@ const MapView = () => {
           return <Marker position={[city.latitude, city.longitude]} icon={cityIcon}>
             <Popup>
             <p class="mapPopupTitle">{city.city}, {city.country}</p>
-            {city.num_pilot !== 0 ? <>Pilot papers: {city.num_pilot}<br /><a href="/location/{city.latitude}-{city.longitude}">Examine pilot papers</a></> : ''}
+            {city.num_pilot !== 0 ? <>Pilot papers: {city.num_pilot}<br /><a href={`/location/${city.latitude}_${city.longitude}_pilot`}>Examine pilot papers</a></> : ''}
             <br /><br />
-            {city.num_scientific !== 0 ? <>Scientific papers: {city.num_scientific}<br /><a href="/location/{city.latitude}-{city.longitude}">Examine scientific papers</a></> : ''}
+            {city.num_scientific !== 0 ? <>Scientific papers: {city.num_scientific}<br /><a href={`/location/${city.latitude}_${city.longitude}_scientific`}>Examine scientific papers</a></> : ''}
             
             </Popup>
           </Marker>

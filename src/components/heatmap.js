@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Heatmap = ({ data, selectedCell, fetchGraph }) => {
+const Heatmap = ({ data, selectedCell, heatmapClick }) => {
 
   const calculateOpacity = classification => {
     if(classification > 0.9) {
@@ -47,7 +47,7 @@ const Heatmap = ({ data, selectedCell, fetchGraph }) => {
       <span id="numSpanB3" className="numberSpan">People's Engagement and Participation</span>
 
       {data.map((cellLabel, index) => {
-        return <span onClick={() => fetchGraph(index)} key={index} className="heatmapCell" style={{ background: `rgba(74, 101, 255, ${calculateOpacity(cellLabel.classification)})`, boxShadow: selectedCell === index && 'inset 0px 0px 0px 4px #ff7300' }}>
+        return <span onClick={() => heatmapClick(index)} key={index} className="heatmapCell" style={{ background: `rgba(74, 101, 255, ${calculateOpacity(cellLabel.classification)})`, boxShadow: selectedCell === index && 'inset 0px 0px 0px 4px #ff7300' }}>
           <span>{`${parseInt(cellLabel.classification * 100)}%`}</span>
         </span>
       })}

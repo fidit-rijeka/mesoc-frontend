@@ -91,7 +91,17 @@ const UploadDocument = ({ userToken, history, userVerified }) => {
       .catch(err => {
         console.log(err.response);
         setWait(false);
-        setDanger(true);
+        if(err.response.data.title[0]) {
+          setInvalid(err.response.data.title[0]);
+        } else if(err.response.data.language[0]) {
+          setInvalid(err.response.data.language[0]);
+        } else if(err.response.data.location[0]) {
+          setInvalid(err.response.data.location[0]);
+        } else if(err.response.data.file[0]) {
+          setInvalid(err.response.data.file[0]);
+        } else {
+          setDanger(true);
+        }
       });
   };
 

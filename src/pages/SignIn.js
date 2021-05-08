@@ -18,11 +18,9 @@ const SignIn = ({ history, setUserToken, setAuthCookie, setUserVerified, verific
       .post('https://api.mesoc.dev/account/login/', {
         username: e.target.email.value,
         password: e.target.password.value
-      }, {auth: {
-        username: 'api',
-        password: '!kAkYk3T'
-      }})
+      })
       .then(res => {
+        console.log(res.data);
         console.log(res.data.token);
         setAuthCookie('mesoc_local_user', res.data.token);
         setAuthCookie('mesoc_local_user_verified', res.data.verified);
@@ -32,7 +30,7 @@ const SignIn = ({ history, setUserToken, setAuthCookie, setUserVerified, verific
       })
       .catch(err => {
         setWait(false);
-        setErr(err.response.data.non_field_errors);
+        err.response && setErr(err.response.data.non_field_errors);
       });
   };
 

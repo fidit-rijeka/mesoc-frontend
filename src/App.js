@@ -89,6 +89,7 @@ function App() {
             <VerificationProcess userToken={userToken}
                                  userVerified={userVerified}
                                  verificationUUIDkey={verificationUUIDkey}
+                                 setUserVerified={setUserVerified}
                                  setVerificationUUIDkey={setVerificationUUIDkey} />
           </Route>
           <Route path='/upload-document'>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import { Row, Col, CardBody, Card, Alert, Container, Label } from "reactstrap";
 import { AvForm, AvField, AvInput, AvGroup } from 'availity-reactstrap-validation';
 import SweetAlert from 'react-bootstrap-sweetalert';
@@ -8,7 +8,7 @@ import axios from 'axios';
 
 import logo from '../images/mesocLogoBlue.png';
 
-const SignUp = props => {
+const SignUp = ({ history }) => {
 
   const [err, setErr] = useState(null);
   const [succ, setSucc] = useState(false);
@@ -59,7 +59,7 @@ const SignUp = props => {
           title="A verification link has been sent to your email account."
           success
           confirmBtnBsStyle="btn btn-primary wawes-effect waves-light"
-          onConfirm={() => {props.history.push('/browse')}}
+          onConfirm={() => {history.push('/browse')}}
         >
           Please click on the link that has just been sent to your email account to verify your email and continue the registration process. Be sure to check your spam folder.
         </SweetAlert>
@@ -150,4 +150,4 @@ const SignUp = props => {
   );
 };
 
-export default SignUp;
+export default withRouter(SignUp);

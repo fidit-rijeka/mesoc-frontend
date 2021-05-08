@@ -12,8 +12,6 @@ const NotVerfied = ({ userToken, history, userVerified }) => {
   const [succ, setSucc] = useState(false);
   const [danger, setDanger] = useState(false);
 
-  // TODO => (maybe?) User is logged in and verified scenario => open a modul and tell user his situation. Give him a button to redirect to /browse
-
   // If not authenticated, redirect to sign in.
   if(userToken === null) {
     return <Redirect to="/sign-in" />
@@ -25,10 +23,9 @@ const NotVerfied = ({ userToken, history, userVerified }) => {
   }
 
   const resendVerificationLink = () => {
-    // TODO: (Feb 21, 2021) => 401 Unauthorized
     console.log(`NotVeriifed page userToken log: ${userToken}`);
     axios
-      .post(`https://api.mesoc.dev/account/verification`, {
+      .post(`https://api.mesoc.dev/account/verification/`,{}, {
         headers: {
           Authorization: `Bearer ${userToken}`
         }

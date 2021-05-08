@@ -6,7 +6,7 @@ import axios from 'axios';
 import logo from '../images/mesocLogoBlue.png';
 import AnalysisLoader from '../components/analysisLoader';
 
-const VerificationProcess = ({ match, history, userToken, userVerified, verificationUUIDkey, setVerificationUUIDkey }) => {
+const VerificationProcess = ({ match, history, userToken, userVerified, verificationUUIDkey, setVerificationUUIDkey, setUserVerified }) => {
 
   const [succ, setSucc] = useState(false);
   const [info, setInfo] = useState(false);
@@ -35,6 +35,7 @@ const VerificationProcess = ({ match, history, userToken, userVerified, verifica
       .then(res => {
         setSucc(true);
         setVerificationUUIDkey(null);
+        setUserVerified(true);
       })
       .catch(err => {
         setDanger(true);

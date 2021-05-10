@@ -432,6 +432,7 @@ nav {
   display: grid;
   grid-template-columns: 120px repeat(3, calc(33.3% - 40px));
   grid-template-rows: 90px repeat(10, 50px);
+  grid-auto-flow: column;
 
   .numberSpan {
     justify-self: center;

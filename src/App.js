@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Switch, Route } from 'react-router-dom';
+import { Switch, Route, Redirect } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
 
 import './assets/scss/theme.scss';
@@ -29,10 +29,8 @@ function toBool(val) {
 
 function App() {
 
-  // TODO:
-  // Display cookie warning.
-
   const [authCookie, setAuthCookie, removeAuthCookie] = useCookies(null); // Stores the authToken
+
   const [userToken, setUserToken] = useState(null);
   const [appReady, setAppReady] = useState(false);
   const [userVerified, setUserVerified] = useState(false);
@@ -57,6 +55,9 @@ function App() {
                   setUserVerified={setUserVerified} />
         </Route>
         <Switch>
+          <Route path="/" exact >
+            <Redirect to="/browse" />
+          </Route>
           <Route path='/browse'>
             <Browse />
           </Route>

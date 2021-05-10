@@ -15,6 +15,7 @@ const MapView = () => {
   const [zoom, setZoom] = useState(4);
   const [position, setPosition] = useState([54.5260, 15.2551]);
   const [cities, setCities] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     axios
@@ -22,6 +23,7 @@ const MapView = () => {
       .then(res => {
         console.log(res.data)
         setCities(res.data);
+        setIsLoading(false);
       })
   }, []);
 
@@ -58,10 +60,9 @@ const MapView = () => {
     popupAnchor:  [0, -40]
   });
 
-  console.log(cities)
-
   return (
     <div>
+      {isLoading && <p>Please wait...</p>}
       <Map className="map-container" center={position} zoom={zoom}>
         <MapboxLayer
           accessToken={process.env.REACT_APP_MAPBOX_ACCESS_TOKEN}
@@ -81,10 +82,9 @@ const MapView = () => {
           return <Marker position={[city.latitude, city.longitude]} icon={cityIcon}>
             <Popup>
             <p class="mapPopupTitle">{city.city}, {city.country}</p>
-            {city.num_pilot !== 0 ? <>Pilot papers: {city.num_pilot}<br /><a href={`/location/${city.latitude}_${city.longitude}_pilot`}>Examine pilot papers</a></> : ''}
+            {city.num_pilot !== 0 ? <>Pilot papers: {city.num_pilot}<br /><a href={`/location/${city.latitude}_${city.longitude}_pilot_${city.city}_${city.country}`}>Examine pilot papers</a></> : ''}
             <br /><br />
-            {city.num_scientific !== 0 ? <>Scientific papers: {city.num_scientific}<br /><a href={`/location/${city.latitude}_${city.longitude}_scientific`}>Examine scientific papers</a></> : ''}
-            
+            {city.num_scientific !== 0 ? <>Scientific papers: {city.num_scientific}<br /><a href={`/location/${city.latitude}_${city.longitude}_scientific_${city.city}_${city.country}`}>Examine scientific papers</a></> : ''}
             </Popup>
           </Marker>
         })}

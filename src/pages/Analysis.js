@@ -31,10 +31,13 @@ const Analysis = ({ userToken, match }) => {
   const [vars, setVars] = useState(null);
   const [selectedVar, setSelectedVar] = useState(null);
   const [varSim, setVarSim] = useState(null);
+  const [cellSimLoading, setCellSimLoading] = useState(false);
 
   useEffect(() => {
     if(match.params.analysisType === 'location') {
+
       const latlong = match.params.analysisKey.split('_');
+
       axios
         .get(`https://api.mesoc.dev/aggregates/heatmap/?latitude=${latlong[0]}&longitude=${latlong[1]}&type=${latlong[2]}`)
         .then(async res => {
@@ -48,7 +51,7 @@ const Analysis = ({ userToken, match }) => {
     }
     else {
       axios
-        .get(`https://api.mesoc.dev/documents/${match.params.analysisKey}/heatmap/`, {
+        .get(`https://api.mesoc.dev/documents/${match.params.analysisKey.split('_')[0]}/heatmap/`, {
           headers: {
             Authorization: `Bearer ${userToken}`
           }
@@ -83,12 +86,14 @@ const Analysis = ({ userToken, match }) => {
 
     // Mark selected cell.
     setSelectedCell(cellIndex);
+    setCellSimLoading(true);
     if(match.params.analysisType === 'location') {
       const latlong = match.params.analysisKey.split('_');
       axios
         .get(`https://api.mesoc.dev/aggregates/similar/cell/?latitude=${latlong[0]}&longitude=${latlong[1]}&cell=${cellIndex}`)
         .then(res => {
           setCellSim(res.data);
+          setCellSimLoading(false);
         })
     } else {
       axios
@@ -99,6 +104,7 @@ const Analysis = ({ userToken, match }) => {
         })
         .then(res => {
           setCellSim(res.data);
+          setCellSimLoading(false);
         });
     }
     
@@ -158,14 +164,16 @@ const Analysis = ({ userToken, match }) => {
         <Sidenav />
       </div>
       <div className="pageArea">
-        {/* TODO:
-        Create dynamic page header here to display document title or city. */}
         <Row>
           <Col xl="5" lg="12">
             <Card>
               <CardBody>
                 <CardTitle>MESOC matrix</CardTitle>
-                <CardSubtitle className="mb-3">Impact of variables per cell in a given {match.params.analysisType}</CardSubtitle>
+                <CardSubtitle className="mb-3">{
+                  match.params.analysisType === 'location' ?
+                    `Location: ${match.params.analysisKey.split('_')[3]}, ${match.params.analysisKey.split('_')[4]}` :
+                    `${match.params.analysisKey.split('_')[1]}, ${match.params.analysisKey.split('_')[2]}, ${match.params.analysisKey.split('_')[3]}`
+                }</CardSubtitle>
                 {cells ?
                   <Heatmap
                     data={cells}
@@ -201,6 +209,15 @@ const Analysis = ({ userToken, match }) => {
               <CardBody>
                 <CardTitle>Similar documents</CardTitle>
                 <CardSubtitle className="mb-3">Document similarity by selected cell</CardSubtitle>
+                {
+                  selectedCell !== null ?
+                   (cellSimLoading ?
+                    <AnalysisLoader height="200px" /> :
+                    (cellSim.length ?
+                      <DocumentList docs={cellSim} /> :
+                      <div className="analysisEmpty" style={{ height: '200px' }}>No similar documents</div>)) :
+                   <div className="analysisEmpty" style={{ height: '200px' }}>No cell selected</div>
+                }
                 {selectedCell !== null ?
                   cellSim !== null && cellSim.length ?
                     <DocumentList docs={cellSim} /> :

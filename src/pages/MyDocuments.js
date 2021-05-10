@@ -136,9 +136,6 @@ const MyDocuments = ({ userToken, userVerified }) => {
 
             <button onClick={() => {activeTab === '1' ? switchTab('2') : switchTab('1')}} className="groupSwitch hideOnDesktop">Switch to active</button>
 
-            {/* TODO:
-            Fix Each child in a list should have a unique "key" prop warning */}
-
             <TabContent activeTab={activeTab}>
               <TabPane tabId="1">
                 {loading ?
@@ -166,7 +163,7 @@ const MyDocuments = ({ userToken, userVerified }) => {
                               <td>{`${doc.location.city}, ${doc.location.country}`}</td>
                               <td>
                                 {doc.state === 'processed' ?
-                                  <Link to={`document/${doc.url.split('/')[4]}`} className="btn btn-primary wawes-effect waves-light">Open</Link> :
+                                  <Link to={`document/${doc.url.split('/')[4]}_${doc.title}_${doc.location.city}_${doc.location.country}`} className="btn btn-primary wawes-effect waves-light">Open</Link> :
                                   doc.state === 'processing' ?
                                     <button className="btn btn-primary wawes-effect waves-light" disabled>Processing</button> :
                                     <button onClick={() => openModal('reject', doc.url)} className="btn btn-danger wawes-effect waves-light">Failed</button>

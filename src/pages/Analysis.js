@@ -218,12 +218,6 @@ const Analysis = ({ userToken, match }) => {
                       <div className="analysisEmpty" style={{ height: '200px' }}>No similar documents</div>)) :
                    <div className="analysisEmpty" style={{ height: '200px' }}>No cell selected</div>
                 }
-                {selectedCell !== null ?
-                  cellSim !== null && cellSim.length ?
-                    <DocumentList docs={cellSim} /> :
-                    <div className="analysisEmpty" style={{ height: '200px' }}>No similar documents</div> :
-                    <div className="analysisEmpty" style={{ height: '200px' }}>No cell selected</div>
-                }
               </CardBody>
             </Card>
           </Col>

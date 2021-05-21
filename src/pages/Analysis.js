@@ -68,9 +68,9 @@ const Analysis = ({ userToken, match }) => {
 
   const heatmapClick = async cellIndex => {
     // If analyzing location, do nothing
-    // if(match.params.analysisType === 'location') {
-    //   return;
-    // }
+    if(match.params.analysisKey === 'all') {
+      return;
+    }
 
     // Reset graph data and similar by cell data.
     if(match.params.analysisType !== 'location') {
@@ -203,39 +203,42 @@ const Analysis = ({ userToken, match }) => {
             </Card>
           </Col>
         </Row>
-        <Row>
-          <Col lg="6">
-            <Card>
-              <CardBody>
-                <CardTitle>Similar documents</CardTitle>
-                <CardSubtitle className="mb-3">Document similarity by selected cell</CardSubtitle>
-                {
-                  selectedCell !== null ?
-                   (cellSimLoading ?
-                    <AnalysisLoader height="200px" /> :
-                    (cellSim.length ?
-                      <DocumentList docs={cellSim} /> :
-                      <div className="analysisEmpty" style={{ height: '200px' }}>No similar documents</div>)) :
-                   <div className="analysisEmpty" style={{ height: '200px' }}>No cell selected</div>
-                }
-              </CardBody>
-            </Card>
-          </Col>
-          <Col lg="6">
-            <Card>
-              <CardBody>
-                <CardTitle>Similar documents</CardTitle>
-                <CardSubtitle className="mb-3">Document similarity by selected variable</CardSubtitle>
-                {selectedVar !== null ?
-                  varSim.length ? 
-                    <DocumentList docs={varSim} /> :
-                    <div className="analysisEmpty" style={{ height: '200px' }}>No similar documents</div> :
-                    <div className="analysisEmpty" style={{ height: '200px' }}>No variable selected</div>
-                }
-              </CardBody>
-            </Card>
-          </Col>
-        </Row>
+        {
+          match.params.analysisKey !== 'all' &&
+            <Row>
+              <Col lg="6">
+                <Card>
+                  <CardBody>
+                    <CardTitle>Similar documents</CardTitle>
+                    <CardSubtitle className="mb-3">Document similarity by selected cell</CardSubtitle>
+                    {
+                      selectedCell !== null ?
+                      (cellSimLoading ?
+                        <AnalysisLoader height="200px" /> :
+                        (cellSim.length ?
+                          <DocumentList docs={cellSim} /> :
+                          <div className="analysisEmpty" style={{ height: '200px' }}>No similar documents</div>)) :
+                      <div className="analysisEmpty" style={{ height: '200px' }}>No cell selected</div>
+                    }
+                  </CardBody>
+                </Card>
+              </Col>
+              <Col lg="6">
+                <Card>
+                  <CardBody>
+                    <CardTitle>Similar documents</CardTitle>
+                    <CardSubtitle className="mb-3">Document similarity by selected variable</CardSubtitle>
+                    {selectedVar !== null ?
+                      varSim.length ? 
+                        <DocumentList docs={varSim} /> :
+                        <div className="analysisEmpty" style={{ height: '200px' }}>No similar documents</div> :
+                        <div className="analysisEmpty" style={{ height: '200px' }}>No variable selected</div>
+                    }
+                  </CardBody>
+                </Card>
+              </Col>
+            </Row>
+        }
       </div>
     </div>
   );

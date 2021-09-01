@@ -3,31 +3,35 @@ import { ResponsiveBar } from '@nivo/bar';
 
 import AnalysisLoader from './analysisLoader';
 
-const Graph = ({ vars, varClick }) => {
+const Bar = ({ data, selectedVar, varClick, index }) => {
+  return (
+    <div
+      className="graphBar"
+      style={{
+        background: `linear-gradient(90deg, #9CAAFF ${data.strength}%, #EFF1FF ${data.strength}%)`,
+        boxShadow: selectedVar === index && 'inset 0px 0px 0px 4px #ff7300'
+      }}
+      onClick={() => varClick(index)}
+    >
+      {data.strength}% - {data.impact}
+    </div>
+  )
+};
+
+const Graph = ({ vars, varClick, selectedVar }) => {
   return(
-    <React.Fragment>
+    <>
       {vars ?
-        <div style={{ width: '100%', height: '535px' }}>
-          <ResponsiveBar
-            data={vars}
-            keys={[ 'strength', 'Strength' ]}
-            indexBy="name"
-            layout="vertical"
-            minValue={0}
-            maxValue={100}
-            margin={{ top: 30, right: 30, bottom: 40, left: 30 }}
-            padding={0.5}
-            colors={['#4e84ad', '#2f546d']}
-            borderWidth={1}
-            borderColor="#000000"
-            labelTextColor={'#ffffff'}
-            onClick={varClick}
-            animate={false}
-          />
+        <div className="graphWrapper">
+          {
+            vars.map((each, index) => (
+              <Bar key={index} data={each} index={index} varClick={varClick} selectedVar={selectedVar} />
+            ))
+          }
         </div> :
         <AnalysisLoader height='550px' />
       }
-    </React.Fragment>
+    </>
   );
 };
 

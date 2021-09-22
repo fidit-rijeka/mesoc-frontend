@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Redirect, withRouter } from 'react-router-dom';
 import { Card, CardBody, CardTitle, CardSubtitle, Alert, FormGroup, Label, Input } from "reactstrap";
 import Select from 'react-select';
@@ -9,28 +9,55 @@ import Sidenav from '../components/sidenav';
 import FileDropzone from '../components/fileDropzone';
 import FilePreview from '../components/filePreview';
 
-let langTimeout = null;
-let locTimeout = null;
-
 const UploadDocument = ({ userToken, history, userVerified }) => {
 
   const [invalid, setInvalid] = useState(null);
 
   const [langOptions, setLangOptions] = useState([]);
-  const [fullLangData, setFullLangData] = useState([]);
   const [selectedLang, setSelectedLang] = useState(null);
-  const [langLoading, setLangLoading] = useState(false);
 
   const [locOptions, setLocOptions] = useState([]);
-  const [fullLocData, setFullLocData] = useState([]);
   const [selectedLoc, setSelectedLoc] = useState(null);
-  const [locLoading, setLocLoading] = useState(false);
+
+  const [typeOptions, setTypeOptions] = useState([
+    { label: 'Scientific', value: 'scientific' },
+    { label: 'Pilot', value: 'pilot' }
+  ]);
+  const [selectedType, setSelectedType] = useState(null);
 
   const [file, setFile] = useState([]);
 
   const [succ, setSucc] = useState(false);
   const [danger, setDanger] = useState(false);
   const [wait, setWait] = useState(false);
+
+  const [textAreaBadge, setTextAreaBadge] = useState(false);
+  const [textCount, setTextCount] = useState(0);
+
+  useEffect(() => {
+    axios
+      .get(`https://api.mesoc.dev/languages`, {headers: {
+        Authorization: `Bearer ${userToken}`
+      }})
+      .then(async res => {
+        let langsToAdd = [];
+        await res.data.forEach(lang => {
+          langsToAdd.push({ label: lang.name, value: lang.url });
+        });
+        setLangOptions(langsToAdd);
+      });
+    axios
+      .get(`https://api.mesoc.dev/locations`, {headers: {
+        Authorization: `Bearer ${userToken}`
+      }})
+      .then(async res => {
+        let locsToAdd = [];
+        await res.data.forEach(loc => {
+          locsToAdd.push({ label: `${loc.city}, ${loc.country}`, value: loc.url });
+        });
+        setLocOptions(locsToAdd);
+      });
+  }, []);
 
   // USER MANAGEMENT
   // If not authenticated, redirect to sign in.
@@ -59,6 +86,14 @@ const UploadDocument = ({ userToken, history, userVerified }) => {
       setInvalid('Please specify location.');
       return;
     }
+    if(eventTarget.type.value === '') {
+      setInvalid('Please specify document type.');
+      return;
+    }
+    if(eventTarget.documentAbstract.value === '') {
+      setInvalid('Please specify abstract of your document.');
+      return;
+    }
     if(file.length === 0) {
       setInvalid('Please upload your document.');
       return;
@@ -75,6 +110,8 @@ const UploadDocument = ({ userToken, history, userVerified }) => {
     formData.append('title', eventTarget.title.value);
     formData.append('language', eventTarget.language.value);
     formData.append('location', eventTarget.location.value);
+    formData.append('type', eventTarget.type.value);
+    formData.append('abstract', eventTarget.documentAbstract.value);
     formData.append('file', file[0]);
 
     axios
@@ -105,73 +142,9 @@ const UploadDocument = ({ userToken, history, userVerified }) => {
       });
   };
 
-  const langSearch = parameter => {
-    if(parameter === '') {
-      setLangLoading(false);
-      setLangOptions([]);
-      clearTimeout(langTimeout);
-      return;
-    }
-
-    setLangLoading(true);
-    // Cancel any previous search attempts.
-    clearTimeout(langTimeout);
-
-    // Wait .6 seconds before starting a search
-    langTimeout = setTimeout(() => {
-      if(langSearch !== null) {
-        axios
-        .get(`https://api.mesoc.dev/languages?language=${parameter}`, {headers: {
-          Authorization: `Bearer ${userToken}`
-        }})
-        .then(async res => {
-          let langsToAdd = [];
-          setFullLangData(res.data);
-          await res.data.forEach(lang => {
-            langsToAdd.push({ label: lang.name, value: lang.url });
-          });
-          setLangOptions(langsToAdd);
-          setLangLoading(false);
-        });
-      }
-    }, 600);
-  };
-
   const langSelecChg = input => {
     setInvalid(null);
     setSelectedLang(input);
-  };
-
-  const locSearch = parameter => {
-    if(parameter === '') {
-      setLocLoading(false);
-      setLocOptions([]);
-      clearTimeout(locTimeout);
-      return;
-    }
-
-    setLocLoading(true);
-    // Cancel any previous search attempts.
-    clearTimeout(locTimeout);
-
-    // Wait .6 seconds before starting a search
-    locTimeout = setTimeout(() => {
-      if(langSearch !== null) {
-        axios
-        .get(`https://api.mesoc.dev/locations?city=${parameter}`, {headers: {
-          Authorization: `Bearer ${userToken}`
-        }})
-        .then(async res => {
-          let locsToAdd = [];
-          setFullLocData(res.data);
-          await res.data.forEach(loc => {
-            locsToAdd.push({ label: `${loc.city}, ${loc.country}`, value: loc.url });
-          });
-          setLocOptions(locsToAdd);
-          setLocLoading(false);
-        });
-      }
-    }, 600);
   };
 
   const locSelecChg = input => {
@@ -179,13 +152,28 @@ const UploadDocument = ({ userToken, history, userVerified }) => {
     setSelectedLoc(input);
   };
 
+  const typeSelecChg = input => {
+    setInvalid(null);
+    setSelectedType(input);
+  };
+
+  const textareachange = e => {
+    var count = e.target.value.length;
+    setInvalid(null);
+    
+		if(count > 0) {
+      setTextAreaBadge(true);
+		} else {
+      setTextAreaBadge(false);
+    }
+
+		setTextCount(e.target.value.length);
+	};
+
   // If not authenticated, redirect to sign in.
   if(userToken === null) {
     return <Redirect to="/sign-in" />
   }
-
-  // TODO:
-  // add -> If not verified, redirect to sign in
 
   return(
     <div className="pageWrapper">
@@ -233,10 +221,8 @@ const UploadDocument = ({ userToken, history, userVerified }) => {
                 <Select
                   name="language"
                   value={selectedLang}
-                  onInputChange={event => langSearch(event)}
                   onChange={event => langSelecChg(event)}
                   options={langOptions}
-                  isLoading={langLoading}
                 />
               </FormGroup>
 
@@ -245,11 +231,39 @@ const UploadDocument = ({ userToken, history, userVerified }) => {
                 <Select
                   name="location"
                   value={selectedLoc}
-                  onInputChange={event => locSearch(event)}
                   onChange={event => locSelecChg(event)}
                   options={locOptions}
-                  isLoading={locLoading}
                 />
+              </FormGroup>
+
+              <FormGroup className="ajax-select select2-container formField">
+                <Label>Type</Label>
+                <Select
+                  name="type"
+                  value={selectedType}
+                  onChange={event => typeSelecChg(event)}
+                  options={typeOptions}
+                />
+              </FormGroup>
+
+              <FormGroup className="ajax-select select2-container formField">
+                <Label>Abstract</Label>
+                <Input
+                  type="textarea"
+                  id="textarea"
+                  onChange={(e) => { textareachange(e) }}
+                  minLength="1"
+                  maxLength="1000"
+                  rows="10"
+                  placeholder="Document abstract"
+                  name="documentAbstract"
+                />
+                {textAreaBadge ? (
+                  <span className="badgecount badge badge-success">
+                    {" "}
+                    {textCount} / 1000{" "}
+                  </span>
+                ) : null}
               </FormGroup>
 
               <FileDropzone setFile={setFile} setInvalid={setInvalid} />

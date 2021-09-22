@@ -3,6 +3,7 @@ import { Link, withRouter, Redirect } from 'react-router-dom';
 import { Table, Card, CardBody, CardTitle, CardSubtitle, Nav, NavItem, NavLink, TabContent, TabPane } from "reactstrap";
 import classnames from 'classnames';
 import axios from 'axios';
+import dayjs from 'dayjs';
 
 import Sidenav from '../components/sidenav';
 import InfoModal from '../components/infoModal';
@@ -158,7 +159,7 @@ const MyDocuments = ({ userToken, userVerified }) => {
                             return <tr key={doc.id}>
                               <th scope="row">{index + 1}</th>
                               <td>{doc.title}</td>
-                              <td>{doc.uploaded_at}</td>
+                              <td>{dayjs(doc.uploaded_at).format('DD/MM/YYYY')}</td>
                               <td>{doc.language.name}</td>
                               <td>{`${doc.location.city}, ${doc.location.country}`}</td>
                               <td>
@@ -198,7 +199,7 @@ const MyDocuments = ({ userToken, userVerified }) => {
                             return <tr key={doc.id}>
                               <th scope="row">{index + 1}</th>
                               <td>{doc.title}</td>
-                              <td>{doc.uploaded_at}</td>
+                              <td>{dayjs(doc.uploaded_at).format('DD/MM/YYYY')}</td>
                               <td>{doc.language.name}</td>
                               <td>{`${doc.location.city}, ${doc.location.country}`}</td>
                               <td>

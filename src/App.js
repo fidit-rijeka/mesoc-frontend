@@ -17,6 +17,7 @@ import Analysis from './pages/Analysis';
 import AnalysisLoader from './components/analysisLoader';
 import NotVerfied from './pages/NotVerified';
 import VerificationProcess from './pages/VerificationProcess';
+import ResetPassword from './pages/ResetPassword';
 
 // (Feb 22 2021) => When app reads user verified status and stores it in state it stores it as a string, which creates a bug. Temporary fix. Fix it or write it better.
 function toBool(val) {
@@ -96,6 +97,9 @@ function App() {
           <Route path='/upload-document'>
             <UploadDocument userToken={userToken}
                             userVerified={userVerified} />
+          </Route>
+          <Route path="/password_reset/:token">
+            <ResetPassword />
           </Route>
           <Route path='/:analysisType/:analysisKey'>
             <Analysis userToken={userToken} />

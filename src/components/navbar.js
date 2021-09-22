@@ -28,7 +28,7 @@ const Navbar = ({ userToken, setUserToken, removeAuthCookie, setUserVerified, hi
       <NavSearchField />
 
       <Link to="/browse" className="mainA">Browse</Link>
-      {userToken === null && <Link to="sign-in" className="secondaryA">Sign in</Link>}
+      {userToken === null && <Link to="/sign-in" className="secondaryA">Sign in</Link>}
       {userToken === null ?
         <Link to="/create-account" className="secondaryA">Create account</Link> :
         <p to="/browse" onClick={signOut} className="secondaryA">Sign out</p>

@@ -88,6 +88,7 @@ const Analysis = ({ userToken, match }) => {
           }
         })
         .then(async res => {
+          console.log(res.data);
           let heatData = await [...Array(30).keys()].map(x => {return {order: x, classification: 0.0}});
           await res.data.map(resItem => {
             heatData[resItem.order] = resItem;
@@ -98,22 +99,37 @@ const Analysis = ({ userToken, match }) => {
   }, []);
 
   const heatmapClick = async cellIndex => {
-    // If analyzing location, do nothing
+    const latlong = match.params.analysisKey.split('_');
+
     if(match.params.analysisKey === 'all') {
+      setVars(null);
+      setSelectedVar(null);
+      if(selectedCell === cellIndex || cells[cellIndex].classification === 0) {
+        setSelectedCell(null);
+        return;
+      }
+      setSelectedCell(cellIndex);
+      const graphData = (await axios.get('https://api.mesoc.dev/aggregates/impact/')).data;
+      // Sort graph data by strength.
+      await graphData.sort(compare);
+      // Modify graph data for displaying.
+      await graphData.map(barData => { barData.strength = Math.round(barData.strength * 100) });
+      // Set graph data to state.
+      console.log(graphData);
+      setVars(graphData);
       return;
     }
 
     // Reset graph data and similar by cell data.
     setVars(null);
     setCellSim(null);
+    setSelectedVar(null);
 
     // If deselecting cell or clicking on "classification: 0" cell, clear cell data and terminate function.
     if(selectedCell === cellIndex || cells[cellIndex].classification === 0) {
       setSelectedCell(null);
       return;
     }
-
-    const latlong = match.params.analysisKey.split('_');
 
     // Mark selected cell.
     setSelectedCell(cellIndex);
@@ -140,7 +156,16 @@ const Analysis = ({ userToken, match }) => {
 
     if (match.params.analysisType !== 'location') {
       // Fetch graph data.
-      let graphData = await (await axios.get(cells[cellIndex].variables, { headers: { Authorization: `Bearer ${userToken}` } })).data;
+      //let graphData = await (await axios.get(cells[cellIndex].variables, { headers: { Authorization: `Bearer ${userToken}` } })).data;
+      let cellNum;
+      if(cellIndex.toString().length === 1)
+        cellNum = 0;
+      else if(Number(cellIndex.toString().charAt(0)) === 1)
+        cellNum = 1;
+      else
+        cellNum = 2;
+      let graphData = await (await axios.get(`https://api.mesoc.dev/documents/${match.params.analysisKey.split('_')[0]}/impacts/?column=${cellNum}`, { headers: { Authorization: `Bearer ${userToken}` } })).data;
+      console.log(graphData)
       // Sort graph data by strength.
       await graphData.sort(compare);
       // Modify graph data for displaying.
@@ -181,6 +206,20 @@ const Analysis = ({ userToken, match }) => {
     setVarSimLoading(true);
     setSelectedVar(varIndex);
 
+    if(latlong[0] === 'all') return;
+
+    if(match.params.analysisType === 'document') {
+      const result = await axios.get(vars[varIndex].similar, {
+        headers: {
+          Authorization: `Bearer ${userToken}`
+        }
+      });
+      setVarSim(result.data);
+      console.log(result.data);
+      setVarSimLoading(false);
+      return;
+    }
+
     let cellNum;
       if(selectedCell.toString().length === 1)
         cellNum = 0;
@@ -192,7 +231,7 @@ const Analysis = ({ userToken, match }) => {
     const result = await axios.get(`https://api.mesoc.dev/aggregates/similar/cell/?latitude=${latlong[0]}&longitude=${latlong[1]}&cell=${cellNum}`)
     setVarSim(result.data);
     console.log(result.data);
-    setVarSimLoading(false)
+    setVarSimLoading(false);
 
     // // Create a copy of graph data.
     // let newGraphData = [...vars];
@@ -264,8 +303,8 @@ const Analysis = ({ userToken, match }) => {
           <Col xl="7" lg="12">
             <Card>
               <CardBody>
-                <CardTitle>MESOC Graph</CardTitle>
-                <CardSubtitle className="mb-3">Distribution of variables impacting selected cell</CardSubtitle>
+                <CardTitle>MESOC Impacts</CardTitle>
+                <CardSubtitle className="mb-3">Impacts detected in selected cell's column</CardSubtitle>
                 {/* {selectedCell !== null ?
                   match.params.analysisType !== 'location' ?
                     <Graph vars={vars} varClick={graphClick} /> :
@@ -308,7 +347,7 @@ const Analysis = ({ userToken, match }) => {
                 <Card>
                   <CardBody>
                     <CardTitle>Similar documents</CardTitle>
-                    <CardSubtitle className="mb-3">Document similarity by selected variable</CardSubtitle>
+                    <CardSubtitle className="mb-3">Document similarity by selected impact</CardSubtitle>
                     {
                       selectedVar !== null ?
                       (varSimLoading ?

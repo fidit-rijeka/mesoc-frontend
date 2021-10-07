@@ -14,7 +14,7 @@ const compare = (a, b) => {
   const varB= b.strength;
 
   let comparison = 0;
-  if(varA > varB) {
+  if(varA < varB) {
     comparison = 1;
   } else if(varA < varB) {
     comparison = -1;
@@ -69,14 +69,19 @@ const Analysis = ({ userToken, match }) => {
 
       const latlong = match.params.analysisKey.split('_');
 
+      const url = latlong[0] === 'all' ? 
+        'https://api.mesoc.dev/aggregates/heatmap/' :
+        `https://api.mesoc.dev/aggregates/heatmap/?latitude=${latlong[0]}&longitude=${latlong[1]}&type=${latlong[2]}`;
+      
       axios
-        .get(`https://api.mesoc.dev/aggregates/heatmap/?latitude=${latlong[0]}&longitude=${latlong[1]}&type=${latlong[2]}`)
+        .get(url)
         .then(async res => {
           console.log(res);
-          let heatData = await [...Array(30).keys()].map(x => {return {order: x, classification: 0.0}});
+          let heatData = await [...Array(30).keys()].map(x => {return {cell: x, classification: 0.0}});
           await res.data.map(resItem => {
-            heatData[resItem.order] = resItem;
+            heatData[resItem.cell] = resItem;
           });
+          console.log(heatData);
           setCells(heatData);
         })
     }
@@ -89,9 +94,9 @@ const Analysis = ({ userToken, match }) => {
         })
         .then(async res => {
           console.log(res.data);
-          let heatData = await [...Array(30).keys()].map(x => {return {order: x, classification: 0.0}});
+          let heatData = await [...Array(30).keys()].map(x => {return {cell: x, classification: 0.0}});
           await res.data.map(resItem => {
-            heatData[resItem.order] = resItem;
+            heatData[resItem.cell] = resItem;
           });
           setCells(heatData);
         });
@@ -108,8 +113,15 @@ const Analysis = ({ userToken, match }) => {
         setSelectedCell(null);
         return;
       }
+      let cellNum;
+      if(cellIndex.toString().length === 1)
+        cellNum = 0;
+      else if(Number(cellIndex.toString().charAt(0)) === 1)
+        cellNum = 1;
+      else
+        cellNum = 2;
       setSelectedCell(cellIndex);
-      const graphData = (await axios.get('https://api.mesoc.dev/aggregates/impact/')).data;
+      const graphData = (await axios.get(`https://api.mesoc.dev/aggregates/impact/?column=${cellNum}`)).data;
       // Sort graph data by strength.
       await graphData.sort(compare);
       // Modify graph data for displaying.
@@ -136,7 +148,7 @@ const Analysis = ({ userToken, match }) => {
     setCellSimLoading(true);
     if(match.params.analysisType === 'location') {
       axios
-        .get(`https://api.mesoc.dev/aggregates/similar/cell/?latitude=${latlong[0]}&longitude=${latlong[1]}&cell=${cellIndex}`)
+        .get(cells[cellIndex].similar_documents)
         .then(res => {
           setCellSim(res.data);
           setCellSimLoading(false);
@@ -181,11 +193,7 @@ const Analysis = ({ userToken, match }) => {
       else
         cellNum = 2;
 
-      const result = await (await axios.get(`https://api.mesoc.dev/aggregates/impact/?type=${latlong[2]}&latitude=${latlong[0]}&longitude=${latlong[1]}&column=${cellNum}`, {
-        headers: {
-          Authorization: `Bearer ${userToken}`
-        }
-      })).data;
+      const result = await (await axios.get(`https://api.mesoc.dev/aggregates/impact/?type=${latlong[2]}&latitude=${latlong[0]}&longitude=${latlong[1]}&column=${cellNum}`)).data;
       await result.sort(compare);
       await result.map(barData => { barData.strength = Math.round(barData.strength * 100) });
       console.log(result);
@@ -209,7 +217,7 @@ const Analysis = ({ userToken, match }) => {
     if(latlong[0] === 'all') return;
 
     if(match.params.analysisType === 'document') {
-      const result = await axios.get(vars[varIndex].similar, {
+      const result = await axios.get(vars[varIndex].similar_documents, {
         headers: {
           Authorization: `Bearer ${userToken}`
         }
@@ -220,48 +228,10 @@ const Analysis = ({ userToken, match }) => {
       return;
     }
 
-    let cellNum;
-      if(selectedCell.toString().length === 1)
-        cellNum = 0;
-      else if(Number(selectedCell.toString().charAt(0)) === 1)
-        cellNum = 1;
-      else
-        cellNum = 2;
-
-    const result = await axios.get(`https://api.mesoc.dev/aggregates/similar/cell/?latitude=${latlong[0]}&longitude=${latlong[1]}&cell=${cellNum}`)
+    const result = await axios.get(vars[varIndex].similar_documents);
     setVarSim(result.data);
     console.log(result.data);
     setVarSimLoading(false);
-
-    // // Create a copy of graph data.
-    // let newGraphData = [...vars];
-
-    // if(data.id === 'strength') {
-    //   // Bar is being selected.
-    //   await newGraphData.map(current => {
-    //     if(current.Strength) {
-    //       current.strength = current.Strength;
-    //       current.Strength = 0;
-    //     }
-    //   });
-    //   newGraphData[data.index].Strength = newGraphData[data.index].strength;
-    //   newGraphData[data.index].strength = 0;
-
-    //   setSelectedVar(data.id);
-
-    //   // TODO: fetch similar by variable
-    //   setTimeout(() => {
-    //     setVarSim(require('../testData/simm.json').similar);
-    //   }, 1000);
-    // } else {
-    //   // Bar is being deselected.
-    //   newGraphData[data.index].strength = newGraphData[data.index].Strength;
-    //   newGraphData[data.index].Strength = 0;
-      
-    //   setSelectedVar(null);
-    // }
-    // // Set modified graph data to state.
-    // setVars(newGraphData);
   };
 
   const displayImpactKeywords = () => {};

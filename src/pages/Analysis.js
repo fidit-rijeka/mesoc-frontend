@@ -256,7 +256,7 @@ const Analysis = ({ userToken, match }) => {
                 <CardTitle>MESOC matrix</CardTitle>
                 <CardSubtitle className="mb-3">{
                   match.params.analysisType === 'location' ?
-                    `Location: ${match.params.analysisKey.split('_')[3]}, ${match.params.analysisKey.split('_')[4]}` :
+                    `Location: ${match.params.analysisKey.split('_')[3]}` :
                     `${match.params.analysisKey.split('_')[1]}, ${match.params.analysisKey.split('_')[2]}, ${match.params.analysisKey.split('_')[3]}`
                 }</CardSubtitle>
                 {cells ?

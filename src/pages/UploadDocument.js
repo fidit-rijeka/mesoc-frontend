@@ -9,6 +9,8 @@ import Sidenav from '../components/sidenav';
 import FileDropzone from '../components/fileDropzone';
 import FilePreview from '../components/filePreview';
 
+let locTimeout = null;
+
 const UploadDocument = ({ userToken, history, userVerified }) => {
 
   const [invalid, setInvalid] = useState(null);
@@ -18,6 +20,8 @@ const UploadDocument = ({ userToken, history, userVerified }) => {
 
   const [locOptions, setLocOptions] = useState([]);
   const [selectedLoc, setSelectedLoc] = useState(null);
+  const [fullLocData, setFullLocData] = useState([]);
+  const [locLoading, setLocLoading] = useState(false);
 
   const [typeOptions, setTypeOptions] = useState([
     { label: 'Scientific', value: 'scientific' },
@@ -35,6 +39,7 @@ const UploadDocument = ({ userToken, history, userVerified }) => {
   const [textCount, setTextCount] = useState(0);
 
   useEffect(() => {
+    console.log(userToken);
     axios
       .get(`https://api.mesoc.dev/languages`, {headers: {
         Authorization: `Bearer ${userToken}`
@@ -45,17 +50,6 @@ const UploadDocument = ({ userToken, history, userVerified }) => {
           langsToAdd.push({ label: lang.name, value: lang.url });
         });
         setLangOptions(langsToAdd);
-      });
-    axios
-      .get(`https://api.mesoc.dev/locations`, {headers: {
-        Authorization: `Bearer ${userToken}`
-      }})
-      .then(async res => {
-        let locsToAdd = [];
-        await res.data.forEach(loc => {
-          locsToAdd.push({ label: `${loc.city}, ${loc.country}`, value: loc.url });
-        });
-        setLocOptions(locsToAdd);
       });
   }, []);
 
@@ -140,6 +134,40 @@ const UploadDocument = ({ userToken, history, userVerified }) => {
           setDanger(true);
         }
       });
+  };
+
+  const locSearch = parameter => {
+    if(parameter === '') {
+      setLocLoading(false);
+      setLocOptions([]);
+      clearTimeout(locTimeout);
+      return;
+    }
+
+    setLocLoading(true);
+    // Cancel any previous search attempts.
+    clearTimeout(locTimeout);
+
+    // Wait .6 seconds before starting a search
+    locTimeout = setTimeout(() => {
+      if(locSearch !== null) {
+        axios
+        .get(`https://api.mesoc.dev/locations?address=${parameter}`, {headers: {
+          Authorization: `Bearer ${userToken}`
+        }})
+        .then(async res => {
+          let locsToAdd = [];
+          setFullLocData(res.data);
+          await res.data.forEach(loc => {
+            locsToAdd.push({ label: `${loc.city}, ${loc.country}`, value: loc.address });
+          });
+          console.log(res.data);
+          console.log(locsToAdd);
+          setLocOptions(locsToAdd);
+          setLocLoading(false);
+        });
+      }
+    }, 600);
   };
 
   const langSelecChg = input => {
@@ -228,11 +256,19 @@ const UploadDocument = ({ userToken, history, userVerified }) => {
 
               <FormGroup className="ajax-select select2-container formField">
                 <Label>Location</Label>
-                <Select
+                {/* <Select
                   name="location"
                   value={selectedLoc}
                   onChange={event => locSelecChg(event)}
                   options={locOptions}
+                /> */}
+                <Select
+                  name="location"
+                  value={selectedLoc}
+                  onInputChange={event => locSearch(event)}
+                  onChange={event => locSelecChg(event)}
+                  options={locOptions}
+                  isLoading={locLoading}
                 />
               </FormGroup>
 

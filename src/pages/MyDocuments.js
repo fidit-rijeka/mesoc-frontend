@@ -165,7 +165,7 @@ const MyDocuments = ({ userToken, userVerified }) => {
                               <td>{`${doc.location.city}, ${doc.location.country}`}</td>
                               <td>
                                 {doc.state === 'processed' ?
-                                  <Link to={`document/${doc.url.split('/')[5]}_${doc.title}_${doc.location.city}_${doc.location.country}`} className="btn btn-primary wawes-effect waves-light">Open</Link> :
+                                  <Link to={`document/${doc.url.split('/')[4]}_${doc.title}_${doc.location.city}_${doc.location.country}`} className="btn btn-primary wawes-effect waves-light">Open</Link> :
                                   doc.state === 'processing' ?
                                     <button className="btn btn-primary wawes-effect waves-light" disabled>Processing</button> :
                                     <button onClick={() => openModal('reject', doc.url)} className="btn btn-danger wawes-effect waves-light">Failed</button>

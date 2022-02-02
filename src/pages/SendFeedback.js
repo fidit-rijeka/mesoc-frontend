@@ -32,7 +32,7 @@ const SendFeedback = ({ userToken, history, userVerified }) => {
     setWait(true);
 
     axios
-      .post('https://api.mesoc.dev/feedback/', {
+      .post(`${process.env.REACT_APP_API_DOMAIN}/feedback/`, {
         subject: eventTarget.subject.value,
         message: eventTarget.messageBody.value
       }, {

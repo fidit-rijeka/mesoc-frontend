@@ -19,7 +19,7 @@ const MapView = () => {
 
   useEffect(() => {
     axios
-      .get('https://api.mesoc.dev/aggregates/location/')
+      .get(`${process.env.REACT_APP_API_DOMAIN}/aggregates/location/`)
       .then(res => {
         console.log(res.data)
         setCities(res.data);

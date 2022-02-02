@@ -33,7 +33,7 @@ const SignUp = ({ history }) => {
 
     setWait(true);
     axios
-      .post('https://api.mesoc.dev/account/', {
+      .post(`${process.env.REACT_APP_API_DOMAIN}/account/`, {
         email: e.target.email.value,
         password: e.target.password.value
       }, {auth: {

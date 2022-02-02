@@ -25,7 +25,7 @@ const VerificationProcess = ({ match, history, userToken, userVerified, verifica
     }
 
     axios
-      .post(`https://api.mesoc.dev/account/verification/confirmation/`, {
+      .post(`${process.env.REACT_APP_API_DOMAIN}/account/verification/confirmation/`, {
         uuid: match.params.uuidKey
       }, {
         headers: {

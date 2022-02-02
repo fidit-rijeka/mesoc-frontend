@@ -24,7 +24,7 @@ const MyDocuments = ({ userToken, userVerified }) => {
     // Finish and test this request.
     if (userToken && userVerified) {
       axios
-      .get(`https://api.mesoc.dev/documents?state=active`, {
+      .get(`${process.env.REACT_APP_API_DOMAIN}/documents?state=active`, {
         headers: {
           Authorization: `Bearer ${userToken}`
         }
@@ -58,7 +58,7 @@ const MyDocuments = ({ userToken, userVerified }) => {
 
     if(index === '1') {
       axios
-        .get(`https://api.mesoc.dev/documents?state=active`, {
+        .get(`${process.env.REACT_APP_API_DOMAIN}/documents?state=active`, {
           headers: {
             Authorization: `Bearer ${userToken}`
           }
@@ -72,7 +72,7 @@ const MyDocuments = ({ userToken, userVerified }) => {
         })
     } else {
       axios
-        .get(`https://api.mesoc.dev/documents?state=dismissed`, {
+        .get(`${process.env.REACT_APP_API_DOMAIN}/documents?state=dismissed`, {
           headers: {
             Authorization: `Bearer ${userToken}`
           }

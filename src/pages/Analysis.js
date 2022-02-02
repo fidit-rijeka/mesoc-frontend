@@ -70,8 +70,8 @@ const Analysis = ({ userToken, match }) => {
       const latlong = match.params.analysisKey.split('_');
 
       const url = latlong[0] === 'all' ? 
-        'https://api.mesoc.dev/aggregates/heatmap/' :
-        `https://api.mesoc.dev/aggregates/heatmap/?latitude=${latlong[0]}&longitude=${latlong[1]}&type=${latlong[2]}`;
+        `${process.env.REACT_APP_API_DOMAIN}/aggregates/heatmap/` :
+        `${process.env.REACT_APP_API_DOMAIN}/aggregates/heatmap/?latitude=${latlong[0]}&longitude=${latlong[1]}&type=${latlong[2]}`;
       
       axios
         .get(url)
@@ -87,7 +87,7 @@ const Analysis = ({ userToken, match }) => {
     }
     else {
       axios
-        .get(`https://api.mesoc.dev/documents/${match.params.analysisKey.split('_')[0]}/heatmap/`, {
+        .get(`${process.env.REACT_APP_API_DOMAIN}/documents/${match.params.analysisKey.split('_')[0]}/heatmap/`, {
           headers: {
             Authorization: `Bearer ${userToken}`
           }
@@ -121,7 +121,7 @@ const Analysis = ({ userToken, match }) => {
       else
         cellNum = 2;
       setSelectedCell(cellIndex);
-      const graphData = (await axios.get(`https://api.mesoc.dev/aggregates/impact/?column=${cellNum}`)).data;
+      const graphData = (await axios.get(`${process.env.REACT_APP_API_DOMAIN}/aggregates/impact/?column=${cellNum}`)).data;
       // Sort graph data by strength.
       await graphData.sort(compare);
       // Modify graph data for displaying.
@@ -176,7 +176,7 @@ const Analysis = ({ userToken, match }) => {
         cellNum = 1;
       else
         cellNum = 2;
-      let graphData = await (await axios.get(`https://api.mesoc.dev/documents/${match.params.analysisKey.split('_')[0]}/impacts/?column=${cellNum}`, { headers: { Authorization: `Bearer ${userToken}` } })).data;
+      let graphData = await (await axios.get(`${process.env.REACT_APP_API_DOMAIN}/documents/${match.params.analysisKey.split('_')[0]}/impacts/?column=${cellNum}`, { headers: { Authorization: `Bearer ${userToken}` } })).data;
       console.log(graphData)
       // Sort graph data by strength.
       await graphData.sort(compare);
@@ -193,7 +193,7 @@ const Analysis = ({ userToken, match }) => {
       else
         cellNum = 2;
 
-      const result = await (await axios.get(`https://api.mesoc.dev/aggregates/impact/?type=${latlong[2]}&latitude=${latlong[0]}&longitude=${latlong[1]}&column=${cellNum}`)).data;
+      const result = await (await axios.get(`${process.env.REACT_APP_API_DOMAIN}/aggregates/impact/?type=${latlong[2]}&latitude=${latlong[0]}&longitude=${latlong[1]}&column=${cellNum}`)).data;
       await result.sort(compare);
       await result.map(barData => { barData.strength = Math.round(barData.strength * 100) });
       console.log(result);

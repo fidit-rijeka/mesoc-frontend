@@ -22,7 +22,7 @@ const ResetPassword = ({ history, match }) => {
     setWait(true);
 
     axios
-      .post(`https://api.mesoc.dev/account/password_reset/confirmation/`, {
+      .post(`${process.env.REACT_APP_API_DOMAIN}/account/password_reset/confirmation/`, {
         uuid: match.params.token,
         password: e.target.password.value
       }, {

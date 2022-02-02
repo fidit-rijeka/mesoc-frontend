@@ -15,7 +15,7 @@ const SignIn = ({ history, setUserToken, setAuthCookie, setUserVerified, verific
     setWait(true);
 
     axios
-      .post('https://api.mesoc.dev/account/login/', {
+      .post(`${process.env.REACT_APP_API_DOMAIN}/account/login/`, {
         username: e.target.email.value,
         password: e.target.password.value
       })

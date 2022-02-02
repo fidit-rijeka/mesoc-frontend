@@ -18,7 +18,7 @@ const ForgotPassword = ({ history }) => {
     console.log(e.target.email.value);
 
     axios
-      .post(`https://api.mesoc.dev/account/password_reset/`, {
+      .post(`${process.env.REACT_APP_API_DOMAIN}/account/password_reset/`, {
         email: e.target.email.value
       }, {
         auth: {

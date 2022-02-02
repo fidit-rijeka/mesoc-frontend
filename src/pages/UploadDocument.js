@@ -41,7 +41,7 @@ const UploadDocument = ({ userToken, history, userVerified }) => {
   useEffect(() => {
     console.log(userToken);
     axios
-      .get(`https://api.mesoc.dev/languages`, {headers: {
+      .get(`${process.env.REACT_APP_API_DOMAIN}/languages`, {headers: {
         Authorization: `Bearer ${userToken}`
       }})
       .then(async res => {
@@ -109,7 +109,7 @@ const UploadDocument = ({ userToken, history, userVerified }) => {
     formData.append('file', file[0]);
 
     axios
-      .post(`https://api.mesoc.dev/documents/`, formData, {
+      .post(`${process.env.REACT_APP_API_DOMAIN}/documents/`, formData, {
         headers: {
           Authorization: `Bearer ${userToken}`,
           'Content-Type': 'multipart/form-data'
@@ -152,7 +152,7 @@ const UploadDocument = ({ userToken, history, userVerified }) => {
     locTimeout = setTimeout(() => {
       if(locSearch !== null) {
         axios
-        .get(`https://api.mesoc.dev/locations?address=${parameter}`, {headers: {
+        .get(`${process.env.REACT_APP_API_DOMAIN}/locations?address=${parameter}`, {headers: {
           Authorization: `Bearer ${userToken}`
         }})
         .then(async res => {

@@ -252,7 +252,7 @@ const Analysis = ({ userToken, match }) => {
         />
 
         <Row>
-          <Col xl="5" lg="12">
+          <Col lg="6">
             <Card>
               <CardBody>
                 <CardTitle>MESOC matrix</CardTitle>
@@ -272,7 +272,7 @@ const Analysis = ({ userToken, match }) => {
               </CardBody>
             </Card>
           </Col>
-          <Col xl="7" lg="12">
+          <Col lg="6">
             <Card>
               <CardBody>
                 <CardTitle>MESOC Impacts</CardTitle>

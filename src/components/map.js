@@ -63,7 +63,7 @@ const MapView = () => {
   return (
     <div>
       {isLoading && <p>Please wait...</p>}
-      <Map className="map-container" center={position} zoom={zoom} tap={false}>
+      <Map className="map-container" center={position} zoom={zoom} minZoom={2} tap={false}>
         <MapboxLayer
           accessToken={process.env.REACT_APP_MAPBOX_ACCESS_TOKEN}
           style={process.env.REACT_APP_MAPBOX_STYLE}

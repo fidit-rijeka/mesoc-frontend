@@ -2,8 +2,6 @@ import React, { useState } from 'react'
 import { Link, withRouter } from 'react-router-dom';
 import classnames from 'classnames';
 
-import NavSearchField from './navSearchField';
-
 import logo from '../images/mesocLogoBlue.png';
 
 const Navbar = ({ userToken, setUserToken, removeAuthCookie, setUserVerified, history }) => {
@@ -25,8 +23,6 @@ const Navbar = ({ userToken, setUserToken, removeAuthCookie, setUserVerified, hi
         <img src={logo} alt="logo of mesoc toolkit application" className="logo"/>
       </a>
 
-      <NavSearchField />
-
       <Link to="/browse" className="mainA">Browse</Link>
       {userToken === null && <Link to="/sign-in" className="secondaryA">Sign in</Link>}
       {userToken === null ?
@@ -39,13 +35,12 @@ const Navbar = ({ userToken, setUserToken, removeAuthCookie, setUserVerified, hi
         <span className={classnames({ burgerLinesApk: true, hamOpen: navOpen })}></span>
       </div>
       <div className={classnames({ mobileNavList: true, mobileNavLOpen: navOpen })}>
-        <NavSearchField display="block" margin=".5em auto" width="200px" />
         {userToken === null ?
           <div className="accountDiv">
             <Link onClick={() => setNavOpen(!navOpen)} to="/sign-in" className="secondaryAPhone">Sign in</Link>
             <span>or</span>
             <Link onClick={() => setNavOpen(!navOpen)} to="/create-account" className="secondaryAPhone">Create account</Link>
-          </div> : 
+          </div> :
           <Link onClick={signOut} to="/browse" className="secondaryAPhone" style={{ margin: '1.4em auto', display: 'block', width: '83px' }}>Sign out</Link>
         }
         <Link onClick={() => setNavOpen(!navOpen)} to="/browse" className="mobileSideLink">Browse</Link>

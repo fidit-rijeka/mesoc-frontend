@@ -69,10 +69,10 @@ const Analysis = ({ userToken, match }) => {
 
       const latlong = match.params.analysisKey.split('_');
 
-      const url = latlong[0] === 'all' ? 
+      const url = latlong[0] === 'all' ?
         `${process.env.REACT_APP_API_DOMAIN}/aggregates/heatmap/` :
         `${process.env.REACT_APP_API_DOMAIN}/aggregates/heatmap/?latitude=${latlong[0]}&longitude=${latlong[1]}&type=${latlong[2]}`;
-      
+
       axios
         .get(url)
         .then(async res => {
@@ -214,7 +214,9 @@ const Analysis = ({ userToken, match }) => {
     setVarSimLoading(true);
     setSelectedVar(varIndex);
 
-    if(latlong[0] === 'all') return;
+    if(latlong[0] === 'all' || vars[varIndex].similar_documents === undefined) {
+      return;
+    }
 
     if(match.params.analysisType === 'document') {
       const result = await axios.get(vars[varIndex].similar_documents, {
@@ -332,7 +334,7 @@ const Analysis = ({ userToken, match }) => {
                     }
                     {
                       selectedVar !== null ?
-                        varSim.length ? 
+                        varSim.length ?
                           <DocumentList docs={varSim} /> :
                           <div className="analysisEmpty" style={{ height: '200px' }}>No similar documents</div> :
                         <div className="analysisEmpty" style={{ height: '200px' }}>No variable selected</div>

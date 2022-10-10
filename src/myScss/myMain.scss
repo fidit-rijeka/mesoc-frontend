@@ -648,6 +648,7 @@ nav {
 /*   ------   BROWSE SCREEN   ------   */
 
 .map-container {
+  min-height: calc(100vh - 300px);
   height: 600px;
   width: 100%;
 }

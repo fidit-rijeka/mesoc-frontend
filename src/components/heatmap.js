@@ -44,7 +44,7 @@ const Heatmap = ({ data, selectedCell, heatmapClick }) => {
 
       <span id="numSpanB1" className="numberSpan">Health and Wellbeing</span>
       <span id="numSpanB2" className="numberSpan">Urban and Terrotorial Renovation</span>
-      <span id="numSpanB3" className="numberSpan">People's Engagement and Participation</span>
+      <span id="numSpanB3" className="numberSpan">Social Cohesion</span>
 
       {data.map((cellLabel, index) => {
         return <span onClick={() => heatmapClick(index)} key={index} className="heatmapCell" style={{ background: `rgba(74, 101, 255, ${calculateOpacity(cellLabel.classification)})`, boxShadow: selectedCell === index && 'inset 0px 0px 0px 4px #ff7300' }}>

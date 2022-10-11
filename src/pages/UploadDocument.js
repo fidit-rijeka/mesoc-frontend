@@ -164,10 +164,9 @@ const UploadDocument = ({ userToken, history, userVerified }) => {
         }})
         .then(async res => {
           let locsToAdd = [];
-          console.log("RES", res)
           setFullLocData(res.data);
           await res.data.forEach(loc => {
-            locsToAdd.push({ label: `${loc.city}, ${loc.country}`, value: loc.address });
+            locsToAdd.push({ label: loc.address, value: loc.address });
           });
           console.log(res.data);
           console.log(locsToAdd);

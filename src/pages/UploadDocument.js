@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Redirect, withRouter } from 'react-router-dom';
 import { Card, CardBody, CardTitle, CardSubtitle, Alert, FormGroup, Label, Input } from "reactstrap";
+import { AvForm, AvField } from 'availity-reactstrap-validation';
 import Select from 'react-select';
 import SweetAlert from 'react-bootstrap-sweetalert';
 import axios from 'axios';
@@ -12,6 +13,11 @@ import FilePreview from '../components/filePreview';
 let locTimeout = null;
 
 const UploadDocument = ({ userToken, history, userVerified }) => {
+
+  const [invalidLanguage, setInvalidLanguage] = useState(null)
+  const [invalidLocation, setInvalidLocation] = useState(null)
+  const [invalidType, setInvalidType] = useState(null)
+  const [invalidUpload, setInvalidUpload] = useState(null)
 
   const [invalid, setInvalid] = useState(null);
 
@@ -67,30 +73,31 @@ const UploadDocument = ({ userToken, history, userVerified }) => {
     const eventTarget = e.target;
     e.preventDefault();
 
+    let isInvalidForm = false
+
     // form validations
-    if(eventTarget.title.value === '') {
-      setInvalid('Please specify title of your document.');
-      return;
-    }
     if(eventTarget.language.value === '') {
-      setInvalid('Please specify language of your document.');
-      return;
+      setInvalidLanguage('This field is invalid.')
+      isInvalidForm = true
     }
+
     if(eventTarget.location.value === '') {
-      setInvalid('Please specify location.');
-      return;
+      setInvalidLocation('This field is invalid.')
+      isInvalidForm = true
     }
     if(eventTarget.type.value === '') {
-      setInvalid('Please specify document type.');
-      return;
+      setInvalidType('This field is invalid.')
+      isInvalidForm = true
     }
-    if(eventTarget.documentAbstract.value === '') {
-      setInvalid('Please specify abstract of your document.');
-      return;
-    }
+
     if(file.length === 0) {
-      setInvalid('Please upload your document.');
-      return;
+      setInvalidUpload('Please upload your document.')
+      isInvalidForm = true
+    }
+
+    // Break if invalid.
+    if (isInvalidForm) {
+      return
     }
 
     console.log(eventTarget.title.value);
@@ -157,6 +164,7 @@ const UploadDocument = ({ userToken, history, userVerified }) => {
         }})
         .then(async res => {
           let locsToAdd = [];
+          console.log("RES", res)
           setFullLocData(res.data);
           await res.data.forEach(loc => {
             locsToAdd.push({ label: `${loc.city}, ${loc.country}`, value: loc.address });
@@ -172,23 +180,26 @@ const UploadDocument = ({ userToken, history, userVerified }) => {
 
   const langSelecChg = input => {
     setInvalid(null);
+    setInvalidLanguage(null)
     setSelectedLang(input);
   };
 
   const locSelecChg = input => {
     setInvalid(null);
+    setInvalidLocation(null)
     setSelectedLoc(input);
   };
 
   const typeSelecChg = input => {
     setInvalid(null);
+    setInvalidType(null)
     setSelectedType(input);
   };
 
   const textareachange = e => {
     var count = e.target.value.length;
     setInvalid(null);
-    
+
 		if(count > 0) {
       setTextAreaBadge(true);
 		} else {
@@ -228,7 +239,7 @@ const UploadDocument = ({ userToken, history, userVerified }) => {
             Something went wrong.
           </SweetAlert>
         }
-      
+
         <Card>
           <CardBody>
             <CardTitle>Upload document</CardTitle>
@@ -237,11 +248,19 @@ const UploadDocument = ({ userToken, history, userVerified }) => {
             {invalid && <Alert color="danger">{invalid}</Alert>}
             {wait && <Alert color="secondary">Please wait.</Alert>}
 
-            <form className="uplForm" onSubmit={handleSubmit}>
+            {/*<form className="uplForm" onSubmit={handleSubmit}>*/}
+            <AvForm className="uplForm" onValidSubmit={e => handleSubmit(e)}>
 
               <FormGroup className="select2-container formField">
-                <Label>Title</Label>
-                <Input onInput={() => setInvalid(null)} type="text" name="title" placeholder="Title of your document" className="form-control" />
+                <AvField
+                  onInput={() => setInvalid(null)}
+                  name="title"
+                  label="Title"
+                  placeholder="Title of your document"
+                  className="form-control"
+                  type="text"
+                  required
+                />
               </FormGroup>
 
               <FormGroup className="ajax-select select2-container formField">
@@ -252,16 +271,11 @@ const UploadDocument = ({ userToken, history, userVerified }) => {
                   onChange={event => langSelecChg(event)}
                   options={langOptions}
                 />
+                {invalidLanguage && (<div class="invalid-feedback d-block">{invalidLanguage}</div>)}
               </FormGroup>
 
               <FormGroup className="ajax-select select2-container formField">
                 <Label>Location</Label>
-                {/* <Select
-                  name="location"
-                  value={selectedLoc}
-                  onChange={event => locSelecChg(event)}
-                  options={locOptions}
-                /> */}
                 <Select
                   name="location"
                   value={selectedLoc}
@@ -270,6 +284,7 @@ const UploadDocument = ({ userToken, history, userVerified }) => {
                   options={locOptions}
                   isLoading={locLoading}
                 />
+                {invalidLocation && (<div class="invalid-feedback d-block">{invalidLocation}</div>)}
               </FormGroup>
 
               <FormGroup className="ajax-select select2-container formField">
@@ -280,10 +295,24 @@ const UploadDocument = ({ userToken, history, userVerified }) => {
                   onChange={event => typeSelecChg(event)}
                   options={typeOptions}
                 />
+                {invalidType && (<div class="invalid-feedback d-block">{invalidType}</div>)}
               </FormGroup>
 
               <FormGroup className="ajax-select select2-container formField">
-                <Label>Abstract</Label>
+                <AvField
+                  onChange={(e) => { textareachange(e) }}
+                  placeholder="Document abstract"
+                  name="documentAbstract"
+                  label="Acstract"
+                  className="form-control"
+                  type="textarea"
+                  minLength="1"
+                  maxLength="1000"
+                  rows="10"
+                  required
+                />
+
+                {/*<Label>Abstract</Label>
                 <Input
                   type="textarea"
                   id="textarea"
@@ -293,7 +322,7 @@ const UploadDocument = ({ userToken, history, userVerified }) => {
                   rows="10"
                   placeholder="Document abstract"
                   name="documentAbstract"
-                />
+                />*/}
                 {textAreaBadge ? (
                   <span className="badgecount badge badge-success">
                     {" "}
@@ -302,13 +331,15 @@ const UploadDocument = ({ userToken, history, userVerified }) => {
                 ) : null}
               </FormGroup>
 
-              <FileDropzone setFile={setFile} setInvalid={setInvalid} />
+              <FileDropzone setFile={setFile} setInvalid={setInvalidUpload} />
               {file.length ? <FilePreview setFile={setFile} fileName={file[0].name} /> : null}
-              
+              {invalidUpload && (<div class="invalid-feedback d-block">{invalidUpload}</div>)}
+
               <div className="mt-3 btnFix">
                 <button className="btn btn-primary btn-block wawes-effect waves-light" type="submit">Submit</button>
               </div>
-            </form>
+            {/*</form>*/}
+            </AvForm>
           </CardBody>
         </Card>
       </div>

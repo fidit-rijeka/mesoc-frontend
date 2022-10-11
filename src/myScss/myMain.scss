@@ -330,6 +330,7 @@ nav {
 
 /*   ------   UPLOAD DOCUMENT   ------   */
 
+.feedbackForm,
 .uplForm {
   display: flex;
   flex-wrap: wrap;
@@ -399,6 +400,12 @@ nav {
         color: white;
       }
     }
+  }
+}
+
+.feedbackForm {
+  .form-group {
+    width: 100% !important;
   }
 }
 

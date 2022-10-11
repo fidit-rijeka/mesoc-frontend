@@ -127,18 +127,33 @@ const UploadDocument = ({ userToken, history, userVerified }) => {
         setSucc(true);
       })
       .catch(err => {
-        console.log(err.response);
         setWait(false);
-        if(err.response.data.title[0]) {
-          setInvalid(err.response.data.title[0]);
-        } else if(err.response.data.language[0]) {
-          setInvalid(err.response.data.language[0]);
-        } else if(err.response.data.location[0]) {
-          setInvalid(err.response.data.location[0]);
-        } else if(err.response.data.file[0]) {
-          setInvalid(err.response.data.file[0]);
-        } else {
-          setDanger(true);
+
+        const errors = err.response.data
+
+        for (const property in errors) {
+          if (property === 'language') {
+            setInvalidLanguage(errors[property][0])
+            continue
+          }
+
+          if (property === 'location') {
+            setInvalidLocation(errors[property][0])
+            continue
+          }
+
+          if (property === 'type') {
+            setInvalidType(errors[property][0])
+            continue
+          }
+
+          if (property === 'file') {
+            setInvalidUpload(errors[property][0])
+            continue
+          }
+
+          setInvalid(errors[property][0]);
+          // setDanger(true);
         }
       });
   };
@@ -166,10 +181,8 @@ const UploadDocument = ({ userToken, history, userVerified }) => {
           let locsToAdd = [];
           setFullLocData(res.data);
           await res.data.forEach(loc => {
-            locsToAdd.push({ label: loc.address, value: loc.address });
+            locsToAdd.push({ label: loc.address, value: loc.location_id });
           });
-          console.log(res.data);
-          console.log(locsToAdd);
           setLocOptions(locsToAdd);
           setLocLoading(false);
         });
@@ -270,7 +283,7 @@ const UploadDocument = ({ userToken, history, userVerified }) => {
                   onChange={event => langSelecChg(event)}
                   options={langOptions}
                 />
-                {invalidLanguage && (<div class="invalid-feedback d-block">{invalidLanguage}</div>)}
+                {invalidLanguage && (<div className="invalid-feedback d-block">{invalidLanguage}</div>)}
               </FormGroup>
 
               <FormGroup className="ajax-select select2-container formField">
@@ -283,7 +296,7 @@ const UploadDocument = ({ userToken, history, userVerified }) => {
                   options={locOptions}
                   isLoading={locLoading}
                 />
-                {invalidLocation && (<div class="invalid-feedback d-block">{invalidLocation}</div>)}
+                {invalidLocation && (<div className="invalid-feedback d-block">{invalidLocation}</div>)}
               </FormGroup>
 
               <FormGroup className="ajax-select select2-container formField">
@@ -294,7 +307,7 @@ const UploadDocument = ({ userToken, history, userVerified }) => {
                   onChange={event => typeSelecChg(event)}
                   options={typeOptions}
                 />
-                {invalidType && (<div class="invalid-feedback d-block">{invalidType}</div>)}
+                {invalidType && (<div className="invalid-feedback d-block">{invalidType}</div>)}
               </FormGroup>
 
               <FormGroup className="ajax-select select2-container formField">
@@ -332,7 +345,7 @@ const UploadDocument = ({ userToken, history, userVerified }) => {
 
               <FileDropzone setFile={setFile} setInvalid={setInvalidUpload} />
               {file.length ? <FilePreview setFile={setFile} fileName={file[0].name} /> : null}
-              {invalidUpload && (<div class="invalid-feedback d-block">{invalidUpload}</div>)}
+              {invalidUpload && (<div className="invalid-feedback d-block">{invalidUpload}</div>)}
 
               <div className="mt-3 btnFix">
                 <button className="btn btn-primary btn-block wawes-effect waves-light" type="submit">Submit</button>

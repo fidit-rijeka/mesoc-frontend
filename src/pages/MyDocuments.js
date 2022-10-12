@@ -44,6 +44,17 @@ const MyDocuments = ({ userToken, userVerified }) => {
   const [docsData, setDocsData] = useState([]);
   const [docId, setDocId] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [initialLoad, setInitialLoad] = useState(true)
+  const [allData, setAllData] = useState([])
+  const [filtersTemp, setFiltersTemp] = useState(null)
+
+  const getCustomizedData = (items) => {
+    return items.map(item => ({
+      ...item,
+      language_id: item.language.name,
+      location_id: item.location.address
+    }))
+  }
 
   useEffect(() => {
     // TODO:
@@ -56,8 +67,14 @@ const MyDocuments = ({ userToken, userVerified }) => {
         }
       })
       .then(res => {
-        console.log(res.data);
-        setDocsData(res.data);
+        console.log(getCustomizedData(res.data));
+        setDocsData(getCustomizedData(res.data));
+
+        if (initialLoad) {
+          setAllData(getCustomizedData(res.data))
+          setInitialLoad(false)
+        }
+
         setLoading(false);
       })
       .catch(err => {
@@ -78,6 +95,7 @@ const MyDocuments = ({ userToken, userVerified }) => {
   };
 
   const switchTab = index => {
+    setInitialLoad(true)
     setLoading(true);
     setDocsData(null);
     setActiveTab(index);
@@ -90,7 +108,7 @@ const MyDocuments = ({ userToken, userVerified }) => {
           }
         })
         .then(res => {
-          setDocsData(res.data);
+          setDocsData(getCustomizedData(res.data));
           setLoading(false);
         })
         .catch(err => {
@@ -104,7 +122,7 @@ const MyDocuments = ({ userToken, userVerified }) => {
           }
         })
         .then(res => {
-          setDocsData(res.data);
+          setDocsData(getCustomizedData(res.data));
           setLoading(false);
         })
         .catch(err => {
@@ -144,16 +162,21 @@ const MyDocuments = ({ userToken, userVerified }) => {
           text={modalText}
           modalOpen={infoModalOpen}
           setModalOpen={setInfoModalOpen}
-          docId={docId} userToken={userToken}
+          docId={docId}
+          userToken={userToken}
           actionCompleted={actionCompleted}
           action="deleteDocument"
         />
 
         <FiltersModal
+          userToken={userToken}
           modalOpen={filtersModalOpen}
           setModalOpen={setFiltersModalOpen}
           docsData={docsData}
           setDocsData={setDocsData}
+          allData={allData}
+          filtersTemp={filtersTemp}
+          setFiltersTemp={setFiltersTemp}
         />
 
         <Card>

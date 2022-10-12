@@ -9,6 +9,24 @@ import Sidenav from '../components/sidenav';
 import InfoModal from '../components/infoModal';
 import AnalysisLoader from '../components/analysisLoader';
 
+const getBadgeClass = (status) => {
+  let cls = 'badge text-capitalize p-2 '
+
+  if (status === 'active' || status === 'processing' || status === 'dismissed') {
+    cls += 'badge-light'
+  }
+
+  if (status === 'processed') {
+    cls += 'badge-success'
+  }
+
+  if (status === 'failed') {
+    cls += 'badge-danger'
+  }
+
+  return cls
+}
+
 const MyDocuments = ({ userToken, userVerified }) => {
 
   const [activeTab, setActiveTab] = useState('1');
@@ -152,6 +170,7 @@ const MyDocuments = ({ userToken, userVerified }) => {
                             <th>Uploaded</th>
                             <th>Language</th>
                             <th>Location</th>
+                            <th>Status</th>
                             <th></th>
                           </tr>
                         </thead>
@@ -162,7 +181,12 @@ const MyDocuments = ({ userToken, userVerified }) => {
                               <td>{doc.title}</td>
                               <td>{dayjs(doc.uploaded_at).format('DD/MM/YYYY')}</td>
                               <td>{doc.language.name}</td>
-                              <td>{`${doc.location.city}, ${doc.location.country}`}</td>
+                              <td>{doc.location.address}</td>
+                              <td>
+                                <span className={getBadgeClass(doc.state)}>
+                                  {doc.state}
+                                </span>
+                              </td>
                               <td>
                                 {doc.state === 'processed' ?
                                   <Link to={`document/${doc.url.split('/')[4]}_${doc.title}_${doc.location.city}_${doc.location.country}`} className="btn btn-primary wawes-effect waves-light">Open</Link> :
@@ -175,7 +199,7 @@ const MyDocuments = ({ userToken, userVerified }) => {
                           })}
                         </tbody>
                       </Table>
-                    </div> : 
+                    </div> :
                     <div className="analysisEmpty" style={{ height: '200px' }}>You have no active documents</div>
                 }
               </TabPane>
@@ -192,6 +216,7 @@ const MyDocuments = ({ userToken, userVerified }) => {
                             <th>Uploaded</th>
                             <th>Language</th>
                             <th>Location</th>
+                            <th>Status</th>
                             <th></th>
                           </tr>
                         </thead>
@@ -204,13 +229,18 @@ const MyDocuments = ({ userToken, userVerified }) => {
                               <td>{doc.language.name}</td>
                               <td>{`${doc.location.city}, ${doc.location.country}`}</td>
                               <td>
+                                <span className={getBadgeClass(doc.state)}>
+                                  {doc.state}
+                                </span>
+                              </td>
+                              <td>
                                 <button onClick={() => openModal('inform', doc.id)} className="btn btn-info wawes-effect waves-light">Info</button>
                               </td>
                             </tr>
                           })}
                         </tbody>
                       </Table>
-                    </div> : 
+                    </div> :
                     <div className="analysisEmpty" style={{ height: '200px' }}>You have no failed documents</div>
                 }
               </TabPane>

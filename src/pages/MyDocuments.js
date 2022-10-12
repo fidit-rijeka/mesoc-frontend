@@ -7,6 +7,7 @@ import dayjs from 'dayjs';
 
 import Sidenav from '../components/sidenav';
 import InfoModal from '../components/infoModal';
+import FiltersModal from '../components/filtersModal';
 import AnalysisLoader from '../components/analysisLoader';
 
 const inactiveStatuses = [
@@ -37,6 +38,7 @@ const MyDocuments = ({ userToken, userVerified }) => {
 
   const [activeTab, setActiveTab] = useState('1');
   const [infoModalOpen, setInfoModalOpen] = useState(false);
+  const [filtersModalOpen, setFiltersModalOpen] = useState(false);
   const [modalType, setModalType] = useState(null);
   const [modalText, setModalText] = useState(null);
   const [docsData, setDocsData] = useState([]);
@@ -116,6 +118,10 @@ const MyDocuments = ({ userToken, userVerified }) => {
     setInfoModalOpen(false);
   }
 
+  const showFiltersModal = () => {
+    setFiltersModalOpen(true)
+  }
+
   // USER MANAGEMENT
   // If not authenticated, redirect to sign in.
   if(userToken === null) {
@@ -143,10 +149,25 @@ const MyDocuments = ({ userToken, userVerified }) => {
           action="deleteDocument"
         />
 
+        <FiltersModal
+          modalOpen={filtersModalOpen}
+          setModalOpen={setFiltersModalOpen}
+          docsData={docsData}
+          setDocsData={setDocsData}
+        />
+
         <Card>
           <CardBody>
-            <CardTitle>My documents</CardTitle>
-            <CardSubtitle className="mb-3">Here you can find all of your documents you have uploaded over time.</CardSubtitle>
+            <div className='flexed'>
+              <div>
+                <CardTitle>My documents</CardTitle>
+                <CardSubtitle className="mb-3">Here you can find all of your documents you have uploaded over time.</CardSubtitle>
+              </div>
+
+              <button onClick={showFiltersModal} className='btn btn-warning btn-filters'>
+                Filter Results
+              </button>
+            </div>
 
             <Nav tabs className="nav-tabs-custom hideOnMobile">
               <NavItem>

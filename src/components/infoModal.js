@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Modal } from "reactstrap";
 import axios from 'axios';
 
-const InfoModal = ({text, modalOpen, setModalOpen, type, docId, userToken, action = null}) => {
+const InfoModal = ({text, modalOpen, setModalOpen, type, docId, userToken, action = null, actionCompleted = null}) => {
+  const [processing, setProcessing] = useState(false);
 
   const moveToFailed = () => {
     setModalOpen(false);
@@ -18,6 +19,24 @@ const InfoModal = ({text, modalOpen, setModalOpen, type, docId, userToken, actio
         }
       })
   };
+
+  const submitAction = () => {
+    setProcessing(true)
+
+    // Delete document action.
+    if (action === 'deleteDocument') {
+      axios.delete(docId, {
+        headers: {
+          Authorization: `Bearer ${userToken}`
+        }
+      }).then(() => {
+        setProcessing(false)
+        actionCompleted(true)
+      }).catch(() => {
+        setProcessing(false)
+      })
+    }
+  }
 
   return(
     <Modal
@@ -37,7 +56,9 @@ const InfoModal = ({text, modalOpen, setModalOpen, type, docId, userToken, actio
           action ? (
               <div className='actions'>
                 <button onClick={moveToFailed} className="btn btn-secondary wawes-effect">Close</button>
-                <button onClick={moveToFailed} className="btn btn-primary wawes-effect ml-3">Submit</button>
+                <button onClick={submitAction} className="btn btn-primary wawes-effect ml-3" disabled={processing}>
+                  {processing ? 'Hold on...' : 'Submit'}
+                </button>
               </div>
             ) : (
               type === 'reject'

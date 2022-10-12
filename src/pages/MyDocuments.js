@@ -111,6 +111,11 @@ const MyDocuments = ({ userToken, userVerified }) => {
     }
   };
 
+  const actionCompleted = () => {
+    switchTab(activeTab)
+    setInfoModalOpen(false);
+  }
+
   // USER MANAGEMENT
   // If not authenticated, redirect to sign in.
   if(userToken === null) {
@@ -134,6 +139,7 @@ const MyDocuments = ({ userToken, userVerified }) => {
           modalOpen={infoModalOpen}
           setModalOpen={setInfoModalOpen}
           docId={docId} userToken={userToken}
+          actionCompleted={actionCompleted}
           action="deleteDocument"
         />
 
@@ -189,7 +195,7 @@ const MyDocuments = ({ userToken, userVerified }) => {
                         </thead>
                         <tbody>
                           {docsData.map((doc, index) => {
-                            return <tr key={doc.id}>
+                            return <tr key={`first_${index}`}>
                               <th scope="row">{index + 1}</th>
                               <td>{doc.title}</td>
                               <td>{dayjs(doc.uploaded_at).format('DD/MM/YYYY')}</td>
@@ -242,7 +248,7 @@ const MyDocuments = ({ userToken, userVerified }) => {
                         </thead>
                         <tbody>
                           {docsData.map((doc, index) => {
-                            return <tr key={doc.id}>
+                            return <tr key={`second_${index}`}>
                               <th scope="row">{index + 1}</th>
                               <td>{doc.title}</td>
                               <td>{dayjs(doc.uploaded_at).format('DD/MM/YYYY')}</td>

@@ -9,19 +9,25 @@ import Sidenav from '../components/sidenav';
 import InfoModal from '../components/infoModal';
 import AnalysisLoader from '../components/analysisLoader';
 
-const getBadgeClass = (status) => {
-  let cls = 'badge text-capitalize p-2 '
+const inactiveStatuses = [
+  'active',     // This is like pending state.
+  'processing',
+  'dismissed'
+]
 
-  if (status === 'active' || status === 'processing' || status === 'dismissed') {
-    cls += 'badge-light'
+const getBadgeClass = (status) => {
+  let cls = 'badge border text-capitalize p-2 '
+
+  if (inactiveStatuses.includes(status)) {
+    cls += 'text-secondary'
   }
 
   if (status === 'processed') {
-    cls += 'badge-success'
+    cls += 'text-success'
   }
 
   if (status === 'failed') {
-    cls += 'badge-danger'
+    cls += 'text-danger'
   }
 
   return cls
@@ -65,7 +71,7 @@ const MyDocuments = ({ userToken, userVerified }) => {
   const openModal = (type, selected) => {
     setDocId(selected);
     setModalType(type);
-    setModalText("For this document we weren't able to produce any results.");
+    setModalText("By pressing submit you agree to delete your document from the system.");
     setInfoModalOpen(true);
   };
 
@@ -122,7 +128,14 @@ const MyDocuments = ({ userToken, userVerified }) => {
       </div>
       <div className="pageArea">
 
-        <InfoModal type={modalType} text={modalText} modalOpen={infoModalOpen} setModalOpen={setInfoModalOpen} docId={docId} userToken={userToken} />
+        <InfoModal
+          type={modalType}
+          text={modalText}
+          modalOpen={infoModalOpen}
+          setModalOpen={setInfoModalOpen}
+          docId={docId} userToken={userToken}
+          action="deleteDocument"
+        />
 
         <Card>
           <CardBody>
@@ -188,11 +201,18 @@ const MyDocuments = ({ userToken, userVerified }) => {
                                 </span>
                               </td>
                               <td>
-                                {doc.state === 'processed' ?
-                                  <Link to={`document/${doc.url.split('/')[4]}_${doc.title}_${doc.location.city}_${doc.location.country}`} className="btn btn-primary wawes-effect waves-light">Open</Link> :
-                                  doc.state === 'processing' ?
-                                    <button className="btn btn-primary wawes-effect waves-light" disabled>Processing</button> :
-                                    <button onClick={() => openModal('reject', doc.url)} className="btn btn-danger wawes-effect waves-light">Failed</button>
+                                {
+                                  inactiveStatuses.includes(doc.state)
+                                    ? '-'
+                                    : doc.state === 'processed'
+                                      ? (<Link to={`document/${doc.url.split('/')[4]}_${doc.title}_${doc.location.city}_${doc.location.country}`} className="btn btn-primary wawes-effect waves-light">Open</Link>)
+                                      : (
+                                        <button
+                                        onClick={() => openModal('reject', doc.url)}
+                                        className="btn btn-danger wawes-effect waves-light"
+                                      >
+                                        Delete
+                                      </button>)
                                 }
                               </td>
                             </tr>
@@ -227,14 +247,21 @@ const MyDocuments = ({ userToken, userVerified }) => {
                               <td>{doc.title}</td>
                               <td>{dayjs(doc.uploaded_at).format('DD/MM/YYYY')}</td>
                               <td>{doc.language.name}</td>
-                              <td>{`${doc.location.city}, ${doc.location.country}`}</td>
+                              <td>{doc.location.address}</td>
                               <td>
                                 <span className={getBadgeClass(doc.state)}>
                                   {doc.state}
                                 </span>
                               </td>
                               <td>
-                                <button onClick={() => openModal('inform', doc.id)} className="btn btn-info wawes-effect waves-light">Info</button>
+                                <button
+                                  onClick={() => openModal('reject', doc.url)}
+                                  className="btn btn-danger wawes-effect waves-light"
+                                >
+                                  Delete
+                                </button>
+
+                                {/*<button onClick={() => openModal('inform', doc.id)} className="btn btn-info wawes-effect waves-light">Info</button>*/}
                               </td>
                             </tr>
                           })}

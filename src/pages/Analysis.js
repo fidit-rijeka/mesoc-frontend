@@ -9,6 +9,8 @@ import Graph from '../components/graph';
 import AnalysisLoader from '../components/analysisLoader';
 import DocumentList from '../components/documentList';
 
+import ReclassificationModal from '../components/reclassificationModal'
+
 const compare = (a, b) => {
   const varA = a.strength;
   const varB= b.strength;
@@ -64,6 +66,8 @@ const Analysis = ({ userToken, match }) => {
   const [varSimLoading, setVarSimLoading] = useState(false);
   const [isKeywordsModal, setIsKeywordsModal] = useState(false);
 
+  const [classModalOpen, setClassModalOpen] = useState(false)
+
   useEffect(() => {
     if(match.params.analysisType === 'location') {
 
@@ -102,6 +106,10 @@ const Analysis = ({ userToken, match }) => {
         });
     }
   }, []);
+
+  const showClassificationModal = () => {
+    setClassModalOpen(true)
+  }
 
   const heatmapClick = async cellIndex => {
     const latlong = match.params.analysisKey.split('_');
@@ -251,23 +259,39 @@ const Analysis = ({ userToken, match }) => {
           data={(selectedVar !== null && vars !== null) ? vars[selectedVar] : {}}
         />
 
+        <ReclassificationModal
+          setModalOpen={setClassModalOpen}
+          modalOpen={classModalOpen}
+          userToken={userToken}
+          cells={cells}
+        />
+
         <Row>
           <Col lg="6">
             <Card>
               <CardBody>
                 <CardTitle>MESOC matrix</CardTitle>
-                <CardSubtitle className="mb-3">{
+                <CardSubtitle className="mb-3">
+                  {
                   match.params.analysisType === 'location' ?
                     `Location: ${match.params.analysisKey.split('_')[3] || 'All cities'}` :
-                    `${match.params.analysisKey.split('_')[1]}, ${match.params.analysisKey.split('_')[2]}, ${match.params.analysisKey.split('_')[3]}`
+                    `${match.params.analysisKey.split('_')[1]}, ${match.params.analysisKey.split('_')[2]}`
                 }</CardSubtitle>
-                {cells ?
-                  <Heatmap
-                    data={cells}
-                    selectedCell={selectedCell}
-                    heatmapClick={heatmapClick}
-                  /> :
-                  <AnalysisLoader height='590px' />
+                {cells
+                  ? <div>
+                    <Heatmap
+                      data={cells}
+                      selectedCell={selectedCell}
+                      heatmapClick={heatmapClick}
+                    />
+
+                    <div className='mt-4 text-right'>
+                      <button type="button" className="btn btn-secondary" onClick={showClassificationModal}>
+                        Reclassify
+                      </button>
+                    </div>
+                  </div>
+                  : <AnalysisLoader height='590px' />
                 }
               </CardBody>
             </Card>

@@ -259,7 +259,7 @@ const MyDocuments = ({ userToken, userVerified }) => {
                                   inactiveStatuses.includes(doc.state)
                                     ? '-'
                                     : doc.state === 'processed'
-                                      ? (<Link to={`document/${doc.url.split('/')[4]}_${doc.title}_${doc.location.city}_${doc.location.country}`} className="btn btn-primary wawes-effect waves-light">Open</Link>)
+                                      ? (<Link to={`document/${doc.url.split('/')[4]}_${doc.title.replace(/ /g,'').replace('#',' ')}_${doc.location.address}`} className="btn btn-primary wawes-effect waves-light">Open</Link>)
                                       : (
                                         <button
                                         onClick={() => openModal('reject', doc.url)}

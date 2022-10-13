@@ -54,7 +54,7 @@ const MyDocuments = ({ userToken, userVerified }) => {
     return items.map(item => ({
       ...item,
       language_id: item.language.name,
-      location_id: item.location.address
+      location_id: item.location.address,
     }))
   }
 

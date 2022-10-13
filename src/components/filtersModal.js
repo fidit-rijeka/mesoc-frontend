@@ -1,17 +1,23 @@
 import React, { useState, useEffect, useImperativeHandle, forwardRef } from 'react';
-import { FormGroup, Label } from "reactstrap";
+import { FormGroup, Label, Input, Form } from "reactstrap";
+import { DatePicker } from 'reactstrap-date-picker'
 import { Modal } from "reactstrap";
 import Select from 'react-select'
 import axios from 'axios'
+import moment from 'moment'
 
 let locTimeout = null;
 
 const FiltersModal = forwardRef(({ userToken, modalOpen, setModalOpen, docsData, setDocsData, allData, filtersTemp, setFiltersTemp }, ref) => {
   const [filters, setFilters] = useState(
     filtersTemp || {
+    title: null,
+    uploaded_at: null,
     language_id: [],
     location_id: []
   })
+
+  const [uploaded_at, setUploadedAt] = useState(null)
 
   const [langPicked, setLangPicked] = useState([])
   const [locPicked, setLocPicked] = useState([])
@@ -46,8 +52,23 @@ const FiltersModal = forwardRef(({ userToken, modalOpen, setModalOpen, docsData,
       });
   }, []);
 
-  const reset = () => {
-    console.log("Oh hi there!")
+  const handleTitleChange = (e) => {
+    const val = {
+      ...filters,
+      title: e.target.value
+    }
+    setFilters(val)
+  }
+
+  const handleDateChange = (value) => {
+    setUploadedAt(value)
+
+    const val = {
+      ...filters,
+      uploaded_at: value
+    }
+
+    setFilters(val)
   }
 
   const locSearch = parameter => {
@@ -114,6 +135,12 @@ const FiltersModal = forwardRef(({ userToken, modalOpen, setModalOpen, docsData,
     const query = {}
 
     for (const keys in filters) {
+      if (!filters[keys]) { continue }
+
+      if (filters[keys].constructor === String) {
+        query[keys] = filters[keys]
+      }
+
       if (filters[keys].constructor === Array && filters[keys].length > 0) {
         query[keys] = filters[keys]
       }
@@ -129,11 +156,24 @@ const FiltersModal = forwardRef(({ userToken, modalOpen, setModalOpen, docsData,
   const filterData = (data, query) => {
     const filteredData = data.filter((item) => {
       for (const key in query) {
+        if (item[key] === undefined || !item[key]) {
+          return false
+        }
+
         if (
-          item[key] === undefined ||
+          Array.isArray(query[key]) &&
           !query[key].some((r) => item[key].includes(r))
         ) {
           return false
+        }
+
+        if (typeof query[key] === 'string' || query[key] instanceof String) {
+          // Date instance.
+          if (key === 'uploaded_at') {
+            return moment(item[key]).format('YYYY-MM-DD') === moment(query[key]).format('YYYY-MM-DD')
+          }
+
+          return item[key].includes(query[key])
         }
       }
 
@@ -152,6 +192,27 @@ const FiltersModal = forwardRef(({ userToken, modalOpen, setModalOpen, docsData,
         <h5 className="modal-title mt-0">Filter results</h5>
       </div>
       <div className="modal-body">
+        <FormGroup className='ajax-select select2-container formField'>
+          <Label>Title</Label>
+          <Input
+            value={filters.title}
+            type="text"
+            name="title"
+            placeholder="Write documents title"
+            onChange={handleTitleChange}
+          />
+        </FormGroup>
+
+        <FormGroup className='ajax-select select2-container formField'>
+          <Label>Upload date</Label>
+
+          <DatePicker
+            value={uploaded_at}
+            onChange={(v) => handleDateChange(v)}
+            placeholder="Select date"
+          />
+        </FormGroup>
+
         <FormGroup className="ajax-select select2-container formField">
           <Label>Language</Label>
           <Select

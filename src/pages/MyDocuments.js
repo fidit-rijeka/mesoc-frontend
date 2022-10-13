@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, withRouter, Redirect } from 'react-router-dom';
 import { Table, Card, CardBody, CardTitle, CardSubtitle, Nav, NavItem, NavLink, TabContent, TabPane } from "reactstrap";
 import classnames from 'classnames';
@@ -35,6 +35,8 @@ const getBadgeClass = (status) => {
 }
 
 const MyDocuments = ({ userToken, userVerified }) => {
+
+  const filtersRef = useRef(null);
 
   const [activeTab, setActiveTab] = useState('1');
   const [infoModalOpen, setInfoModalOpen] = useState(false);
@@ -95,6 +97,7 @@ const MyDocuments = ({ userToken, userVerified }) => {
   };
 
   const switchTab = index => {
+    filtersRef.current.reset()
     setInitialLoad(true)
     setLoading(true);
     setDocsData(null);
@@ -169,6 +172,7 @@ const MyDocuments = ({ userToken, userVerified }) => {
         />
 
         <FiltersModal
+          ref={filtersRef}
           userToken={userToken}
           modalOpen={filtersModalOpen}
           setModalOpen={setFiltersModalOpen}

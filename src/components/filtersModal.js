@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useImperativeHandle, forwardRef } from 'react';
 import { FormGroup, Label } from "reactstrap";
 import { Modal } from "reactstrap";
 import Select from 'react-select'
@@ -6,7 +6,7 @@ import axios from 'axios'
 
 let locTimeout = null;
 
-const FiltersModal = ({ userToken, modalOpen, setModalOpen, docsData, setDocsData, allData, filtersTemp, setFiltersTemp }) => {
+const FiltersModal = forwardRef(({ userToken, modalOpen, setModalOpen, docsData, setDocsData, allData, filtersTemp, setFiltersTemp }, ref) => {
   const [filters, setFilters] = useState(
     filtersTemp || {
     language_id: [],
@@ -19,6 +19,18 @@ const FiltersModal = ({ userToken, modalOpen, setModalOpen, docsData, setDocsDat
   const [langOptions, setLangOptions] = useState([]);
   const [locOptions, setLocOptions] = useState([]);
   const [locLoading, setLocLoading] = useState(false);
+
+  useImperativeHandle(ref, () => ({
+    reset() {
+      setLangPicked([])
+      setLocPicked([])
+
+      setFilters({
+        language_id: [],
+        location_id: []
+      })
+    },
+  }));
 
   useEffect(() => {
     axios
@@ -33,6 +45,10 @@ const FiltersModal = ({ userToken, modalOpen, setModalOpen, docsData, setDocsDat
         setLangOptions(langsToAdd);
       });
   }, []);
+
+  const reset = () => {
+    console.log("Oh hi there!")
+  }
 
   const locSearch = parameter => {
     if(parameter === '') {
@@ -171,6 +187,6 @@ const FiltersModal = ({ userToken, modalOpen, setModalOpen, docsData, setDocsDat
       </div>
     </Modal>
   );
-};
+});
 
 export default FiltersModal;

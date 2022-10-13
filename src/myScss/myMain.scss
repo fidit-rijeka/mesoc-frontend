@@ -512,6 +512,17 @@ nav {
       transition: .03s;
       cursor: pointer;
     }
+
+    &.inputElement {
+      input {
+        border: none !important;
+        background: transparent !important;
+        outline: none !important;
+        width: 100%;
+        text-align: center;
+        font-size: 14px;
+      }
+    }
   }
 
   @media screen and (max-width: 500px) {

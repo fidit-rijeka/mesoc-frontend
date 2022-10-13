@@ -285,11 +285,11 @@ const Analysis = ({ userToken, match }) => {
                       heatmapClick={heatmapClick}
                     />
 
-                    <div className='mt-4 text-right'>
+                    { match.params.analysisType === 'document' && <div className='mt-4 text-right'>
                       <button type="button" className="btn btn-secondary" onClick={showClassificationModal}>
                         Reclassify
                       </button>
-                    </div>
+                    </div> }
                   </div>
                   : <AnalysisLoader height='590px' />
                 }

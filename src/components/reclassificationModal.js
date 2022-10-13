@@ -1,10 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Modal } from "reactstrap";
+import Heatmap from './heatmap';
 
 const ReclassificationModal = ({ setModalOpen, modalOpen, userToken, cells }) => {
 
+  const [selectedCell, setSelectedCell] = useState(null);
+  const [updatedCells, setUpdatedCells] = useState(null)
+
+  const cellsUpdated = (newCells) => {
+    setUpdatedCells(newCells)
+  }
+
   const apply = () => {
-    console.log("Apply changes", userToken, cells)
+    console.log("Apply changes", updatedCells)
   }
 
   const cancel = () => {
@@ -23,7 +31,12 @@ const ReclassificationModal = ({ setModalOpen, modalOpen, userToken, cells }) =>
         </div>
       </div>
       <div className="modal-body">
-        <p>Display cells here....</p>
+        <Heatmap
+          data={cells}
+          selectedCell={selectedCell}
+          cellsUpdated={cellsUpdated}
+          editable
+        />
       </div>
       <div className="modal-footer">
         <button onClick={cancel} className="btn btn-secondary wawes-effect">

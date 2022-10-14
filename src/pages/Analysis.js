@@ -66,11 +66,53 @@ const Analysis = ({ userToken, match }) => {
   const [varSimLoading, setVarSimLoading] = useState(false);
   const [isKeywordsModal, setIsKeywordsModal] = useState(false);
 
+  const [geoCellLoading, setGeoCellLoading] = useState(true);
+  const [geoCell, setGeoCell] = useState(null)
+
   const [classModalOpen, setClassModalOpen] = useState(false);
   const [docId, setDocId] = useState(null)
 
+  const fetchLocationDocuments = async () => {
+    const address = match.params.analysisType === 'location'
+      ? match.params.analysisKey.split('_')[3]
+      : match.params.analysisKey.split('_')[2]
+
+    const headers = { Authorization: `Bearer ${userToken}` }
+    let location_id = null
+    let documents = []
+
+    if (!address) { return }
+
+    // Get location id.
+    await axios
+      .get(
+        `${process.env.REACT_APP_API_DOMAIN}/locations?address=${address}`,
+        { headers }
+      ).then(response => {
+        location_id   = response.data.length > 0
+          ? response.data.find(i => i.address === address).location_id
+          : null
+      })
+
+      if (!location_id) { return }
+
+      //  Get documents related to location.
+      await axios
+        .get(
+          `${process.env.REACT_APP_API_DOMAIN}/aggregates/location/documents?location_id=${location_id}`,
+          { headers }
+        ).then(response => { documents = response.data })
+
+      setGeoCell(documents)
+      setGeoCellLoading(false)
+  }
+
   useEffect(() => {
     setDocId(match.params.analysisKey.split('_')[0])
+
+    if (match.params.analysisKey !== 'all') {
+      fetchLocationDocuments()
+    }
 
     if(match.params.analysisType === 'location') {
 
@@ -326,6 +368,23 @@ const Analysis = ({ userToken, match }) => {
         {
           match.params.analysisKey !== 'all' &&
             <Row>
+              <Col lg="6">
+                <Card>
+                  <CardBody>
+                    <CardTitle>Similar documents</CardTitle>
+                    <CardSubtitle className="mb-3">Document similarity by geological refference</CardSubtitle>
+                    {
+                      geoCellLoading ?
+                        <AnalysisLoader height="200px" /> :
+                        (geoCell && geoCell.length > 0 ?
+                          <DocumentList docs={geoCell} /> :
+                          <div className="analysisEmpty" style={{ height: '200px' }}>
+                              No similar documents
+                          </div>)
+                    }
+                  </CardBody>
+                </Card>
+              </Col>
               <Col lg="6">
                 <Card>
                   <CardBody>

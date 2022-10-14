@@ -66,9 +66,12 @@ const Analysis = ({ userToken, match }) => {
   const [varSimLoading, setVarSimLoading] = useState(false);
   const [isKeywordsModal, setIsKeywordsModal] = useState(false);
 
-  const [classModalOpen, setClassModalOpen] = useState(false)
+  const [classModalOpen, setClassModalOpen] = useState(false);
+  const [docId, setDocId] = useState(null)
 
   useEffect(() => {
+    setDocId(match.params.analysisKey.split('_')[0])
+
     if(match.params.analysisType === 'location') {
 
       const latlong = match.params.analysisKey.split('_');
@@ -264,6 +267,7 @@ const Analysis = ({ userToken, match }) => {
           modalOpen={classModalOpen}
           userToken={userToken}
           cells={cells}
+          docId={docId}
         />
 
         <Row>

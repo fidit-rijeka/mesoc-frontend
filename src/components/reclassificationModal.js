@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Modal } from "reactstrap";
 import Heatmap from './heatmap';
+import axios from 'axios'
 
-const ReclassificationModal = ({ setModalOpen, modalOpen, userToken, cells }) => {
+const ReclassificationModal = ({ setModalOpen, modalOpen, userToken, cells, docId }) => {
 
   const [selectedCell, setSelectedCell] = useState(null);
   const [updatedCells, setUpdatedCells] = useState(null)
@@ -11,8 +12,20 @@ const ReclassificationModal = ({ setModalOpen, modalOpen, userToken, cells }) =>
     setUpdatedCells(newCells)
   }
 
-  const apply = () => {
-    console.log("Apply changes", updatedCells)
+  const apply = async() => {
+    const headers = {
+      Authorization: `Bearer ${userToken}`
+    }
+
+    await axios.patch(
+      `${process.env.REACT_APP_API_DOMAIN}/documents/${docId}/classification`,
+      { cells: updatedCells },  // #TODO - API needs to be updated regarding this method. It should accept array
+      { headers }               //         of objects, i.e. [{ cell: 1, classfication: 0.35 }]
+    ).then(response => {
+      console.log("Success", response)
+    }).catch(error => {
+      console.log("ERR", error.response)
+    })
   }
 
   const cancel = () => {

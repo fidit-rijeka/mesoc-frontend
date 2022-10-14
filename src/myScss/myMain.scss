@@ -523,6 +523,11 @@ nav {
         font-size: 14px;
       }
     }
+
+    &.marked {
+      background: #ffc400 !important;
+      user-select: none;
+    }
   }
 
   @media screen and (max-width: 500px) {

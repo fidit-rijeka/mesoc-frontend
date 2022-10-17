@@ -14,6 +14,7 @@ let locTimeout = null;
 
 const UploadDocument = ({ userToken, history, userVerified }) => {
 
+  const [invalidTitle, setInvalidTitle] = useState(null)
   const [invalidLanguage, setInvalidLanguage] = useState(null)
   const [invalidLocation, setInvalidLocation] = useState(null)
   const [invalidType, setInvalidType] = useState(null)
@@ -75,6 +76,8 @@ const UploadDocument = ({ userToken, history, userVerified }) => {
 
     let isInvalidForm = false
 
+    setInvalidTitle(null)
+
     // form validations
     if(eventTarget.language.value === '') {
       setInvalidLanguage('This field is invalid.')
@@ -132,6 +135,11 @@ const UploadDocument = ({ userToken, history, userVerified }) => {
         const errors = err.response.data
 
         for (const property in errors) {
+          if (property === 'title') {
+            setInvalidTitle(errors[property][0])
+            continue
+          }
+
           if (property === 'language') {
             setInvalidLanguage(errors[property][0])
             continue
@@ -272,7 +280,12 @@ const UploadDocument = ({ userToken, history, userVerified }) => {
                   className="form-control"
                   type="text"
                   required
+                  validate={{
+                    required: {value: true, errorMessage: "Title field is required."},
+                    maxLength: {value: 250, errorMessage: "Ensure this field has no more than 250 characters."}
+                }}
                 />
+                {invalidTitle && (<div className="invalid-feedback d-block">{invalidTitle}</div>)}
               </FormGroup>
 
               <FormGroup className="ajax-select select2-container formField">

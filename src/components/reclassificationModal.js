@@ -21,7 +21,7 @@ const ReclassificationModal = ({ setModalOpen, modalOpen, userToken, cells, docI
     }
 
     await axios.patch(
-      `${process.env.REACT_APP_API_DOMAIN}/documents/${docId}/classification`,
+      `${process.env.REACT_APP_API_DOMAIN}/documents/${docId}/classification/`,
       { cells: markedCells },  // #TODO - API needs to be updated regarding this method. It should accept array
       { headers }               //         of objects, i.e. [{ cell: 1, classfication: 0.35 }]
     ).then(() => {

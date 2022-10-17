@@ -97,7 +97,6 @@ const MyDocuments = ({ userToken, userVerified }) => {
   };
 
   const switchTab = index => {
-    filtersRef.current.reset()
     setInitialLoad(true)
     setLoading(true);
     setDocsData(null);
@@ -112,6 +111,7 @@ const MyDocuments = ({ userToken, userVerified }) => {
         })
         .then(res => {
           setDocsData(getCustomizedData(res.data));
+          filtersRef.current.reset(res.data)
           setLoading(false);
         })
         .catch(err => {
@@ -126,6 +126,7 @@ const MyDocuments = ({ userToken, userVerified }) => {
         })
         .then(res => {
           setDocsData(getCustomizedData(res.data));
+          filtersRef.current.reset(res.data)
           setLoading(false);
         })
         .catch(err => {

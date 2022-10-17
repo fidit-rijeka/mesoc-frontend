@@ -17,6 +17,7 @@ const FiltersModal = forwardRef(({ userToken, modalOpen, setModalOpen, docsData,
     location_id: []
   })
 
+  const [postResetData, setPostResetData] = useState(null)
   const [uploaded_at, setUploadedAt] = useState(null)
 
   const [langPicked, setLangPicked] = useState([])
@@ -27,7 +28,8 @@ const FiltersModal = forwardRef(({ userToken, modalOpen, setModalOpen, docsData,
   const [locLoading, setLocLoading] = useState(false);
 
   useImperativeHandle(ref, () => ({
-    reset() {
+    reset(data) {
+      setPostResetData(data)
       setLangPicked([])
       setLocPicked([])
 
@@ -126,7 +128,7 @@ const FiltersModal = forwardRef(({ userToken, modalOpen, setModalOpen, docsData,
 
   const apply = () => {
     const query = buildFilters()
-    const result = filterData(allData, query)
+    const result = filterData(postResetData || allData, query)
     setDocsData(result)
     setModalOpen(false)
   }

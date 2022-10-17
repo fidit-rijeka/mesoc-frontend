@@ -27,9 +27,9 @@ const compare = (a, b) => {
 
 const KeywordsModal = ({ isOpen, setIsOpen, data }) => {
 
-  useEffect(() => {
+  /*useEffect(() => {
     console.log(data.keywords);
-  }, []);
+  }, []);*/
 
   return (
     <Modal
@@ -43,7 +43,7 @@ const KeywordsModal = ({ isOpen, setIsOpen, data }) => {
         <p>
           {
             data.keywords &&
-              data.keywords.map((each, index) => ( <span>{each}, </span> ))
+              data.keywords.map((each, index) => ( <span key={`kw_${index}`}>{each}, </span> ))
           }
         </p>
       </div>
@@ -125,12 +125,10 @@ const Analysis = ({ userToken, match }) => {
       axios
         .get(url)
         .then(async res => {
-          console.log(res);
           let heatData = await [...Array(30).keys()].map(x => {return {cell: x, classification: 0.0}});
-          await res.data.map(resItem => {
+          await res.data.forEach(resItem => {
             heatData[resItem.cell] = resItem;
           });
-          console.log(heatData);
           setCells(heatData);
         })
     }
@@ -142,9 +140,8 @@ const Analysis = ({ userToken, match }) => {
           }
         })
         .then(async res => {
-          console.log(res.data);
           let heatData = await [...Array(30).keys()].map(x => {return {cell: x, classification: 0.0}});
-          await res.data.map(resItem => {
+          await res.data.forEach(resItem => {
             heatData[resItem.cell] = resItem;
           });
           setCells(heatData);
@@ -178,10 +175,10 @@ const Analysis = ({ userToken, match }) => {
       // Sort graph data by strength.
       await graphData.sort(compare);
       // Modify graph data for displaying.
-      await graphData.map(barData => { barData.strength = Math.round(barData.strength * 100) });
+      await graphData.forEach(barData => { barData.strength = Math.round(barData.strength * 100) });
       // Set graph data to state.
-      console.log(graphData);
-      setVars(graphData);
+      // setVars(graphData);
+      setVars(graphData.sort((a,b) => b.strength - a.strength))
       return;
     }
 
@@ -200,23 +197,30 @@ const Analysis = ({ userToken, match }) => {
     setSelectedCell(cellIndex);
     setCellSimLoading(true);
     if(match.params.analysisType === 'location') {
-      axios
-        .get(cells[cellIndex].similar_documents)
-        .then(res => {
-          setCellSim(res.data);
-          setCellSimLoading(false);
-        })
+      if (cells[cellIndex] && cells[cellIndex].similar_documents) {
+        axios
+          .get(cells[cellIndex].similar_documents)
+          .then(res => {
+            setCellSim(res.data);
+            setCellSimLoading(false);
+          })
+      } else {
+        setCellSim([]);
+        setCellSimLoading(false);
+      }
     } else {
-      axios
-        .get(cells[cellIndex].similar_documents, {
-          headers: {
-            Authorization: `Bearer ${userToken}`
-          }
-        })
-        .then(res => {
-          setCellSim(res.data);
-          setCellSimLoading(false);
-        });
+      if (cells[cellIndex] && cells[cellIndex].similar_documents) {
+        axios
+          .get(cells[cellIndex].similar_documents, {
+            headers: {
+              Authorization: `Bearer ${userToken}`
+            }
+          })
+          .then(res => {
+            setCellSim([]);
+            setCellSimLoading(false);
+          });
+      }
     }
 
     if (match.params.analysisType !== 'location') {
@@ -230,13 +234,13 @@ const Analysis = ({ userToken, match }) => {
       else
         cellNum = 2;
       let graphData = await (await axios.get(`${process.env.REACT_APP_API_DOMAIN}/documents/${match.params.analysisKey.split('_')[0]}/impacts/?column=${cellNum}`, { headers: { Authorization: `Bearer ${userToken}` } })).data;
-      console.log(graphData)
       // Sort graph data by strength.
       await graphData.sort(compare);
       // Modify graph data for displaying.
-      await graphData.map(barData => { barData.strength = Math.round(barData.strength * 100) });
+      await graphData.forEach(barData => { barData.strength = Math.round(barData.strength * 100) });
       // Set graph data to state.
-      setVars(graphData);
+      const sorted = graphData.sort((a,b) => b.strength - a.strength)
+      setVars(sorted);
     } else {
       let cellNum;
       if(cellIndex.toString().length === 1)
@@ -248,9 +252,8 @@ const Analysis = ({ userToken, match }) => {
 
       const result = await (await axios.get(`${process.env.REACT_APP_API_DOMAIN}/aggregates/impact/?type=${latlong[2]}&latitude=${latlong[0]}&longitude=${latlong[1]}&column=${cellNum}`)).data;
       await result.sort(compare);
-      await result.map(barData => { barData.strength = Math.round(barData.strength * 100) });
-      console.log(result);
-      setVars(result);
+      await result.forEach(barData => { barData.strength = Math.round(barData.strength * 100) });
+      setVars(result.sort((a,b) => b.strength - a.strength));
     }
   };
 
@@ -268,6 +271,8 @@ const Analysis = ({ userToken, match }) => {
     setSelectedVar(varIndex);
 
     if(latlong[0] === 'all' || vars[varIndex].similar_documents === undefined) {
+      setVarSim([])
+      setVarSimLoading(false)
       return;
     }
 
@@ -278,14 +283,12 @@ const Analysis = ({ userToken, match }) => {
         }
       });
       setVarSim(result.data);
-      console.log(result.data);
       setVarSimLoading(false);
       return;
     }
 
     const result = await axios.get(vars[varIndex].similar_documents);
     setVarSim(result.data);
-    console.log(result.data);
     setVarSimLoading(false);
   };
 
@@ -371,8 +374,8 @@ const Analysis = ({ userToken, match }) => {
               <Col lg="6">
                 <Card>
                   <CardBody>
-                    <CardTitle>Similar documents</CardTitle>
-                    <CardSubtitle className="mb-3">Document similarity by geological refference</CardSubtitle>
+                    <CardTitle>Geo-referenced documents</CardTitle>
+                    <CardSubtitle className="mb-3">Document list by geographic reference.</CardSubtitle>
                     {
                       geoCellLoading ?
                         <AnalysisLoader height="200px" /> :

@@ -12,8 +12,8 @@ import m_shadow from '../assets/images/map/markers/shadow.png';
 
 const MapView = () => {
 
-  const [zoom, setZoom] = useState(4);
-  const [position, setPosition] = useState([54.5260, 15.2551]);
+  const [zoom] = useState(4);
+  const [position] = useState([54.5260, 15.2551]);
   const [cities, setCities] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -21,7 +21,6 @@ const MapView = () => {
     axios
       .get(`${process.env.REACT_APP_API_DOMAIN}/aggregates/location/`)
       .then(res => {
-        console.log(res.data)
         setCities(res.data);
         setIsLoading(false);
       })

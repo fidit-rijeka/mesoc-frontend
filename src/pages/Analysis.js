@@ -371,7 +371,7 @@ const Analysis = ({ userToken, match }) => {
         {
           match.params.analysisKey !== 'all' &&
             <Row>
-              <Col lg="6">
+              <Col lg="12">
                 <Card>
                   <CardBody>
                     <CardTitle>Geo-referenced documents</CardTitle>

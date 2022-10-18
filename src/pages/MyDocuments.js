@@ -16,6 +16,10 @@ const inactiveStatuses = [
   'dismissed'
 ]
 
+const truncate = (str, n) => {
+  return (str.length > n) ? str.slice(0, n-1) + '...' : str;
+}
+
 const getBadgeClass = (status) => {
   let cls = 'badge border text-capitalize p-2 '
 
@@ -246,7 +250,7 @@ const MyDocuments = ({ userToken, userVerified }) => {
                           {docsData.map((doc, index) => {
                             return <tr key={`first_${index}`}>
                               <th scope="row">{index + 1}</th>
-                              <td>{doc.title}</td>
+                              <td>{truncate(doc.title, 20)}</td>
                               <td>{dayjs(doc.uploaded_at).format('DD/MM/YYYY')}</td>
                               <td>{doc.language.name}</td>
                               <td>{doc.location.address}</td>
@@ -299,7 +303,7 @@ const MyDocuments = ({ userToken, userVerified }) => {
                           {docsData.map((doc, index) => {
                             return <tr key={`second_${index}`}>
                               <th scope="row">{index + 1}</th>
-                              <td>{doc.title}</td>
+                              <td>{truncate(doc.title, 20)}</td>
                               <td>{dayjs(doc.uploaded_at).format('DD/MM/YYYY')}</td>
                               <td>{doc.language.name}</td>
                               <td>{doc.location.address}</td>

@@ -66,11 +66,25 @@ const Analysis = ({ userToken, match }) => {
   const [varSimLoading, setVarSimLoading] = useState(false);
   const [isKeywordsModal, setIsKeywordsModal] = useState(false);
 
-  const [geoCellLoading, setGeoCellLoading] = useState(true);
+  const [geoCellLoading, setGeoCellLoading] = useState(false);
   const [geoCell, setGeoCell] = useState(null)
 
   const [classModalOpen, setClassModalOpen] = useState(false);
   const [docId, setDocId] = useState(null)
+
+  const fetchDocuments = async (location_id, paginator) => {
+    const query = location_id ? `?location_id=${location_id}` : ''
+    const URL = process.env.REACT_APP_API_DOMAIN + (paginator || `/aggregates/location/documents${query}`)
+    let documents = []
+
+    setGeoCellLoading(true)
+
+    //  Get documents related to location.
+    await axios.get(URL).then(response => { documents = response.data })
+
+    setGeoCell(documents)
+    setGeoCellLoading(false)
+  }
 
   const fetchLocationDocuments = async () => {
     const address = match.params.analysisType === 'location'
@@ -79,7 +93,6 @@ const Analysis = ({ userToken, match }) => {
 
     const headers = { Authorization: `Bearer ${userToken}` }
     let location_id = null
-    let documents = []
 
     if (!address) { return }
 
@@ -90,27 +103,24 @@ const Analysis = ({ userToken, match }) => {
         { headers }
       ).then(response => {
         location_id   = response.data.length > 0
-          ? response.data.find(i => i.address === address).location_id
+          ? response.data.find(i => i.address === address)?.location_id || null
           : null
       })
 
-      if (!location_id) { return }
-
-      //  Get documents related to location.
-      await axios
-        .get(
-          `${process.env.REACT_APP_API_DOMAIN}/aggregates/location/documents?location_id=${location_id}`,
-          { headers }
-        ).then(response => { documents = response.data })
-
-      setGeoCell(documents)
-      setGeoCellLoading(false)
+      fetchDocuments(location_id, null)
   }
 
   useEffect(() => {
     setDocId(match.params.analysisKey.split('_')[0])
 
-    if (match.params.analysisKey !== 'all') {
+    const params = new URLSearchParams(window.location.search);
+    const queryParam = params.get('loc') || null;
+
+    if (queryParam) {
+      fetchDocuments(queryParam, null)
+    }
+
+    if (!queryParam && match.params.analysisKey !== 'all') {
       fetchLocationDocuments()
     }
 

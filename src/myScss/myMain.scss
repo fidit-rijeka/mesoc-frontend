@@ -83,7 +83,8 @@ nav {
   box-shadow: 0px 0px 24px rgba(0, 0, 0, 0.04);
 
   .logoA {
-    margin-right: 4em;
+    // margin-right: 4em;
+    margin-right: auto;
 
     .logo {
       width: 56px;
@@ -329,6 +330,7 @@ nav {
 
 /*   ------   UPLOAD DOCUMENT   ------   */
 
+.feedbackForm,
 .uplForm {
   display: flex;
   flex-wrap: wrap;
@@ -398,6 +400,12 @@ nav {
         color: white;
       }
     }
+  }
+}
+
+.feedbackForm {
+  .form-group {
+    width: 100% !important;
   }
 }
 
@@ -504,6 +512,22 @@ nav {
       transition: .03s;
       cursor: pointer;
     }
+
+    &.inputElement {
+      input {
+        border: none !important;
+        background: transparent !important;
+        outline: none !important;
+        width: 100%;
+        text-align: center;
+        font-size: 14px;
+      }
+    }
+
+    &.marked {
+      background: #ffc400 !important;
+      user-select: none;
+    }
   }
 
   @media screen and (max-width: 500px) {
@@ -512,6 +536,17 @@ nav {
 }
 
 /*   ------   DOCUMENT LIST   ------   */
+
+.dlPaginator {
+  .btn {
+    margin: 0 5px;
+
+    &.disabled,
+    &:disabled {
+      pointer-events: none;
+    }
+  }
+}
 
 .dlContainer {
   width: 100%;
@@ -647,6 +682,7 @@ nav {
 /*   ------   BROWSE SCREEN   ------   */
 
 .map-container {
+  min-height: calc(100vh - 300px);
   height: 600px;
   width: 100%;
 }
@@ -678,5 +714,16 @@ nav {
       transition: .03s;
       cursor: pointer;
     }
+  }
+}
+
+.flexed {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+
+  .btn-filters {
+
   }
 }

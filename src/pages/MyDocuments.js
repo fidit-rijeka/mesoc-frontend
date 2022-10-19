@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, withRouter, Redirect } from 'react-router-dom';
 import { Table, Card, CardBody, CardTitle, CardSubtitle, Nav, NavItem, NavLink, TabContent, TabPane } from "reactstrap";
 import classnames from 'classnames';
@@ -7,17 +7,60 @@ import dayjs from 'dayjs';
 
 import Sidenav from '../components/sidenav';
 import InfoModal from '../components/infoModal';
+import FiltersModal from '../components/filtersModal';
 import AnalysisLoader from '../components/analysisLoader';
+
+const inactiveStatuses = [
+  'active',     // This is like pending state.
+  'processing',
+  'dismissed'
+]
+
+const truncate = (str, n) => {
+  return (str.length > n) ? str.slice(0, n-1) + '...' : str;
+}
+
+const getBadgeClass = (status) => {
+  let cls = 'badge border text-capitalize p-2 '
+
+  if (inactiveStatuses.includes(status)) {
+    cls += 'text-secondary'
+  }
+
+  if (status === 'processed') {
+    cls += 'text-success'
+  }
+
+  if (status === 'failed') {
+    cls += 'text-danger'
+  }
+
+  return cls
+}
 
 const MyDocuments = ({ userToken, userVerified }) => {
 
+  const filtersRef = useRef(null);
+
   const [activeTab, setActiveTab] = useState('1');
   const [infoModalOpen, setInfoModalOpen] = useState(false);
+  const [filtersModalOpen, setFiltersModalOpen] = useState(false);
   const [modalType, setModalType] = useState(null);
   const [modalText, setModalText] = useState(null);
   const [docsData, setDocsData] = useState([]);
   const [docId, setDocId] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [initialLoad, setInitialLoad] = useState(true)
+  const [allData, setAllData] = useState([])
+  const [filtersTemp, setFiltersTemp] = useState(null)
+
+  const getCustomizedData = (items) => {
+    return items.map(item => ({
+      ...item,
+      language_id: item.language.name,
+      location_id: item.location.address,
+    }))
+  }
 
   useEffect(() => {
     // TODO:
@@ -30,8 +73,14 @@ const MyDocuments = ({ userToken, userVerified }) => {
         }
       })
       .then(res => {
-        console.log(res.data);
-        setDocsData(res.data);
+        console.log(getCustomizedData(res.data));
+        setDocsData(getCustomizedData(res.data));
+
+        if (initialLoad) {
+          setAllData(getCustomizedData(res.data))
+          setInitialLoad(false)
+        }
+
         setLoading(false);
       })
       .catch(err => {
@@ -47,11 +96,12 @@ const MyDocuments = ({ userToken, userVerified }) => {
   const openModal = (type, selected) => {
     setDocId(selected);
     setModalType(type);
-    setModalText("For this document we weren't able to produce any results.");
+    setModalText("By pressing submit you agree to delete your document from the system.");
     setInfoModalOpen(true);
   };
 
   const switchTab = index => {
+    setInitialLoad(true)
     setLoading(true);
     setDocsData(null);
     setActiveTab(index);
@@ -64,7 +114,8 @@ const MyDocuments = ({ userToken, userVerified }) => {
           }
         })
         .then(res => {
-          setDocsData(res.data);
+          setDocsData(getCustomizedData(res.data));
+          filtersRef.current.reset(res.data)
           setLoading(false);
         })
         .catch(err => {
@@ -78,7 +129,8 @@ const MyDocuments = ({ userToken, userVerified }) => {
           }
         })
         .then(res => {
-          setDocsData(res.data);
+          setDocsData(getCustomizedData(res.data));
+          filtersRef.current.reset(res.data)
           setLoading(false);
         })
         .catch(err => {
@@ -86,6 +138,15 @@ const MyDocuments = ({ userToken, userVerified }) => {
         })
     }
   };
+
+  const actionCompleted = () => {
+    switchTab(activeTab)
+    setInfoModalOpen(false);
+  }
+
+  const showFiltersModal = () => {
+    setFiltersModalOpen(true)
+  }
 
   // USER MANAGEMENT
   // If not authenticated, redirect to sign in.
@@ -104,12 +165,41 @@ const MyDocuments = ({ userToken, userVerified }) => {
       </div>
       <div className="pageArea">
 
-        <InfoModal type={modalType} text={modalText} modalOpen={infoModalOpen} setModalOpen={setInfoModalOpen} docId={docId} userToken={userToken} />
+        <InfoModal
+          type={modalType}
+          text={modalText}
+          modalOpen={infoModalOpen}
+          setModalOpen={setInfoModalOpen}
+          docId={docId}
+          userToken={userToken}
+          actionCompleted={actionCompleted}
+          action="deleteDocument"
+        />
+
+        <FiltersModal
+          ref={filtersRef}
+          userToken={userToken}
+          modalOpen={filtersModalOpen}
+          setModalOpen={setFiltersModalOpen}
+          docsData={docsData}
+          setDocsData={setDocsData}
+          allData={allData}
+          filtersTemp={filtersTemp}
+          setFiltersTemp={setFiltersTemp}
+        />
 
         <Card>
           <CardBody>
-            <CardTitle>My documents</CardTitle>
-            <CardSubtitle className="mb-3">Here you can find all of your documents you have uploaded over time.</CardSubtitle>
+            <div className='flexed'>
+              <div>
+                <CardTitle>My documents</CardTitle>
+                <CardSubtitle className="mb-3">Here you can find all of your documents you have uploaded over time.</CardSubtitle>
+              </div>
+
+              <button onClick={showFiltersModal} className='btn btn-warning btn-filters'>
+                Filter Results
+              </button>
+            </div>
 
             <Nav tabs className="nav-tabs-custom hideOnMobile">
               <NavItem>
@@ -152,30 +242,43 @@ const MyDocuments = ({ userToken, userVerified }) => {
                             <th>Uploaded</th>
                             <th>Language</th>
                             <th>Location</th>
+                            <th>Status</th>
                             <th></th>
                           </tr>
                         </thead>
                         <tbody>
                           {docsData.map((doc, index) => {
-                            return <tr key={doc.id}>
+                            return <tr key={`first_${index}`}>
                               <th scope="row">{index + 1}</th>
-                              <td>{doc.title}</td>
+                              <td>{truncate(doc.title, 20)}</td>
                               <td>{dayjs(doc.uploaded_at).format('DD/MM/YYYY')}</td>
                               <td>{doc.language.name}</td>
-                              <td>{`${doc.location.city}, ${doc.location.country}`}</td>
+                              <td>{doc.location.address}</td>
                               <td>
-                                {doc.state === 'processed' ?
-                                  <Link to={`document/${doc.url.split('/')[4]}_${doc.title}_${doc.location.city}_${doc.location.country}`} className="btn btn-primary wawes-effect waves-light">Open</Link> :
-                                  doc.state === 'processing' ?
-                                    <button className="btn btn-primary wawes-effect waves-light" disabled>Processing</button> :
-                                    <button onClick={() => openModal('reject', doc.url)} className="btn btn-danger wawes-effect waves-light">Failed</button>
+                                <span className={getBadgeClass(doc.state)}>
+                                  {doc.state}
+                                </span>
+                              </td>
+                              <td>
+                                {
+                                  inactiveStatuses.includes(doc.state)
+                                    ? '-'
+                                    : doc.state === 'processed'
+                                      ? (<Link to={`document/${doc.url.split('/')[4]}_${doc.title.replace(/ /g,'').replace('#',' ')}_${doc.location.address}`} className="btn btn-primary wawes-effect waves-light">Open</Link>)
+                                      : (
+                                        <button
+                                        onClick={() => openModal('reject', doc.url)}
+                                        className="btn btn-danger wawes-effect waves-light"
+                                      >
+                                        Delete
+                                      </button>)
                                 }
                               </td>
                             </tr>
                           })}
                         </tbody>
                       </Table>
-                    </div> : 
+                    </div> :
                     <div className="analysisEmpty" style={{ height: '200px' }}>You have no active documents</div>
                 }
               </TabPane>
@@ -192,25 +295,38 @@ const MyDocuments = ({ userToken, userVerified }) => {
                             <th>Uploaded</th>
                             <th>Language</th>
                             <th>Location</th>
+                            <th>Status</th>
                             <th></th>
                           </tr>
                         </thead>
                         <tbody>
                           {docsData.map((doc, index) => {
-                            return <tr key={doc.id}>
+                            return <tr key={`second_${index}`}>
                               <th scope="row">{index + 1}</th>
-                              <td>{doc.title}</td>
+                              <td>{truncate(doc.title, 20)}</td>
                               <td>{dayjs(doc.uploaded_at).format('DD/MM/YYYY')}</td>
                               <td>{doc.language.name}</td>
-                              <td>{`${doc.location.city}, ${doc.location.country}`}</td>
+                              <td>{doc.location.address}</td>
                               <td>
-                                <button onClick={() => openModal('inform', doc.id)} className="btn btn-info wawes-effect waves-light">Info</button>
+                                <span className={getBadgeClass(doc.state)}>
+                                  {doc.state}
+                                </span>
+                              </td>
+                              <td>
+                                <button
+                                  onClick={() => openModal('reject', doc.url)}
+                                  className="btn btn-danger wawes-effect waves-light"
+                                >
+                                  Delete
+                                </button>
+
+                                {/*<button onClick={() => openModal('inform', doc.id)} className="btn btn-info wawes-effect waves-light">Info</button>*/}
                               </td>
                             </tr>
                           })}
                         </tbody>
                       </Table>
-                    </div> : 
+                    </div> :
                     <div className="analysisEmpty" style={{ height: '200px' }}>You have no failed documents</div>
                 }
               </TabPane>

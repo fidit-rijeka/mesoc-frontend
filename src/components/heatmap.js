@@ -1,6 +1,106 @@
-import React from 'react';
+import React, { useState } from 'react';
 
-const Heatmap = ({ data, selectedCell, heatmapClick }) => {
+const Heatmap = ({ data, selectedCell, heatmapClick, editable = false, cellsUpdated = null, reclassifiable = false }) => {
+
+  const [marked, setMarked] = useState([])
+
+  const [tempData, setTempData] = useState([
+    ...(data.map(item => ({
+      ...item,
+      classification_perc: parseInt(item.classification * 100),
+      editor_active: false
+    })))
+  ])
+
+  const setEditorActiveState = (value, index) => {
+    // On blur out.
+    if (!value) {
+
+    }
+
+    const val = tempData.map((td, i) => ({
+      ...td,
+      editor_active: index === i && value,
+      classification: (!value && index === i) ? parseFloat(td.classification_perc / 100) : td.classification
+    }))
+
+    setTempData(val)
+    cellsUpdated(val);
+  }
+
+  const handleChange = (event, index) => {
+    const val = tempData.map((td, i) => ({
+      ...td,
+      classification_perc: index === i ? event.target.value : td.classification_perc
+    }))
+
+    setTempData(val)
+  }
+
+  const markCell = (index) => {
+    const markedCopy = [...marked]
+    const isMarked = markedCopy.includes(index)
+
+    // Remove from array if exists.
+    if (isMarked) {
+      const i = markedCopy.indexOf(index);
+
+      if (i > -1) {
+        markedCopy.splice(i, 1);
+      }
+    } else {
+      // Add to array.
+      markedCopy.push(index)
+    }
+
+    setMarked(markedCopy)
+    cellsUpdated(markedCopy)
+  }
+
+  const getTableTemplate = (cellLabel, index) => {
+    if (editable) {
+      return (
+        <span
+          key={`input_${index}`}
+          className="heatmapCell inputElement"
+          style={{ background: `rgba(74, 101, 255, ${calculateOpacity(cellLabel.classification)})`, boxShadow: selectedCell === index && 'inset 0px 0px 0px 4px #ff7300' }}
+        >
+          <input
+            value={
+              tempData[index].editor_active
+              ? tempData[index].classification_perc
+              : `${tempData[index].classification_perc}%`
+            }
+            onChange={(e) => handleChange(e, index)}
+            onFocus={() => setEditorActiveState(true, index)}
+            onBlur={() => setEditorActiveState(false, index)}
+            type={tempData[index].editor_active ? 'number' : 'text'}
+          />
+        </span>
+      )
+    }
+
+    if (reclassifiable) {
+      return (
+        <span
+          onClick={() => markCell(index)}
+          key={index}
+          className={`heatmapCell ${marked.includes(index) ? 'marked' : ''}`}
+          style={{ background: `rgba(74, 101, 255, ${calculateOpacity(cellLabel.classification)})`, boxShadow: selectedCell === index && 'inset 0px 0px 0px 4px #ff7300' }}
+        >
+          <span>{`${parseInt(cellLabel.classification * 100)}%`}</span>
+        </span>
+      )
+    }
+
+    else {
+      return (
+        <span onClick={() => heatmapClick(index)} key={index} className="heatmapCell" style={{ background: `rgba(74, 101, 255, ${calculateOpacity(cellLabel.classification)})`, boxShadow: selectedCell === index && 'inset 0px 0px 0px 4px #ff7300' }}>
+          <span>{`${parseInt(cellLabel.classification * 100)}%`}</span>
+        </span>
+      )
+    }
+  }
 
   const calculateOpacity = classification => {
     if(classification > 0.9) {
@@ -44,12 +144,10 @@ const Heatmap = ({ data, selectedCell, heatmapClick }) => {
 
       <span id="numSpanB1" className="numberSpan">Health and Wellbeing</span>
       <span id="numSpanB2" className="numberSpan">Urban and Terrotorial Renovation</span>
-      <span id="numSpanB3" className="numberSpan">People's Engagement and Participation</span>
+      <span id="numSpanB3" className="numberSpan">Social Cohesion</span>
 
       {data.map((cellLabel, index) => {
-        return <span onClick={() => heatmapClick(index)} key={index} className="heatmapCell" style={{ background: `rgba(74, 101, 255, ${calculateOpacity(cellLabel.classification)})`, boxShadow: selectedCell === index && 'inset 0px 0px 0px 4px #ff7300' }}>
-          <span>{`${parseInt(cellLabel.classification * 100)}%`}</span>
-        </span>
+        return getTableTemplate(cellLabel, index)
       })}
     </div>
   );

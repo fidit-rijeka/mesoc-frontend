@@ -9,6 +9,8 @@ import Graph from '../components/graph';
 import AnalysisLoader from '../components/analysisLoader';
 import DocumentList from '../components/documentList';
 
+import ReclassificationModal from '../components/reclassificationModal'
+
 const compare = (a, b) => {
   const varA = a.strength;
   const varB= b.strength;
@@ -25,9 +27,9 @@ const compare = (a, b) => {
 
 const KeywordsModal = ({ isOpen, setIsOpen, data }) => {
 
-  useEffect(() => {
+  /*useEffect(() => {
     console.log(data.keywords);
-  }, []);
+  }, []);*/
 
   return (
     <Modal
@@ -41,7 +43,7 @@ const KeywordsModal = ({ isOpen, setIsOpen, data }) => {
         <p>
           {
             data.keywords &&
-              data.keywords.map((each, index) => ( <span>{each}, </span> ))
+              data.keywords.map((each, index) => ( <span key={`kw_${index}`}>{each}, </span> ))
           }
         </p>
       </div>
@@ -54,6 +56,9 @@ const KeywordsModal = ({ isOpen, setIsOpen, data }) => {
 
 const Analysis = ({ userToken, match }) => {
 
+  const [nextUrl, setNextUrl] = useState(null)
+  const [prevUrl, setPrevUrl] = useState(null)
+
   const [cells, setCells] = useState(null);
   const [selectedCell, setSelectedCell] = useState(null);
   const [cellSim, setCellSim] = useState(null);
@@ -64,24 +69,108 @@ const Analysis = ({ userToken, match }) => {
   const [varSimLoading, setVarSimLoading] = useState(false);
   const [isKeywordsModal, setIsKeywordsModal] = useState(false);
 
+  const [geoCellLoading, setGeoCellLoading] = useState(false);
+  const [geoCell, setGeoCell] = useState(null)
+
+  const [classModalOpen, setClassModalOpen] = useState(false);
+  const [docId, setDocId] = useState(null)
+
+  const updateQueryStringParameter = (uri, key, value) => {
+    var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
+    var separator = uri.indexOf('?') !== -1 ? "&" : "?";
+
+    if (uri.match(re)) {
+      return uri.replace(re, '$1' + key + "=" + value + '$2');
+    }
+    else {
+      return uri + separator + key + "=" + value;
+    }
+  }
+
+  const fetchDocuments = async (location_id, paginator) => {
+    let documents = []
+    let nextUrl = null
+    let prevUrl = null
+
+    let URL = `${process.env.REACT_APP_API_DOMAIN}/aggregates/location/documents`
+    URL = updateQueryStringParameter(URL, 'limit', 4)
+    URL = updateQueryStringParameter(URL, 'offset', 0)
+
+    if (location_id && location_id !== 'unknown') {
+      URL = updateQueryStringParameter(URL, 'location_id', location_id)
+    }
+
+    setGeoCellLoading(true)
+
+    await axios.get(paginator || URL).then(response => {
+      documents = response.data.results || response.data
+      nextUrl = response.data.next || null
+      prevUrl = response.data.previous || null
+    })
+
+    setNextUrl(nextUrl)
+    setPrevUrl(prevUrl)
+    setGeoCell(documents)
+    setGeoCellLoading(false)
+  }
+
+  const fetchLocationDocuments = async () => {
+    const address = match.params.analysisType === 'location'
+      ? match.params.analysisKey.split('_')[3]
+      : match.params.analysisKey.split('_')[2]
+
+    const headers = { Authorization: `Bearer ${userToken}` }
+    let location_id = null
+
+    if (!address) { return }
+
+    // Get location id.
+    await axios
+      .get(
+        `${process.env.REACT_APP_API_DOMAIN}/locations?address=${address}`,
+        { headers }
+      ).then(response => {
+        location_id   = response.data.length > 0
+          ? response.data.find(i => i.address === address)?.location_id || null
+          : null
+      })
+
+      fetchDocuments(location_id, null)
+  }
+
+  const urlChangeHandler = (url) => {
+    fetchDocuments(null, url)
+  }
+
   useEffect(() => {
+    setDocId(match.params.analysisKey.split('_')[0])
+
+    const params = new URLSearchParams(window.location.search);
+    const queryParam = params.get('loc') || null;
+
+    if (queryParam) {
+      fetchDocuments(queryParam, null)
+    }
+
+    if (!queryParam && match.params.analysisKey !== 'all') {
+      fetchLocationDocuments()
+    }
+
     if(match.params.analysisType === 'location') {
 
       const latlong = match.params.analysisKey.split('_');
 
-      const url = latlong[0] === 'all' ? 
+      const url = latlong[0] === 'all' ?
         `${process.env.REACT_APP_API_DOMAIN}/aggregates/heatmap/` :
         `${process.env.REACT_APP_API_DOMAIN}/aggregates/heatmap/?latitude=${latlong[0]}&longitude=${latlong[1]}&type=${latlong[2]}`;
-      
+
       axios
         .get(url)
         .then(async res => {
-          console.log(res);
           let heatData = await [...Array(30).keys()].map(x => {return {cell: x, classification: 0.0}});
-          await res.data.map(resItem => {
+          await res.data.forEach(resItem => {
             heatData[resItem.cell] = resItem;
           });
-          console.log(heatData);
           setCells(heatData);
         })
     }
@@ -93,15 +182,18 @@ const Analysis = ({ userToken, match }) => {
           }
         })
         .then(async res => {
-          console.log(res.data);
           let heatData = await [...Array(30).keys()].map(x => {return {cell: x, classification: 0.0}});
-          await res.data.map(resItem => {
+          await res.data.forEach(resItem => {
             heatData[resItem.cell] = resItem;
           });
           setCells(heatData);
         });
     }
   }, []);
+
+  const showClassificationModal = () => {
+    setClassModalOpen(true)
+  }
 
   const heatmapClick = async cellIndex => {
     const latlong = match.params.analysisKey.split('_');
@@ -125,10 +217,10 @@ const Analysis = ({ userToken, match }) => {
       // Sort graph data by strength.
       await graphData.sort(compare);
       // Modify graph data for displaying.
-      await graphData.map(barData => { barData.strength = Math.round(barData.strength * 100) });
+      await graphData.forEach(barData => { barData.strength = Math.round(barData.strength * 100) });
       // Set graph data to state.
-      console.log(graphData);
-      setVars(graphData);
+      // setVars(graphData);
+      setVars(graphData.sort((a,b) => b.strength - a.strength))
       return;
     }
 
@@ -147,23 +239,30 @@ const Analysis = ({ userToken, match }) => {
     setSelectedCell(cellIndex);
     setCellSimLoading(true);
     if(match.params.analysisType === 'location') {
-      axios
-        .get(cells[cellIndex].similar_documents)
-        .then(res => {
-          setCellSim(res.data);
-          setCellSimLoading(false);
-        })
+      if (cells[cellIndex] && cells[cellIndex].similar_documents) {
+        axios
+          .get(cells[cellIndex].similar_documents)
+          .then(res => {
+            setCellSim(res.data);
+            setCellSimLoading(false);
+          })
+      } else {
+        setCellSim([]);
+        setCellSimLoading(false);
+      }
     } else {
-      axios
-        .get(cells[cellIndex].similar_documents, {
-          headers: {
-            Authorization: `Bearer ${userToken}`
-          }
-        })
-        .then(res => {
-          setCellSim(res.data);
-          setCellSimLoading(false);
-        });
+      if (cells[cellIndex] && cells[cellIndex].similar_documents) {
+        axios
+          .get(cells[cellIndex].similar_documents, {
+            headers: {
+              Authorization: `Bearer ${userToken}`
+            }
+          })
+          .then(res => {
+            setCellSim([]);
+            setCellSimLoading(false);
+          });
+      }
     }
 
     if (match.params.analysisType !== 'location') {
@@ -177,13 +276,13 @@ const Analysis = ({ userToken, match }) => {
       else
         cellNum = 2;
       let graphData = await (await axios.get(`${process.env.REACT_APP_API_DOMAIN}/documents/${match.params.analysisKey.split('_')[0]}/impacts/?column=${cellNum}`, { headers: { Authorization: `Bearer ${userToken}` } })).data;
-      console.log(graphData)
       // Sort graph data by strength.
       await graphData.sort(compare);
       // Modify graph data for displaying.
-      await graphData.map(barData => { barData.strength = Math.round(barData.strength * 100) });
+      await graphData.forEach(barData => { barData.strength = Math.round(barData.strength * 100) });
       // Set graph data to state.
-      setVars(graphData);
+      const sorted = graphData.sort((a,b) => b.strength - a.strength)
+      setVars(sorted);
     } else {
       let cellNum;
       if(cellIndex.toString().length === 1)
@@ -195,9 +294,8 @@ const Analysis = ({ userToken, match }) => {
 
       const result = await (await axios.get(`${process.env.REACT_APP_API_DOMAIN}/aggregates/impact/?type=${latlong[2]}&latitude=${latlong[0]}&longitude=${latlong[1]}&column=${cellNum}`)).data;
       await result.sort(compare);
-      await result.map(barData => { barData.strength = Math.round(barData.strength * 100) });
-      console.log(result);
-      setVars(result);
+      await result.forEach(barData => { barData.strength = Math.round(barData.strength * 100) });
+      setVars(result.sort((a,b) => b.strength - a.strength));
     }
   };
 
@@ -214,7 +312,11 @@ const Analysis = ({ userToken, match }) => {
     setVarSimLoading(true);
     setSelectedVar(varIndex);
 
-    if(latlong[0] === 'all') return;
+    if(latlong[0] === 'all' || vars[varIndex].similar_documents === undefined) {
+      setVarSim([])
+      setVarSimLoading(false)
+      return;
+    }
 
     if(match.params.analysisType === 'document') {
       const result = await axios.get(vars[varIndex].similar_documents, {
@@ -223,14 +325,12 @@ const Analysis = ({ userToken, match }) => {
         }
       });
       setVarSim(result.data);
-      console.log(result.data);
       setVarSimLoading(false);
       return;
     }
 
     const result = await axios.get(vars[varIndex].similar_documents);
     setVarSim(result.data);
-    console.log(result.data);
     setVarSimLoading(false);
   };
 
@@ -249,28 +349,45 @@ const Analysis = ({ userToken, match }) => {
           data={(selectedVar !== null && vars !== null) ? vars[selectedVar] : {}}
         />
 
+        <ReclassificationModal
+          setModalOpen={setClassModalOpen}
+          modalOpen={classModalOpen}
+          userToken={userToken}
+          cells={cells}
+          docId={docId}
+        />
+
         <Row>
-          <Col xl="5" lg="12">
+          <Col lg="6">
             <Card>
               <CardBody>
                 <CardTitle>MESOC matrix</CardTitle>
-                <CardSubtitle className="mb-3">{
+                <CardSubtitle className="mb-3">
+                  {
                   match.params.analysisType === 'location' ?
-                    `Location: ${match.params.analysisKey.split('_')[3]}` :
-                    `${match.params.analysisKey.split('_')[1]}, ${match.params.analysisKey.split('_')[2]}, ${match.params.analysisKey.split('_')[3]}`
+                    `Location: ${match.params.analysisKey.split('_')[3] || 'All cities'}` :
+                    `${match.params.analysisKey.split('_')[1]}, ${match.params.analysisKey.split('_')[2]}`
                 }</CardSubtitle>
-                {cells ?
-                  <Heatmap
-                    data={cells}
-                    selectedCell={selectedCell}
-                    heatmapClick={heatmapClick}
-                  /> :
-                  <AnalysisLoader height='590px' />
+                {cells
+                  ? <div>
+                    <Heatmap
+                      data={cells}
+                      selectedCell={selectedCell}
+                      heatmapClick={heatmapClick}
+                    />
+
+                    { match.params.analysisType === 'document' && <div className='mt-4 text-right'>
+                      <button type="button" className="btn btn-secondary" onClick={showClassificationModal}>
+                        Reclassify
+                      </button>
+                    </div> }
+                  </div>
+                  : <AnalysisLoader height='590px' />
                 }
               </CardBody>
             </Card>
           </Col>
-          <Col xl="7" lg="12">
+          <Col lg="6">
             <Card>
               <CardBody>
                 <CardTitle>MESOC Impacts</CardTitle>
@@ -296,6 +413,23 @@ const Analysis = ({ userToken, match }) => {
         {
           match.params.analysisKey !== 'all' &&
             <Row>
+              <Col lg="12">
+                <Card>
+                  <CardBody>
+                    <CardTitle>Geo-referenced documents</CardTitle>
+                    <CardSubtitle className="mb-3">Document list by geographic reference.</CardSubtitle>
+                    {
+                      geoCellLoading ?
+                        <AnalysisLoader height="200px" /> :
+                        (geoCell && geoCell.length > 0 ?
+                          <DocumentList docs={geoCell} prevUrl={prevUrl} nextUrl={nextUrl} urlChangeHandler={urlChangeHandler} /> :
+                          <div className="analysisEmpty" style={{ height: '200px' }}>
+                              No similar documents
+                          </div>)
+                    }
+                  </CardBody>
+                </Card>
+              </Col>
               <Col lg="6">
                 <Card>
                   <CardBody>
@@ -332,7 +466,7 @@ const Analysis = ({ userToken, match }) => {
                     }
                     {
                       selectedVar !== null ?
-                        varSim.length ? 
+                        varSim.length ?
                           <DocumentList docs={varSim} /> :
                           <div className="analysisEmpty" style={{ height: '200px' }}>No similar documents</div> :
                         <div className="analysisEmpty" style={{ height: '200px' }}>No variable selected</div>

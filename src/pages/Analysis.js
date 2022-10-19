@@ -56,6 +56,9 @@ const KeywordsModal = ({ isOpen, setIsOpen, data }) => {
 
 const Analysis = ({ userToken, match }) => {
 
+  const [nextUrl, setNextUrl] = useState(null)
+  const [prevUrl, setPrevUrl] = useState(null)
+
   const [cells, setCells] = useState(null);
   const [selectedCell, setSelectedCell] = useState(null);
   const [cellSim, setCellSim] = useState(null);
@@ -72,16 +75,41 @@ const Analysis = ({ userToken, match }) => {
   const [classModalOpen, setClassModalOpen] = useState(false);
   const [docId, setDocId] = useState(null)
 
+  const updateQueryStringParameter = (uri, key, value) => {
+    var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
+    var separator = uri.indexOf('?') !== -1 ? "&" : "?";
+
+    if (uri.match(re)) {
+      return uri.replace(re, '$1' + key + "=" + value + '$2');
+    }
+    else {
+      return uri + separator + key + "=" + value;
+    }
+  }
+
   const fetchDocuments = async (location_id, paginator) => {
-    const query = location_id ? `?location_id=${location_id}` : ''
-    const URL = process.env.REACT_APP_API_DOMAIN + (paginator || `/aggregates/location/documents${query}`)
     let documents = []
+    let nextUrl = null
+    let prevUrl = null
+
+    let URL = `${process.env.REACT_APP_API_DOMAIN}/aggregates/location/documents`
+    URL = updateQueryStringParameter(URL, 'limit', 4)
+    URL = updateQueryStringParameter(URL, 'offset', 0)
+
+    if (location_id && location_id !== 'unknown') {
+      URL = updateQueryStringParameter(URL, 'location_id', location_id)
+    }
 
     setGeoCellLoading(true)
 
-    //  Get documents related to location.
-    await axios.get(URL).then(response => { documents = response.data })
+    await axios.get(paginator || URL).then(response => {
+      documents = response.data.results || response.data
+      nextUrl = response.data.next || null
+      prevUrl = response.data.previous || null
+    })
 
+    setNextUrl(nextUrl)
+    setPrevUrl(prevUrl)
     setGeoCell(documents)
     setGeoCellLoading(false)
   }
@@ -108,6 +136,10 @@ const Analysis = ({ userToken, match }) => {
       })
 
       fetchDocuments(location_id, null)
+  }
+
+  const urlChangeHandler = (url) => {
+    fetchDocuments(null, url)
   }
 
   useEffect(() => {
@@ -390,7 +422,7 @@ const Analysis = ({ userToken, match }) => {
                       geoCellLoading ?
                         <AnalysisLoader height="200px" /> :
                         (geoCell && geoCell.length > 0 ?
-                          <DocumentList docs={geoCell} /> :
+                          <DocumentList docs={geoCell} prevUrl={prevUrl} nextUrl={nextUrl} urlChangeHandler={urlChangeHandler} /> :
                           <div className="analysisEmpty" style={{ height: '200px' }}>
                               No similar documents
                           </div>)

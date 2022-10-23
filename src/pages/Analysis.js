@@ -160,9 +160,9 @@ const Analysis = ({ userToken, match }) => {
 
       const latlong = match.params.analysisKey.split('_');
 
-      const url = latlong[0] === 'all' ?
-        `${process.env.REACT_APP_API_DOMAIN}/aggregates/heatmap/` :
-        `${process.env.REACT_APP_API_DOMAIN}/aggregates/heatmap/?latitude=${latlong[0]}&longitude=${latlong[1]}&type=${latlong[2]}`;
+      const url = (latlong[0] === 'all' || queryParam === null) ?
+      `${process.env.REACT_APP_API_DOMAIN}/aggregates/heatmap/` :
+      `${process.env.REACT_APP_API_DOMAIN}/aggregates/heatmap/?location_id=${queryParam}&type=${latlong[2]}`;
 
       axios
         .get(url)
@@ -292,7 +292,14 @@ const Analysis = ({ userToken, match }) => {
       else
         cellNum = 2;
 
-      const result = await (await axios.get(`${process.env.REACT_APP_API_DOMAIN}/aggregates/impact/?type=${latlong[2]}&latitude=${latlong[0]}&longitude=${latlong[1]}&column=${cellNum}`)).data;
+      const params = new URLSearchParams(window.location.search);
+      const queryParam = params.get('loc') || null;
+
+      const url = (queryParam === null) ?
+      `${process.env.REACT_APP_API_DOMAIN}/aggregates/impact/?type=${latlong[2]}&column=${cellNum}` :
+      `${process.env.REACT_APP_API_DOMAIN}/aggregates/impact/?location_id=${queryParam}&type=${latlong[2]}&column=${cellNum}`
+
+      const result = await (await axios.get(url)).data;
       await result.sort(compare);
       await result.forEach(barData => { barData.strength = Math.round(barData.strength * 100) });
       setVars(result.sort((a,b) => b.strength - a.strength));

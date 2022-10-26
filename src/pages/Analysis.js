@@ -259,7 +259,7 @@ const Analysis = ({ userToken, match }) => {
             }
           })
           .then(res => {
-            setCellSim([]);
+            setCellSim(res.data);
             setCellSimLoading(false);
           });
       }

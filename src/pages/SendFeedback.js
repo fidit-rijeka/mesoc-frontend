@@ -120,9 +120,15 @@ const SendFeedback = ({ userToken, history, userVerified }) => {
                 placeholder="Message body"
                 className="form-control mb-2"
                 type="textarea"
+                minLength="120"
                 maxLength="1200"
                 rows="10"
                 required
+                validate={{
+                  required: {value: true, errorMessage: "This field is required."},
+                  minLength: {value: 120, errorMessage: "Ensure this field has at least 120 characters."},
+                  maxLength: {value: 1200, errorMessage: "Ensure this field has no more than 1200 characters."}
+                }}
               />
 
               {/*<input type="text" name="subject" maxLength="50" placeholder="Subject" className="form-control mb-2" required />*/}

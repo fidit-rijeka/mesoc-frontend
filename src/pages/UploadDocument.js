@@ -328,7 +328,7 @@ const UploadDocument = ({ userToken, history, userVerified }) => {
                   onChange={(e) => { textareachange(e) }}
                   placeholder="Document abstract"
                   name="documentAbstract"
-                  label="Acstract"
+                  label="Abstract"
                   className="form-control"
                   type="textarea"
                   minLength="1"

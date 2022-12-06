@@ -20,8 +20,6 @@ const SignIn = ({ history, setUserToken, setAuthCookie, setUserVerified, verific
         password: e.target.password.value
       })
       .then(res => {
-        console.log(res.data);
-        console.log(res.data.token);
         setAuthCookie('mesoc_local_user', res.data.token);
         setAuthCookie('mesoc_local_user_verified', res.data.verified);
         setUserToken(res.data.token);

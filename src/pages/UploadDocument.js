@@ -46,7 +46,6 @@ const UploadDocument = ({ userToken, history, userVerified }) => {
   const [textCount, setTextCount] = useState(0);
 
   useEffect(() => {
-    console.log(userToken);
     axios
       .get(`${process.env.REACT_APP_API_DOMAIN}/languages`, {headers: {
         Authorization: `Bearer ${userToken}`
@@ -102,11 +101,6 @@ const UploadDocument = ({ userToken, history, userVerified }) => {
     if (isInvalidForm) {
       return
     }
-
-    console.log(eventTarget.title.value);
-    console.log(eventTarget.language.value);
-    console.log(eventTarget.location.value);
-    console.log(file[0]);
 
     setWait(true);
 

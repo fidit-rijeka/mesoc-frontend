@@ -14,7 +14,6 @@ const FileDropzone = ({ setFile, setInvalid }) => {
       return;
     }
     setFile(acceptedFiles);
-    console.log(acceptedFiles);
   }, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({onDrop, accept: '.pdf, .txt'});

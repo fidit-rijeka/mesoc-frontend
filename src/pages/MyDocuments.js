@@ -73,7 +73,6 @@ const MyDocuments = ({ userToken, userVerified }) => {
         }
       })
       .then(res => {
-        console.log(getCustomizedData(res.data));
         setDocsData(getCustomizedData(res.data));
 
         if (initialLoad) {

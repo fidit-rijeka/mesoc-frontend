@@ -4,7 +4,6 @@ const NavSearchField = ({ display, margin, width }) => {
 
   const searchRepo = e => {
     e.preventDefault();
-    console.log(e.target.repoInput.value);
   };
 
   return(

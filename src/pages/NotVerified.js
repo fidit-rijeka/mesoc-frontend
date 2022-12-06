@@ -23,7 +23,6 @@ const NotVerfied = ({ userToken, history, userVerified }) => {
   }
 
   const resendVerificationLink = () => {
-    console.log(`NotVeriifed page userToken log: ${userToken}`);
     axios
       .post(`${process.env.REACT_APP_API_DOMAIN}/account/verification/`,{}, {
         headers: {

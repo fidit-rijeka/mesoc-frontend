@@ -15,7 +15,6 @@ const ForgotPassword = ({ history }) => {
 
   const handleValidSubmit = e => {
     setWait(true);
-    console.log(e.target.email.value);
 
     axios
       .post(`${process.env.REACT_APP_API_DOMAIN}/account/password_reset/`, {
@@ -29,7 +28,6 @@ const ForgotPassword = ({ history }) => {
       .then(res => {
         setWait(false);
         setSucc(true);
-        console.log(res);
       })
       .catch(err => {
         setWait(false);

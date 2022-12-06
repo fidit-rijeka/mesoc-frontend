@@ -34,7 +34,6 @@ const ResetPassword = ({ history, match }) => {
       .then(res => {
         setWait(false);
         setSucc(true);
-        console.log(res);
       })
       .catch(err => {
         setWait(false);

@@ -28,9 +28,6 @@ const SignUp = ({ history }) => {
     //   return;
     // }
 
-    console.log(e.target.email.value);
-    console.log(e.target.password.value);
-
     setWait(true);
     axios
       .post(`${process.env.REACT_APP_API_DOMAIN}/account/`, {

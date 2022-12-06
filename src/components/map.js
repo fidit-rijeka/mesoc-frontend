@@ -81,7 +81,7 @@ const MapView = () => {
           return <Marker key={`marker_${index}`} position={[city.latitude, city.longitude]} icon={cityIcon}>
             <Popup>
             <p className="mapPopupTitle">{city.address}</p>
-            {city.num_pilot !== 0 ? <>Pilot papers: {city.num_pilot}<br /><a href={`/location/${city.latitude}_${city.longitude}_pilot_${city.city}_${city.country}`}>Examine pilot papers</a><br /></> : ''}
+            {city.num_pilot !== 0 ? <>Pilot papers: {city.num_pilot}<br /><a href={`/location/${city.latitude}_${city.longitude}_pilot_${city.address}?loc=${city.location_id}`}>Examine pilot papers</a><br /></> : ''}
             {city.num_scientific !== 0 ? <>Scientific papers: {city.num_scientific}<br /><a href={`/location/${city.latitude}_${city.longitude}_scientific_${city.address}?loc=${city.location_id}`}>Examine scientific papers</a></> : ''}
             </Popup>
           </Marker>
